@@ -50,10 +50,12 @@
 	}
 	/* Text position */
 	.my-page .ui-listview h2 {
-		font-size: 1.25em;
+		font-size: 1.0em;
+		text-align: center;
 		margin: 0;
-		padding: .125em 1em;
-		bottom: 50%;
+		padding: .2em 2em;
+		bottom: 0%;
+		
 	}
 	.my-page .ui-listview p {
 		font-size: 1em;
@@ -134,7 +136,7 @@
 		margin: .625em 1%;
 	}
 }
-@media ( min-width: 85em ) {
+@media ( min-width: 90em ) {
 	.my-page .ui-content {
 		padding: .50em; /* 10px */
 	}
