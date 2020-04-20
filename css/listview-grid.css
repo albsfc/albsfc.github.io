@@ -129,9 +129,27 @@
 	/* Because of the 1000px max-width the width will always be 230px (and margin left/right 10px),
 	but we stick to percentage values for demo purposes. */
 	.my-page .ui-listview li {
-		width: 23%;
+		width: 22%;
 		height: 230px;
 		margin: .625em 1%;
+	}
+}
+@media ( min-width: 85em ) {
+	.my-page .ui-content {
+		padding: .50em; /* 10px */
+	}
+	/* Set a max-width for the last breakpoint to prevent too much stretching on large screens.
+	By setting the max-width equal to the breakpoint width minus padding we keep square tiles. */
+	.my-page .ui-listview {
+		max-width: 62.5em; /* 1000px */
+		margin: 0 auto;
+	}
+	/* Because of the 1000px max-width the width will always be 230px (and margin left/right 10px),
+	but we stick to percentage values for demo purposes. */
+	.my-page .ui-listview li {
+		width: 18%;
+		height: 190px;
+		margin: .500em 1%;
 	}
 }
 
