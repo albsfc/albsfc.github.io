@@ -78,7 +78,7 @@
 	}
 	/* ui-li-aside has class .ui-li-desc as well so we have to override some things. */
 	.my-page .ui-listview .ui-li-aside {
-		padding: .125em .625em;
+		padding: .125em .425em;
 		width: auto;
 		min-height: 0;
 		top: 0;
