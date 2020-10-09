@@ -1,17 +1,5 @@
+#EXTM3U
+#EXTINF:-1,Old Skool Hits
 http://stream.scahw.com.au/live/2oldskool_128.stream
+#EXTINF:-1,RAW FM
 http://frontend.stream.rawfm.net.au/i/syd-stream-192k.aac
-http://79.172.214.45:35000/live.mp3
-http://stream.scahw.com.au/live/2day_128.stream
-http://stream.scahw.com.au/live/2easy_128.stream
-http://194.97.151.153:80/chillout
-https://wz2web.scahw.com.au/live/2urbanhits_128.stream
-http://192.99.8.192:3132/stream
-http://54.38.214.41:8020/radio.mp3
-http://strm112.1.fm/psytrance_mobile_mp3
-http://streamer.psyradio.org:8030/;listen.mp3
-http://streamer.psyradio.org:8010/;listen.mp3
-http://79.142.67.91:9998/stream
-
-
-
-
