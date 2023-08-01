@@ -14,7 +14,7 @@
         }
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(var(--num-columns, 3), minmax(200px, 1fr));
             gap: 20px;
             justify-items: center;
             margin-top: 30px;
@@ -63,37 +63,26 @@
     </style>
 </head>
 <body>
-    <div class="grid-container" draggable="true">
-        <!-- Your channel cards go here -->
+    <h1>TV Channels</h1>
+
+    <label for="column-slider">Number of Columns:</label>
+    <input type="range" id="column-slider" min="1" max="4" step="1" value="3">
+
+    <div class="grid-container">
+        <!-- Your channel cards will go here -->
+        <!-- Example channel card -->
+        <div class="channel-card">
+            <img class="channel-logo" src="channel_logo.png" alt="Channel Logo">
+            <span>Channel Name</span>
+        </div>
     </div>
 
     <script>
-        // JavaScript code for making the grid container movable
-        let isDragging = false;
-        let initialX;
-        let initialY;
-        let xOffset = 0;
-        let yOffset = 0;
-
+        const columnSlider = document.getElementById("column-slider");
         const gridContainer = document.querySelector(".grid-container");
 
-        gridContainer.addEventListener("mousedown", (e) => {
-            isDragging = true;
-            initialX = e.clientX - xOffset;
-            initialY = e.clientY - yOffset;
-        });
-
-        document.addEventListener("mouseup", () => {
-            isDragging = false;
-        });
-
-        document.addEventListener("mousemove", (e) => {
-            if (isDragging) {
-                xOffset = e.clientX - initialX;
-                yOffset = e.clientY - initialY;
-
-                gridContainer.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
-            }
+        columnSlider.addEventListener("input", () => {
+            gridContainer.style.setProperty("--num-columns", columnSlider.value);
         });
     </script>
 </head>
