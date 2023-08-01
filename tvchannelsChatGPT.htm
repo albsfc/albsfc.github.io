@@ -63,6 +63,41 @@
     </style>
 </head>
 <body>
+    <div class="grid-container" draggable="true">
+        <!-- Your channel cards go here -->
+    </div>
+
+    <script>
+        // JavaScript code for making the grid container movable
+        let isDragging = false;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        const gridContainer = document.querySelector(".grid-container");
+
+        gridContainer.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+        });
+
+        document.addEventListener("mouseup", () => {
+            isDragging = false;
+        });
+
+        document.addEventListener("mousemove", (e) => {
+            if (isDragging) {
+                xOffset = e.clientX - initialX;
+                yOffset = e.clientY - initialY;
+
+                gridContainer.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+            }
+        });
+    </script>
+</head>
+<body>
     <button class="chrome-extension-button" onclick="openChromeExtension()">Click for Chrome Extension</button>
     <h1>TV Channels</h1>
     <div class="grid-container">
