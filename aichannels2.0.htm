@@ -9,6 +9,8 @@
             text-align: center;
             margin: 0;
             padding: 0;
+            background-color: #333333; /* Dark grey background */
+            color: white;
         }
 
         #m3u8Input {
@@ -17,15 +19,10 @@
             margin: 10px;
         }
 
-        #videoContainer {
+        #container {
             display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #videoPlayer {
-            max-width: 100%;
-            max-height: 70vh;
+            flex-direction: column; /* Change to column */
+            align-items: center; /* Center horizontally */
         }
 
         #channelContainer {
@@ -57,6 +54,20 @@
             background-repeat: no-repeat;
             background-position: center;
         }
+
+        #videoContainer {
+            width: 50%; /* Set the width of the video container */
+            height: 70vh; /* Set the height of the video container */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px auto; /* Center the container horizontally and add some margin */
+        }
+
+        #videoPlayer {
+            max-width: 100%;
+            max-height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -64,19 +75,102 @@
     <input type="text" id="m3u8Input" placeholder="Enter M3U8 link" value="https://i.mjh.nz/au/Sydney/raw-tv.m3u8">
     <button onclick="loadChannels()">Load Channels</button>
 
-    <!-- Video Container -->
-    <div id="videoContainer">
-        <video id="videoPlayer" controls allowfullscreen></video>
-    </div>
+    <div id="container">
+        <div id="channelContainer"></div>
 
-    <div id="channelContainer"></div>
+        <!-- Video Container -->
+        <div id="videoContainer">
+            <video id="videoPlayer" controls allowfullscreen></video>
+        </div>
+    </div>
 
     <!-- Include hls.js -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <!-- JavaScript Logic -->
     <script>
-        // Rest of your JavaScript code here...
+        function loadChannels() {
+            const m3u8Link = document.getElementById('m3u8Input').value;
+
+            fetch(m3u8Link)
+                .then(response => response.text())
+                .then(data => {
+                    const channels = parseM3U8Data(data);
+
+                    // Display the channels as clickable buttons
+                    const channelContainer = document.getElementById('channelContainer');
+                    channelContainer.innerHTML = '';
+
+                    channels.forEach((channel) => {
+                        const container = document.createElement('div');
+                        container.className = 'channelButtonContainer';
+
+                        const button = document.createElement('button');
+                        button.className = 'channelButton';
+                        button.style.backgroundImage = `url(${channel.image})`;
+                        button.onclick = () => playChannel(channel.url);
+
+                        const channelName = document.createElement('span');
+                        channelName.className = 'channelName';
+                        channelName.textContent = channel.name;
+
+                        button.appendChild(channelName);
+                        container.appendChild(button);
+                        channelContainer.appendChild(container);
+                    });
+                })
+                .catch(error => {
+                    alert("Error fetching M3U8 data. Make sure the link is correct and accessible.");
+                });
+        }
+
+        function parseM3U8Data(m3u8Data) {
+            const channels = [];
+
+            const lines = m3u8Data.split('\n');
+            let channelName = null;
+            let channelImage = null;
+
+            lines.forEach((line) => {
+                if (line.startsWith('#EXTINF')) {
+                    // Extract the channel name from the line after the comma
+                    const matchName = line.match(/,([^,]+)/);
+                    if (matchName) {
+                        channelName = matchName[1];
+                    }
+
+                    // Extract the image link (if available) from the line after the 'tvg-logo' tag
+                    const matchImage = line.match(/tvg-logo="([^"]+)"/);
+                    if (matchImage) {
+                        channelImage = matchImage[1];
+                    }
+                } else if (line.startsWith('http') && channelName) {
+                    // If a valid channel URL is found, add it to the channels array
+                    channels.push({ name: channelName.trim(), url: line.trim(), image: channelImage });
+                    channelName = null;
+                    channelImage = null;
+                }
+            });
+
+            return channels;
+        }
+
+        function playChannel(channelUrl) {
+            if (Hls.isSupported()) {
+                const videoPlayer = document.getElementById('videoPlayer');
+                const hls = new Hls();
+                hls.loadSource(channelUrl);
+                hls.attachMedia(videoPlayer);
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    videoPlayer.play();
+                });
+            } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                videoPlayer.src = channelUrl;
+                videoPlayer.addEventListener('loadedmetadata', function () {
+                    videoPlayer.play();
+                });
+            }
+        }
     </script>
 </body>
 </html>
