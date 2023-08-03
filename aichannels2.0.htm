@@ -25,6 +25,20 @@
             align-items: center; /* Center horizontally */
         }
 
+        #videoContainer {
+            width: 50%; /* Set the width of the video container */
+            height: 70vh; /* Set the height of the video container */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px auto; /* Center the container horizontally and add some margin */
+        }
+
+        #videoPlayer {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
         #channelContainer {
             display: flex;
             flex-wrap: wrap;
@@ -54,20 +68,6 @@
             background-repeat: no-repeat;
             background-position: center;
         }
-
-        #videoContainer {
-            width: 50%; /* Set the width of the video container */
-            height: 70vh; /* Set the height of the video container */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 10px auto; /* Center the container horizontally and add some margin */
-        }
-
-        #videoPlayer {
-            max-width: 100%;
-            max-height: 100%;
-        }
     </style>
 </head>
 <body>
@@ -75,13 +75,13 @@
     <input type="text" id="m3u8Input" placeholder="Enter M3U8 link" value="https://i.mjh.nz/au/Sydney/raw-tv.m3u8">
     <button onclick="loadChannels()">Load Channels</button>
 
+    <!-- Video Container -->
+    <div id="videoContainer">
+        <video id="videoPlayer" controls allowfullscreen></video>
+    </div>
+
     <div id="container">
         <div id="channelContainer"></div>
-
-        <!-- Video Container -->
-        <div id="videoContainer">
-            <video id="videoPlayer" controls allowfullscreen></video>
-        </div>
     </div>
 
     <!-- Include hls.js -->
