@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>M3U8 Channel Viewer</title>
+    <!-- CSS Styling -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        #m3u8Input {
+            width: 300px;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        #videoContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #videoPlayer {
+            max-width: 100%;
+            max-height: 70vh;
+        }
+
+        #channelContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .channelButtonContainer {
+            margin: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .channelButton {
+            min-width: 150px; /* Minimum width of the channel button */
+            height: 150px;
+            background-color: #333333; /* Dark grey background */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            flex-grow: 1; /* Allow buttons to grow and occupy available space */
+        }
+    </style>
+</head>
+<body>
+    <h1>M3U8 Channel Viewer</h1>
+    <input type="text" id="m3u8Input" placeholder="Enter M3U8 link" value="https://i.mjh.nz/au/Sydney/raw-tv.m3u8">
+    <button onclick="loadChannels()">Load Channels</button>
+
+    <!-- Video Container -->
+    <div id="videoContainer">
+        <video id="videoPlayer" controls allowfullscreen></video>
+    </div>
+
+    <div id="channelContainer"></div>
+
+    <!-- Include hls.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Rest of your JavaScript code here...
+    </script>
+</body>
+</html>
