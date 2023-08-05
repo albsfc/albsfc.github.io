@@ -5,94 +5,142 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Embedded Music Player</title>
     <style>
-        /* ... CSS styles (unchanged) ... */
+        body {
+            background-color: #333;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            margin: 0 auto;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        #radioName {
+            font-size: 24px;
+        }
+
+        #radioLogo {
+            width: 150px;
+            height: 150px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: transparent;
+            color: white;
+            font-size: 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #currentAudio {
+            margin-top: 10px;
+        }
+
+        .radioGrid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .radioGridItem {
+            cursor: pointer;
+        }
+
+        .radioGridItem img {
+            width: 100px;
+            height: 100px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 id="station-name">Radio Station Name</h1>
-        <img id="station-logo" src="path_to_logo_image.png" alt="Radio Station Logo" onclick="toggleAudio()">
-        <button id="back-btn" onclick="changeTrack(-1)">Back</button>
-        <button id="forward-btn" onclick="changeTrack(1)">Forward</button>
-        <marquee id="current-audio">Current Audio Title</marquee>
-        <div class="grid" id="radio-grid">
-            <!-- The dynamic radio channels will be added here using JavaScript -->
+        <h1 id="radioName">Radio Station Name</h1>
+        <img src="" alt="Radio Station Logo" id="radioLogo" onclick="toggleAudio()">
+        <button onclick="playPrevious()">&lt;&lt;</button>
+        <audio id="audioPlayer" controls>
+            <!-- The audio will be loaded here -->
+        </audio>
+        <button onclick="playNext()">&gt;&gt;</button>
+        <marquee id="currentAudio">Currently Playing: </marquee>
+        <div class="radioGrid" id="radioGridContainer">
+            <!-- The radio channels will be displayed here dynamically -->
         </div>
     </div>
+
     <script>
-        const radioGrid = document.getElementById('radio-grid');
-        const stationName = document.getElementById('station-name');
-        const stationLogo = document.getElementById('station-logo');
-        const currentAudio = document.getElementById('current-audio');
+        const audioPlayer = document.getElementById("audioPlayer");
+        const radioName = document.getElementById("radioName");
+        const radioLogo = document.getElementById("radioLogo");
+        const currentAudio = document.getElementById("currentAudio");
+        const radioGridContainer = document.getElementById("radioGridContainer");
 
-        const m3u8URL = 'radiochans.m3u8';
-        let currentTrackIndex = 0;
-        let audioPlayer;
+        let currentIndex = 0;
+        let radioChannels = [];
 
-        // Fetch and display radio channels from the M3U8 file
-        async function fetchRadioChannels() {
-            try {
-                const response = await fetch(m3u8URL);
-                const data = await response.text();
-                const lines = data.split('\n');
-
-                for (let i = 0; i < lines.length; i += 2) {
-                    const name = lines[i].trim();
-                    const streamURL = lines[i + 1].trim();
-                    const radioChannel = { name, streamURL };
-                    displayRadioChannel(radioChannel);
+        // Fetch data from the CSV file
+        fetch("https://albsfc.github.io/radiochans.csv")
+            .then(response => response.text())
+            .then(data => {
+                const rows = data.split("\n").slice(1);
+                for (const row of rows) {
+                    const [name, link, imageUrl] = row.split(",");
+                    radioChannels.push({ name, link, imageUrl });
                 }
-            } catch (error) {
-                console.error('Error fetching radio channels:', error);
-            }
-        }
+                // Load the first radio channel on page load
+                loadRadioChannel(currentIndex);
+                // Load the radio grid
+                loadRadioGrid();
+            });
 
-        // Display a radio channel in the grid
-        function displayRadioChannel(channel) {
-            const gridItem = document.createElement('div');
-            gridItem.classList.add('grid-item');
-            gridItem.innerHTML = `
-                <img src="${channel.logoURL}" alt="${channel.name}" onclick="playChannel('${channel.name}', '${channel.streamURL}')">
-                <p>${channel.name}</p>
-            `;
-            radioGrid.appendChild(gridItem);
-        }
-
-        // Play the selected radio channel
-        function playChannel(name, streamURL) {
-            stationName.innerText = name;
-            stationLogo.src = 'path_to_logo_image.png'; // Replace with the actual path to the station logo
-            stationLogo.alt = name;
-            currentAudio.innerText = name;
-            
-            if (audioPlayer) {
-                audioPlayer.pause();
-                audioPlayer.src = streamURL;
-            } else {
-                audioPlayer = new Audio(streamURL);
-            }
-
+        // Function to load the selected radio channel
+        function loadRadioChannel(index) {
+            const { name, link, imageUrl } = radioChannels[index];
+            radioName.textContent = name;
+            audioPlayer.src = link;
+            radioLogo.src = imageUrl;
+            currentIndex = index;
             audioPlayer.play();
         }
 
-        // Function to toggle play/pause the audio player
-        function toggleAudio() {
-            if (audioPlayer) {
-                if (audioPlayer.paused) audioPlayer.play();
-                else audioPlayer.pause();
+        // Function to play the previous radio channel
+        function playPrevious() {
+            if (currentIndex > 0) {
+                loadRadioChannel(currentIndex - 1);
             }
         }
 
-        // Function to change to the previous or next track in the list
-        function changeTrack(direction) {
-            // Implement this function based on your requirements
-            // You'll need to update currentTrackIndex and play the corresponding track
-            // Example: currentTrackIndex += direction;
-            // playChannel(radioChannels[currentTrackIndex].name, radioChannels[currentTrackIndex].streamURL);
+        // Function to play the next radio channel
+        function playNext() {
+            if (currentIndex < radioChannels.length - 1) {
+                loadRadioChannel(currentIndex + 1);
+            }
         }
 
-        // Fetch and display radio channels on page load
-        fetchRadioChannels();
+        // Function to toggle audio play/pause on logo click
+        function toggleAudio() {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+            } else {
+                audioPlayer.pause();
+            }
+        }
+
+        // Function to load the radio grid dynamically
+        function loadRadioGrid() {
+            radioGridContainer.innerHTML = "";
+            radioChannels.forEach((channel, index) => {
+                const radioGridItem = document.createElement("div");
+                radioGridItem.classList.add("radioGridItem");
+                radioGridItem.innerHTML = `<img src="${channel.imageUrl}" alt="${channel.name}" onclick="loadRadioChannel(${index})">`;
+                radioGridContainer.appendChild(radioGridItem);
+            });
+        }
     </script>
 </body>
 </html>
