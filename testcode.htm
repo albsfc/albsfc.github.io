@@ -94,16 +94,16 @@
                 
                 const channelGrid = document.getElementById('channelGrid');
                 
-                lines.forEach((line, index) => {
-                    line = line.trim();
+                for (let i = 0; i < lines.length; i++) {
+                    let line = lines[i].trim();
                     if (line.startsWith('#EXTINF:')) {
                         // Extract channel name from #EXTINF line
                         const channelName = line.split(',')[1].trim();
                         
                         // Extract logo URL if available
                         let logoUrl = null;
-                        if (lines[index + 1].trim().startsWith('http')) {
-                            logoUrl = lines[index + 1].trim();
+                        if (lines[i + 1] && lines[i + 1].trim().startsWith('http')) {
+                            logoUrl = lines[i + 1].trim();
                         }
                         
                         // Create channel card
@@ -126,23 +126,21 @@
                         
                         // Add click event to play video
                         channelCard.addEventListener('click', () => {
-                            openVideo(lines, index);
+                            openVideo(lines[i + 1].trim());
                         });
                         
                         // Append channel card to grid
                         channelGrid.appendChild(channelCard);
                     }
-                });
+                }
                 
             } catch (error) {
                 console.error('Error fetching channels:', error);
             }
         }
         
-        // Function to open video modal and play selected channel
-        function openVideo(lines, index) {
-            const videoUrl = lines[index + 1].trim(); // Assuming the video URL is directly after the #EXTINF line
-            
+        // Function to open video modal and play selected video
+        function openVideo(videoUrl) {
             const videoPlayer = document.getElementById('videoPlayer');
             videoPlayer.src = videoUrl;
             
