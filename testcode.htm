@@ -10,6 +10,14 @@
     <script src="js/jquery-1.12.4.js"></script>
     <script src="js/jquery.mobile-1.4.5.js"></script>
     <style>
+        .ui-li {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+        }
+
         .ui-li-thumb {
             width: 100px; /* Adjust as needed */
             height: auto; /* Maintain aspect ratio */
@@ -17,12 +25,19 @@
             margin: 0 auto;
         }
 
-        .ui-li {
+        .ui-li a {
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             flex-direction: column;
+            width: 100%;
+        }
+
+        .ui-li h2 {
+            text-align: center;
+            margin: 0;
+            padding: 0;
         }
     </style>
 </head>
