@@ -42,21 +42,27 @@
             success: function(data) {
                 var lines = data.split('\n');
                 var channels = [];
-                for (var i = 0; i < lines.length; i++) {
-                    if (lines[i].startsWith('#EXTINF')) {
-                        var info = lines[i].split(',');
-                        var name = info[1].trim();
-                        var url = lines[i + 1].trim();
-                        channels.push({name: name, url: url});
+                var currentChannel = {};
+
+                lines.forEach(function(line) {
+                    if (line.startsWith('#EXTINF')) {
+                        var info = line.split(',');
+                        currentChannel.name = info[1].trim();
+                    } else if (line.startsWith('#EXTIMG')) {
+                        currentChannel.logo = line.replace('#EXTIMG:', '').trim();
+                    } else if (line.startsWith('http')) {
+                        currentChannel.url = line.trim();
+                        channels.push(currentChannel);
+                        currentChannel = {};
                     }
-                }
+                });
+
                 var list = $('#channel-list');
                 channels.forEach(function(channel) {
-                    var logo = 'img/tv.' + channel.name.toLowerCase().replace(/\s+/g, '-') + '.png'; // Assuming logos are named in this pattern
                     var listItem = `
                         <li>
                             <a target="_blank" href="${channel.url}">
-                                <img src="${logo}" class="ui-li-thumb">
+                                <img src="${channel.logo}" class="ui-li-thumb">
                                 <h2>${channel.name}</h2>
                                 <p class="ui-li-aside">TV</p>
                             </a>
