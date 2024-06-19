@@ -7,22 +7,20 @@
 	<link rel="shortcut icon" href="../favicon.ico">
 	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
 	<link rel="stylesheet" href="css/listview-grid.css">
-	<link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet" />
 	<script src="js/jquery-1.12.4.js"></script>
 	<script src="js/jquery.mobile-1.4.5.js"></script>
-	<script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script async src="//jsfiddle.net/mdesdev/eFLqJ/embed/"></script>
 </head>
 <body>
 
-<div data-role="page" data-theme="b" id="demo-page" class="my-page">
+	<div data-role="page" data-theme="b" id="demo-page" class="my-page">
 
     <div data-role="header">
         <h1>Free Digital TV Stations</h1>
     </div>
 
     <div role="main" class="ui-content">
-        <!-- Page counter -->
         <a href="https://chrome.google.com/webstore/detail/native-hls-playback/emnphkkblegpebimobpbekeedfgemhof" data-role="button">
             Direct Playback Chrome extension <click to install>
         </a>
@@ -33,9 +31,23 @@
         </script></p>
 
         <!-- Video Player for M3U8 file -->
-        <video-js id="my_video" class="vjs-default-skin" controls preload="auto" width="640" height="264" data-setup='{}'>
-            <source src="https://i.mjh.nz/au/Sydney/raw-tv.m3u8" type="application/x-mpegURL">
-        </video-js>
+        <video id="video" controls width="100%" height="auto"></video>
+        <script>
+            if (Hls.isSupported()) {
+                var video = document.getElementById('video');
+                var hls = new Hls();
+                hls.loadSource('https://i.mjh.nz/au/Sydney/raw-tv.m3u8');
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play();
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = 'https://i.mjh.nz/au/Sydney/raw-tv.m3u8';
+                video.addEventListener('canplay', function() {
+                    video.play();
+                });
+            }
+        </script>
 
         <ul data-role="listview" data-inset="true" data-filter="true" data-filter-placeholder="Search...">
             <!-- Additional content and TV station links here -->
