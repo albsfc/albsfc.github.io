@@ -44,6 +44,7 @@
             background-color: #fff;
             position: relative;
             padding: 20px;
+            text-align: center;
         }
 
         .close {
@@ -88,6 +89,7 @@
                 const channelGrid = document.getElementById('channelGrid');
                 
                 lines.forEach(line => {
+                    line = line.trim();
                     if (line.startsWith('#EXTINF:')) {
                         // Extract channel name from #EXTINF line
                         const channelName = line.split(',')[1].trim();
@@ -99,7 +101,7 @@
                         
                         // Add click event to play video
                         channelCard.addEventListener('click', () => {
-                            openVideo(line);
+                            openVideo(lines, line);
                         });
                         
                         // Append channel card to grid
@@ -113,8 +115,9 @@
         }
         
         // Function to open video modal and play selected channel
-        function openVideo(line) {
-            const videoUrl = line.split('\n')[1].trim(); // Assuming the video URL is in the next line
+        function openVideo(lines, line) {
+            const startIndex = lines.indexOf(line) + 1;
+            const videoUrl = lines[startIndex].trim();
             
             const videoPlayer = document.getElementById('videoPlayer');
             videoPlayer.src = videoUrl;
