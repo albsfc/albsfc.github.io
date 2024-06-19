@@ -50,8 +50,12 @@
                         currentChannel.name = info[1].trim();
                     } else if (line.startsWith('#EXTIMG')) {
                         currentChannel.logo = line.replace('#EXTIMG:', '').trim();
-                    } else if (line.startsWith('http')) {
+                    } else if (line.startsWith('http') && currentChannel.name) {
                         currentChannel.url = line.trim();
+                        if (!currentChannel.logo) {
+                            // Construct a default logo URL if not provided
+                            currentChannel.logo = `https://i.mjh.nz/.images/${currentChannel.name.toLowerCase().replace(/\s+/g, '-')}.png`;
+                        }
                         channels.push(currentChannel);
                         currentChannel = {};
                     }
