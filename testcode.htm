@@ -1,103 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TV Channel List</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Free Digital AUS TV Stations</title>
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+    <link rel="stylesheet" href="css/listview-grid.css">
+    <script src="js/jquery-1.12.4.js"></script>
+    <script src="js/jquery.mobile-1.4.5.js"></script>
     <style>
-        /* Basic styling for the grid layout */
-        .channel-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .channel-card {
-            border: 1px solid #ccc;
-            padding: 10px;
+        .ui-li {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            cursor: pointer;
+            flex-direction: column;
         }
 
-        .channel-card:hover {
-            background-color: #f0f0f0;
+        .ui-li-thumb {
+            width: 100px; /* Adjust as needed */
+            height: auto; /* Maintain aspect ratio */
+            display: block;
+            margin: 0 auto;
         }
 
-        .channel-logo {
-            max-width: 100px;
-            max-height: 50px;
-            margin-bottom: 10px;
-        }
-
-        /* Styles for the video modal */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
+        .ui-li a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
             width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.9);
         }
 
-        .modal-content {
-            margin: 15% auto;
-            width: 80%;
-            max-width: 800px;
-            background-color: #fff;
-            position: relative;
-            padding: 20px;
+        .ui-li h2 {
             text-align: center;
+            margin: 0;
+            padding: 0;
         }
 
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
+        #video-player-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            display: none; /* Initially hidden */
         }
 
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
+        #video-player {
+            width: 100%;
+            height: 350px; /* Adjust as needed */
         }
     </style>
 </head>
 <body>
-    <div class="channel-grid" id="channelGrid">
-        <!-- Channels will be dynamically added here -->
+
+<div data-role="page" data-theme="b" id="demo-page" class="my-page">
+
+    <div data-role="header">
+        <h1>Free Digital TV Stations</h1>
     </div>
 
-    <!-- Modal for video player -->
-    <div id="videoModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <video id="videoPlayer" controls autoplay></video>
+    <div role="main" class="ui-content">
+        <div id="video-player-container">
+            <video id="video-player" controls>
+                <source src="" type="application/x-mpegURL">
+                Your browser does not support the video tag.
+            </video>
         </div>
-    </div>
 
-    <script>
-        // Function to fetch and display channels from M3U8 playlist
-        async function fetchChannels() {
-            const playlistUrl = 'https://i.mjh.nz/au/Sydney/raw-tv.m3u8';
-            
-            try {
-                const response = await fetch(playlistUrl);
-                const data = await response.text();
-                const lines = data.split('\n');
-                
-                const channelGrid = document.getElementById('channelGrid');
-                
-                for (let i = 0; i < lines.length; i++) {
-                    let line = lines[i].trim();
-                    if (line.startsWith('#EXTINF:')) {
-                        // Extract channel name and logo URL from #EXTINF line
-                        const channelName = line.split(',')[1].trim();
-                        const logoMatch = line.match(/tvg-logo="([^"]+)"/);
-                        const logoUrl = logoMatch ? logoMatch[1] : nu
+        <a href="https://chrome.google.com/webstore/detail/native-hls-playback/emnphkkblegpebimobpbekeedfgemhof" data-role="button">
+            Direct Playback Chrome extension <click to install>
+        </a>
+        <p>Date/Time: <span id="datetime"></span>
+        <script>
+            var dt = new Date();
+            document.getElementById("datetime").innerHTML = dt.toLocaleString();
+        </script></p>
+
+        <ul id="channel-list" data-role="listview" data-inset="true" data-filter="true" data-filter-placeholder="Search...">
+            <!-- Channel items will be added here dynamically -->
+        </ul><!-- /listview -->
+    </div><!-- /content -->
+
+</div><!-- /page -->
+
+<script>
+    $(document).ready(function() {
+        $.ajax({
+            url: 'https://i.mjh.nz/au/Sydney/raw-tv.m3u8',
+            success: function(data) {
+                var lines = data.split('\n');
+                var channels = [];
+                var currentChannel = {};
+
+                lines.forEach(function(line) {
+                    if (line.startsWith('#EXTINF')) {
+                        var info = line.split(',');
+                        currentChannel.name = info[1].trim();
+                        var tvgLogoMatch = line.match(/tvg-logo="([^"]+)"/);
+                        if (tvgLogoMatch) {
+                            currentChannel.logo = tvgLogoMatch[1];
+                        }
+                    } else if (line.startsWith('http') && currentChannel.name) {
+                        currentChannel.url = line.trim();
+                        channels.push(currentChannel);
+                        currentChannel = {};
+                    }
+                });
+
+                var list = $('#channel-list');
+                channels.forEach(function(channel) {
+                    console.log('Channel:', channel.name);
+                    console.log('Image URL:', channel.logo);
+                    console.log('Stream URL:', channel.url);
+
+                    var listItem = `
+                        <li>
+                            <a href="#" data-stream-url="${channel.url}">
+                                <img src="${channel.logo}" class="ui-li-thumb">
+                                <h2>${channel.name}</h2>
+                                <p class="ui-li-aside">TV</p>
+                            </a>
+                        </li>
+                    `;
+                    list.append(listItem);
+                });
+                list.listview('refresh');
+
+                $('#channel-list').on('click', 'a', function(event) {
+                    event.preventDefault();
+                    var streamUrl = $(this).data('stream-url');
+                    $('#video-player').attr('src', streamUrl);
+                    $('#video-player-container').show();
+                });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error loading m3u8 file:', textStatus, errorThrown);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
