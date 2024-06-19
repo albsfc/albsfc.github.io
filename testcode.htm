@@ -117,4 +117,21 @@
             const videoUrl = line.split('\n')[1].trim(); // Assuming the video URL is in the next line
             
             const videoPlayer = document.getElementById('videoPlayer');
-            videoPl
+            videoPlayer.src = videoUrl;
+            
+            const modal = document.getElementById('videoModal');
+            modal.style.display = 'block';
+            
+            const closeModal = document.querySelector('.close');
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+                videoPlayer.pause();
+                videoPlayer.src = ''; // Clear video source
+            });
+        }
+        
+        // Fetch channels when the page loads
+        window.onload = fetchChannels;
+    </script>
+</body>
+</html>
