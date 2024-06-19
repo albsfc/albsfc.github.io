@@ -48,15 +48,12 @@
                     if (line.startsWith('#EXTINF')) {
                         var info = line.split(',');
                         currentChannel.name = info[1].trim();
-                    } else if (line.startsWith('#EXTIMG')) {
-                        currentChannel.logo = line.replace('#EXTIMG:', '').trim();
+                        var tvgLogoMatch = line.match(/tvg-logo="([^"]+)"/);
+                        if (tvgLogoMatch) {
+                            currentChannel.logo = tvgLogoMatch[1];
+                        }
                     } else if (line.startsWith('http') && currentChannel.name) {
                         currentChannel.url = line.trim();
-                        if (!currentChannel.logo) {
-                            // Construct a default logo URL if not provided
-                            var channelNameForImage = currentChannel.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-                            currentChannel.logo = `https://i.mjh.nz/.images/${channelNameForImage}-syd.png`;
-                        }
                         channels.push(currentChannel);
                         currentChannel = {};
                     }
