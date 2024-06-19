@@ -54,7 +54,8 @@
                         currentChannel.url = line.trim();
                         if (!currentChannel.logo) {
                             // Construct a default logo URL if not provided
-                            currentChannel.logo = `https://i.mjh.nz/.images/${currentChannel.name.toLowerCase().replace(/\s+/g, '-')}.png`;
+                            var channelNameForImage = currentChannel.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+                            currentChannel.logo = `https://i.mjh.nz/.images/${channelNameForImage}-syd.png`;
                         }
                         channels.push(currentChannel);
                         currentChannel = {};
