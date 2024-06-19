@@ -94,17 +94,18 @@
                 
                 const channelGrid = document.getElementById('channelGrid');
                 
+                let channelName = '';
+                let logoUrl = null;
+                
                 for (let i = 0; i < lines.length; i++) {
                     let line = lines[i].trim();
+                    
                     if (line.startsWith('#EXTINF:')) {
                         // Extract channel name from #EXTINF line
-                        const channelName = line.split(',')[1].trim();
-                        
-                        // Extract logo URL if available
-                        let logoUrl = null;
-                        if (lines[i + 1] && lines[i + 1].trim().startsWith('http')) {
-                            logoUrl = lines[i + 1].trim();
-                        }
+                        channelName = line.split(',')[1].trim();
+                    } else if (line.startsWith('http')) {
+                        // Assume it's the logo URL if it starts with http (could be improved with better validation)
+                        logoUrl = line.trim();
                         
                         // Create channel card
                         const channelCard = document.createElement('div');
@@ -131,6 +132,10 @@
                         
                         // Append channel card to grid
                         channelGrid.appendChild(channelCard);
+                        
+                        // Reset variables for next channel
+                        channelName = '';
+                        logoUrl = null;
                     }
                 }
                 
