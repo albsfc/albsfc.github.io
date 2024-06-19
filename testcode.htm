@@ -15,11 +15,13 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            flex-direction: column;
         }
 
         .ui-li-thumb {
-            max-width: 100px;
-            height: auto;
+            width: 100px; /* Adjust as needed */
+            height: auto; /* Maintain aspect ratio */
+            display: block;
             margin: 0 auto;
         }
 
@@ -28,8 +30,8 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            width: 100%;
             flex-direction: column;
+            width: 100%;
         }
 
         .ui-li h2 {
@@ -90,6 +92,10 @@
 
                 var list = $('#channel-list');
                 channels.forEach(function(channel) {
+                    console.log('Channel:', channel.name);
+                    console.log('Image URL:', channel.logo);
+                    console.log('Stream URL:', channel.url);
+
                     var listItem = `
                         <li>
                             <a target="_blank" href="${channel.url}">
