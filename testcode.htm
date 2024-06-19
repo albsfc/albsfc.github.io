@@ -24,6 +24,12 @@
             background-color: #f0f0f0;
         }
 
+        .channel-logo {
+            max-width: 100px;
+            max-height: 50px;
+            margin-bottom: 10px;
+        }
+
         /* Styles for the video modal */
         .modal {
             display: none; /* Hidden by default */
@@ -88,20 +94,39 @@
                 
                 const channelGrid = document.getElementById('channelGrid');
                 
-                lines.forEach(line => {
+                lines.forEach((line, index) => {
                     line = line.trim();
                     if (line.startsWith('#EXTINF:')) {
                         // Extract channel name from #EXTINF line
                         const channelName = line.split(',')[1].trim();
                         
+                        // Extract logo URL if available
+                        let logoUrl = null;
+                        if (lines[index + 1].trim().startsWith('http')) {
+                            logoUrl = lines[index + 1].trim();
+                        }
+                        
                         // Create channel card
                         const channelCard = document.createElement('div');
                         channelCard.classList.add('channel-card');
-                        channelCard.textContent = channelName;
+                        
+                        // Create channel logo if available
+                        if (logoUrl) {
+                            const logoImg = document.createElement('img');
+                            logoImg.src = logoUrl;
+                            logoImg.alt = `${channelName} Logo`;
+                            logoImg.classList.add('channel-logo');
+                            channelCard.appendChild(logoImg);
+                        }
+                        
+                        // Create channel name text
+                        const channelNameText = document.createElement('div');
+                        channelNameText.textContent = channelName;
+                        channelCard.appendChild(channelNameText);
                         
                         // Add click event to play video
                         channelCard.addEventListener('click', () => {
-                            openVideo(lines, line);
+                            openVideo(lines, index);
                         });
                         
                         // Append channel card to grid
@@ -115,9 +140,8 @@
         }
         
         // Function to open video modal and play selected channel
-        function openVideo(lines, line) {
-            const startIndex = lines.indexOf(line) + 1;
-            const videoUrl = lines[startIndex].trim();
+        function openVideo(lines, index) {
+            const videoUrl = lines[index + 1].trim(); // Assuming the video URL is directly after the #EXTINF line
             
             const videoPlayer = document.getElementById('videoPlayer');
             videoPlayer.src = videoUrl;
