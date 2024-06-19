@@ -23,6 +23,43 @@
         .channel-card:hover {
             background-color: #f0f0f0;
         }
+
+        /* Styles for the video modal */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .modal-content {
+            margin: 15% auto;
+            width: 80%;
+            max-width: 800px;
+            background-color: #fff;
+            position: relative;
+            padding: 20px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -80,21 +117,4 @@
             const videoUrl = line.split('\n')[1].trim(); // Assuming the video URL is in the next line
             
             const videoPlayer = document.getElementById('videoPlayer');
-            videoPlayer.src = videoUrl;
-            
-            const modal = document.getElementById('videoModal');
-            modal.style.display = 'block';
-            
-            const closeModal = document.querySelector('.close');
-            closeModal.addEventListener('click', () => {
-                modal.style.display = 'none';
-                videoPlayer.pause();
-                videoPlayer.src = ''; // Clear video source
-            });
-        }
-        
-        // Fetch channels when the page loads
-        window.onload = fetchChannels;
-    </script>
-</body>
-</html>
+            videoPl
