@@ -15,13 +15,11 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            flex-direction: column;
         }
 
         .ui-li-thumb {
             max-width: 100px;
             height: auto;
-            display: block;
             margin: 0 auto;
         }
 
@@ -30,8 +28,8 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            flex-direction: column;
             width: 100%;
+            flex-direction: column;
         }
 
         .ui-li h2 {
@@ -91,4 +89,26 @@
                 });
 
                 var list = $('#channel-list');
-                channels.forEach(function(channel)
+                channels.forEach(function(channel) {
+                    var listItem = `
+                        <li>
+                            <a target="_blank" href="${channel.url}">
+                                <img src="${channel.logo}" class="ui-li-thumb">
+                                <h2>${channel.name}</h2>
+                                <p class="ui-li-aside">TV</p>
+                            </a>
+                        </li>
+                    `;
+                    list.append(listItem);
+                });
+                list.listview('refresh');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error loading m3u8 file:', textStatus, errorThrown);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
