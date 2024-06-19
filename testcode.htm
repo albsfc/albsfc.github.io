@@ -85,36 +85,4 @@
                         }
                     } else if (line.startsWith('http') && currentChannel.name) {
                         currentChannel.url = line.trim();
-                        channels.push(currentChannel);
-                        currentChannel = {};
-                    }
-                });
-
-                var list = $('#channel-list');
-                channels.forEach(function(channel) {
-                    console.log('Channel:', channel.name);
-                    console.log('Image URL:', channel.logo);
-                    console.log('Stream URL:', channel.url);
-
-                    var listItem = `
-                        <li>
-                            <a target="_blank" href="${channel.url}">
-                                <img src="${channel.logo}" class="ui-li-thumb">
-                                <h2>${channel.name}</h2>
-                                <p class="ui-li-aside">TV</p>
-                            </a>
-                        </li>
-                    `;
-                    list.append(listItem);
-                });
-                list.listview('refresh');
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('Error loading m3u8 file:', textStatus, errorThrown);
-            }
-        });
-    });
-</script>
-
-</body>
-</html>
+                        channels.push(currentCh
