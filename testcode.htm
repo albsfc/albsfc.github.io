@@ -63,6 +63,10 @@
 
                 var list = $('#channel-list');
                 channels.forEach(function(channel) {
+                    console.log('Channel:', channel.name);
+                    console.log('Image URL:', channel.logo);
+                    console.log('Stream URL:', channel.url);
+
                     var listItem = `
                         <li>
                             <a target="_blank" href="${channel.url}">
