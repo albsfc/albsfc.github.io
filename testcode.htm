@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Free Digital AUS TV Stations</title>
-	<link rel="shortcut icon" href="../favicon.ico">
-	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
-	<link rel="stylesheet" href="css/listview-grid.css">
-	<script src="js/jquery-1.12.4.js"></script>
-	<script src="js/jquery.mobile-1.4.5.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script async src="//jsfiddle.net/mdesdev/eFLqJ/embed/"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Free Digital AUS TV Stations</title>
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+    <link rel="stylesheet" href="css/listview-grid.css">
+    <script src="js/jquery-1.12.4.js"></script>
+    <script src="js/jquery.mobile-1.4.5.js"></script>
 </head>
 <body>
 
-	<div data-role="page" data-theme="b" id="demo-page" class="my-page">
+<div data-role="page" data-theme="b" id="demo-page" class="my-page">
 
     <div data-role="header">
         <h1>Free Digital TV Stations</h1>
@@ -30,31 +28,47 @@
             document.getElementById("datetime").innerHTML = dt.toLocaleString();
         </script></p>
 
-        <!-- Video Player for M3U8 file -->
-        <video id="video" controls width="100%" height="auto"></video>
-        <script>
-            if (Hls.isSupported()) {
-                var video = document.getElementById('video');
-                var hls = new Hls();
-                hls.loadSource('https://i.mjh.nz/au/Sydney/raw-tv.m3u8');
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    video.play();
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = 'https://i.mjh.nz/au/Sydney/raw-tv.m3u8';
-                video.addEventListener('canplay', function() {
-                    video.play();
-                });
-            }
-        </script>
-
-        <ul data-role="listview" data-inset="true" data-filter="true" data-filter-placeholder="Search...">
-            <!-- Additional content and TV station links here -->
+        <ul id="channel-list" data-role="listview" data-inset="true" data-filter="true" data-filter-placeholder="Search...">
+            <!-- Channel items will be added here dynamically -->
         </ul><!-- /listview -->
     </div><!-- /content -->
 
 </div><!-- /page -->
+
+<script>
+    $(document).ready(function() {
+        $.ajax({
+            url: 'https://i.mjh.nz/au/Sydney/raw-tv.m3u8',
+            success: function(data) {
+                var lines = data.split('\n');
+                var channels = [];
+                for (var i = 0; i < lines.length; i++) {
+                    if (lines[i].startsWith('#EXTINF')) {
+                        var info = lines[i].split(',');
+                        var name = info[1].trim();
+                        var url = lines[i + 1].trim();
+                        channels.push({name: name, url: url});
+                    }
+                }
+                var list = $('#channel-list');
+                channels.forEach(function(channel) {
+                    var logo = 'img/tv.' + channel.name.toLowerCase().replace(/\s+/g, '-') + '.png'; // Assuming logos are named in this pattern
+                    var listItem = `
+                        <li>
+                            <a target="_blank" href="${channel.url}">
+                                <img src="${logo}" class="ui-li-thumb">
+                                <h2>${channel.name}</h2>
+                                <p class="ui-li-aside">TV</p>
+                            </a>
+                        </li>
+                    `;
+                    list.append(listItem);
+                });
+                list.listview('refresh');
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
