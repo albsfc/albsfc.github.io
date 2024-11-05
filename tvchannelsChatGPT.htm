@@ -3,48 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic TV Channels</title>
+    <title>TV Channels</title>
+    <style>
+        /* Add your original styling here */
+    </style>
 </head>
 <body>
     <h1>TV Channels</h1>
-    <div id="channelsContainer">Loading channels...</div>
+
+    <!-- Channel placeholders -->
+    <div class="channel" data-channel-name="Channel 1">
+        <h3>Channel 1</h3>
+        <video controls width="320">
+            <source src="" type="application/vnd.apple.mpegurl">
+        </video>
+    </div>
+    <div class="channel" data-channel-name="Channel 2">
+        <h3>Channel 2</h3>
+        <video controls width="320">
+            <source src="" type="application/vnd.apple.mpegurl">
+        </video>
+    </div>
+    <!-- Add more channels as needed -->
 
     <script>
-        // Function to fetch and parse the m3u8 file
-        async function loadChannels() {
-            const container = document.getElementById('channelsContainer');
-            container.innerHTML = '';
-
+        async function updateChannelLinks() {
             try {
                 const response = await fetch('https://i.mjh.nz/au/Sydney/raw-tv.m3u8');
                 const data = await response.text();
                 const lines = data.split('\n');
+                const channels = {};
 
-                let currentChannel = {};
+                let currentChannelName = '';
                 lines.forEach(line => {
                     if (line.startsWith('#EXTINF')) {
-                        const name = line.split(',')[1].trim();
-                        currentChannel = { name };
-                    } else if (line.startsWith('http')) {
-                        currentChannel.url = line;
-                        container.innerHTML += `
-                            <div>
-                                <h3>${currentChannel.name}</h3>
-                                <video controls width="320">
-                                    <source src="${currentChannel.url}" type="application/vnd.apple.mpegurl">
-                                </video>
-                            </div>
-                        `;
+                        currentChannelName = line.split(',')[1].trim();
+                    } else if (line.startsWith('http') && currentChannelName) {
+                        channels[currentChannelName] = line;
+                    }
+                });
+
+                document.querySelectorAll('.channel').forEach(channelElement => {
+                    const channelName = channelElement.getAttribute('data-channel-name');
+                    if (channels[channelName]) {
+                        channelElement.querySelector('source').src = channels[channelName];
+                        channelElement.querySelector('video').load();  // Reload video with new source
                     }
                 });
             } catch (error) {
-                container.innerHTML = 'Failed to load channels.';
-                console.error(error);
+                console.error('Failed to update channels:', error);
             }
         }
 
-        // Load channels on page load
-        window.onload = loadChannels;
+        // Update channels on page load
+        window.onload = updateChannelLinks;
     </script>
 </body>
 </html>
