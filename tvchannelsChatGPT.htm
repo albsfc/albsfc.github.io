@@ -3,34 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic TV Channels</title>
+    <title>TV Channels</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
             background-color: #f4f4f4;
+            padding: 20px;
         }
         h1 {
             text-align: center;
         }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
         .channel {
-            margin-bottom: 20px;
             text-align: center;
         }
-        video {
-            width: 100%;
-            max-width: 500px;
-            background-color: #000;
+        .channel img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            cursor: pointer;
         }
-        h3 {
-            margin-top: 0;
+        .channel-name {
+            margin-top: 10px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <h1>TV Channels</h1>
-    <div id="channels-container">
+    <div id="channels-container" class="grid-container">
         <!-- Channels will be dynamically generated here -->
     </div>
 
@@ -52,19 +58,17 @@
                         const channelDiv = document.createElement('div');
                         channelDiv.className = 'channel';
 
-                        const title = document.createElement('h3');
+                        const img = document.createElement('img');
+                        img.src = `https://logo.clearbit.com/${currentChannelName.toLowerCase()}.com`; // Placeholder for logos
+                        img.alt = currentChannelName;
+                        img.onclick = () => window.open(line, '_blank');
+
+                        const title = document.createElement('div');
+                        title.className = 'channel-name';
                         title.textContent = currentChannelName;
+
+                        channelDiv.appendChild(img);
                         channelDiv.appendChild(title);
-
-                        const video = document.createElement('video');
-                        video.controls = true;
-
-                        const source = document.createElement('source');
-                        source.src = line;
-                        source.type = 'application/vnd.apple.mpegurl';
-                        video.appendChild(source);
-
-                        channelDiv.appendChild(video);
                         channelsContainer.appendChild(channelDiv);
 
                         // Reset for the next channel
