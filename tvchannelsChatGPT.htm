@@ -14,6 +14,16 @@
         h1 {
             text-align: center;
         }
+        .video-player {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            background-color: #333;
+        }
+        video {
+            width: 100%;
+            height: auto;
+        }
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -39,6 +49,15 @@
 </head>
 <body>
     <h1>TV Channels</h1>
+
+    <!-- Embedded video player -->
+    <div class="video-player">
+        <video id="tvPlayer" controls>
+            <source id="videoSource" src="" type="application/vnd.apple.mpegurl">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
     <div id="channels-container" class="grid-container">
         <!-- Channels will be dynamically generated here -->
     </div>
@@ -70,7 +89,7 @@
                         const img = document.createElement('img');
                         img.src = currentLogoUrl; // Use logo URL from m3u8 or fallback
                         img.alt = currentChannelName;
-                        img.onclick = () => window.open(line, '_blank');
+                        img.onclick = () => playChannel(line);
 
                         const title = document.createElement('div');
                         title.className = 'channel-name';
@@ -89,6 +108,14 @@
                 console.error('Error loading channels:', error);
                 document.getElementById('channels-container').innerHTML = '<p>Failed to load channels.</p>';
             }
+        }
+
+        function playChannel(url) {
+            const videoSource = document.getElementById('videoSource');
+            const tvPlayer = document.getElementById('tvPlayer');
+            videoSource.src = url;
+            tvPlayer.load();
+            tvPlayer.play();
         }
 
         // Load channels on page load
