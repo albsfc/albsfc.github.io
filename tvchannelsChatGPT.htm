@@ -53,18 +53,23 @@
                 channelsContainer.innerHTML = ''; // Clear previous content if any
 
                 let currentChannelName = '';
+                let currentLogoUrl = '';
                 lines.forEach(line => {
                     if (line.startsWith('#EXTINF')) {
-                        currentChannelName = line.split(',')[1].trim();
+                        const parts = line.split(',');
+                        currentChannelName = parts[1].trim();
+
+                        // Check for logo attribute in #EXTINF line
+                        const logoMatch = line.match(/tvg-logo="([^"]+)"/);
+                        currentLogoUrl = logoMatch ? logoMatch[1] : 'https://via.placeholder.com/100?text=No+Logo';
                     } else if (line.startsWith('http') && currentChannelName) {
                         // Create channel HTML elements
                         const channelDiv = document.createElement('div');
                         channelDiv.className = 'channel';
 
                         const img = document.createElement('img');
-                        img.src = `https://logo.clearbit.com/${currentChannelName.toLowerCase()}.com`; // Placeholder for logos
+                        img.src = currentLogoUrl; // Use logo URL from m3u8 or fallback
                         img.alt = currentChannelName;
-                        img.onerror = () => img.src = 'https://via.placeholder.com/100?text=No+Logo'; // Fallback image
                         img.onclick = () => window.open(line, '_blank');
 
                         const title = document.createElement('div');
@@ -77,6 +82,7 @@
 
                         // Reset for the next channel
                         currentChannelName = '';
+                        currentLogoUrl = '';
                     }
                 });
             } catch (error) {
