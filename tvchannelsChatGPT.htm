@@ -23,6 +23,7 @@
         video {
             width: 100%;
             height: auto;
+            background-color: #000;
         }
         .grid-container {
             display: grid;
@@ -46,16 +47,15 @@
             font-weight: bold;
         }
     </style>
+    <!-- Add hls.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
     <h1>TV Channels</h1>
 
     <!-- Embedded video player -->
     <div class="video-player">
-        <video id="tvPlayer" controls>
-            <source id="videoSource" src="" type="application/vnd.apple.mpegurl">
-            Your browser does not support the video tag.
-        </video>
+        <video id="tvPlayer" controls></video>
     </div>
 
     <div id="channels-container" class="grid-container">
@@ -111,11 +111,21 @@
         }
 
         function playChannel(url) {
-            const videoSource = document.getElementById('videoSource');
-            const tvPlayer = document.getElementById('tvPlayer');
-            videoSource.src = url;
-            tvPlayer.load();
-            tvPlayer.play();
+            const video = document.getElementById('tvPlayer');
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    video.play();
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Fallback for Safari
+                video.src = url;
+                video.play();
+            } else {
+                alert('Your browser does not support HLS streaming.');
+            }
         }
 
         // Load channels on page load
