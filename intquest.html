@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ICT Interview Practice – Q&A Trainer</title>
+  <style>
+    :root{
+      --bg:#0f172a; /* slate-900 */
+      --panel:#111827ee; /* gray-900 */
+      --card:#1f2937; /* gray-800 */
+      --muted:#94a3b8; /* slate-400 */
+      --text:#e5e7eb; /* gray-200 */
+      --accent:#22c55e; /* green-500 */
+      --accent2:#38bdf8; /* sky-400 */
+      --danger:#f87171; /* red-400 */
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1000px 600px at 10% -10%, #1e293b 0%, transparent 60%),
+                  radial-gradient(1000px 600px at 110% -20%, #0ea5e9 0%, transparent 60%),
+                  var(--bg);
+      color:var(--text);
+    }
+    header{padding:24px 16px; text-align:center}
+    h1{margin:0; font-size:clamp(22px, 3.5vw, 34px)}
+    .sub{color:var(--muted); margin-top:6px}
+
+    .wrap{max-width:980px; margin:0 auto; padding: 0 16px 40px}
+
+    .controls{
+      display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; margin:16px 0 24px
+    }
+    button, .pill{
+      background:linear-gradient(180deg, #2a3346, #1f2937);
+      color:var(--text); border:1px solid #334155; border-radius:12px; padding:10px 14px; cursor:pointer;
+      transition:transform .06s ease, background .2s ease;
+    }
+    button:hover{transform:translateY(-1px)}
+    button:active{transform:translateY(0)}
+    .accent{background:linear-gradient(180deg, #22c55e, #16a34a); border:none}
+    .ghost{background:transparent; border:1px dashed #475569}
+
+    .card{
+      background:linear-gradient(180deg, #111827, #0b1220);
+      border:1px solid #334155; border-radius:16px; padding:16px; margin:12px 0; box-shadow: 0 10px 20px rgba(0,0,0,.25);
+    }
+    .q-head{display:flex; gap:10px; align-items:center; justify-content:space-between; cursor:pointer}
+    .q-title{font-weight:600; font-size:18px; line-height:1.2}
+    .badge{font-size:12px; color:#0f172a; background:#38bdf8; padding:4px 8px; border-radius:999px}
+
+    .answer{display:none; margin-top:12px; color:var(--text)}
+    .answer ul{margin:8px 0 0 18px}
+    .answer li{margin:4px 0}
+
+    .practice{
+      display:grid; gap:10px; margin-top:10px
+    }
+    textarea{
+      width:100%; min-height:90px; resize:vertical; background:#0b1220; color:var(--text); border:1px solid #334155; border-radius:12px; padding:10px; font-size:14px
+    }
+    .row{display:flex; gap:8px; flex-wrap:wrap}
+
+    .footer{color:var(--muted); text-align:center; margin-top:22px; font-size:12px}
+
+    .kbd{background:#0b1220; border:1px solid #334155; padding:2px 6px; border-radius:6px; font-size:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ICT Interview Practice – Q&A Trainer</h1>
+    <div class="sub">Click a question to reveal bullet-point answers. Type your own response first, then peek if needed.</div>
+  </header>
+
+  <div class="wrap">
+    <div class="controls">
+      <button id="shuffle" class="accent">Shuffle Questions</button>
+      <button id="showAll">Show All Answers</button>
+      <button id="hideAll" class="ghost">Hide All Answers</button>
+      <span class="pill">Tip: press <span class="kbd">Space</span> to toggle the current card</span>
+    </div>
+
+    <!-- Cards will be injected here -->
+    <div id="list"></div>
+
+    <div class="footer">Made for Albs • Practice in short bursts. One card at a time is enough.</div>
+  </div>
+
+<script>
+  const data = [
+    {
+      q: "Tell me about yourself",
+      a: [
+        "Senior ICT Tech at WCC – 6+ years",
+        "Train, mentor, onboard staff",
+        "Led upgrades: Network, AV, VOIP, 2FA",
+        "Build rapport, solve problems quickly"
+      ]
+    },
+    {
+      q: "Why do you want this role?",
+      a: [
+        "Already contributing as senior tech",
+        "Know site, staff, systems",
+        "Lead ICT for efficiency & service",
+        "Committed long-term to WCC values"
+      ]
+    },
+    {
+      q: "What are your strengths?",
+      a: ["Problem-solving under pressure","Clear communicator & trainer","Create efficient systems","Calm & approachable"]
+    },
+    {
+      q: "What is a weakness?",
+      a: ["Take on too much myself","Learning to delegate for team growth"]
+    },
+    {
+      q: "Example of solving a problem",
+      a: [
+        "Network outage → UPS power issue",
+        "Fixed power → restored in minutes",
+        "Minimal disruption to staff/students"
+      ]
+    },
+    {
+      q: "How do you handle stress?",
+      a: ["Prioritise by impact","Stay calm & logical","Use backup/ failover plans"]
+    },
+    {
+      q: "Leadership example",
+      a: ["Trained & mentored staff","Created guides/processes","Trainee won Trainee of the Year"]
+    },
+    {
+      q: "How do you handle conflict?",
+      a: ["Listen & understand","Stay respectful","Agree on action & follow up"]
+    },
+    {
+      q: "Why should we hire you?",
+      a: ["Proven in this environment","Strong rapport with staff","Track record of improvements","Ready to lead day one"]
+    },
+    {
+      q: "Questions to ask the panel",
+      a: ["How will this role evolve in 2–3 years?","Top ICT priorities this term?","Quick wins you’d like to see in first few weeks?"]
+    },
+    {
+      q: "Opening line (memorise)",
+      a: [
+        "Thanks for having me. I’ve been part of WCC’s ICT team for years, built strong relationships, trained colleagues, and led system upgrades.",
+        "I’m excited to step into the coordinator role and use that experience to lead the team and improve services further."
+      ]
+    }
+  ];
+
+  // State
+  let currentIndex = 0;
+
+  const list = document.getElementById('list');
+
+  function cardTemplate(item, idx){
+    const id = `card-${idx}`;
+    const li = document.createElement('div');
+    li.className = 'card';
+    li.innerHTML = `
+      <div class="q-head" data-idx="${idx}" aria-controls="ans-${idx}" tabindex="0">
+        <div class="q-title">${idx+1}. ${item.q}</div>
+        <div class="badge">Click to reveal</div>
+      </div>
+      <div class="practice">
+        <textarea placeholder="Your answer here… (optional; practice out loud first)"></textarea>
+        <div class="row">
+          <button class="reveal">Reveal Answer</button>
+          <button class="hide ghost">Hide</button>
+          <button class="clear ghost">Clear Notes</button>
+        </div>
+      </div>
+      <div id="ans-${idx}" class="answer" role="region" aria-hidden="true">
+        <ul>${item.a.map(x=>`<li>${x}</li>`).join('')}</ul>
+      </div>
+    `;
+
+    // Handlers
+    const head = li.querySelector('.q-head');
+    const ans  = li.querySelector('.answer');
+    const rev  = li.querySelector('.reveal');
+    const hid  = li.querySelector('.hide');
+    const clr  = li.querySelector('.clear');
+    const ta   = li.querySelector('textarea');
+
+    // Persist textarea per question
+    const key = 'ans-'+item.q;
+    ta.value = localStorage.getItem(key) || '';
+    ta.addEventListener('input', ()=> localStorage.setItem(key, ta.value));
+
+    function show(){ ans.style.display = 'block'; ans.setAttribute('aria-hidden','false'); }
+    function hide(){ ans.style.display = 'none';  ans.setAttribute('aria-hidden','true'); }
+    function toggle(){ (ans.style.display === 'block') ? hide() : show(); }
+
+    head.addEventListener('click', ()=>{ currentIndex = idx; toggle(); });
+    head.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); currentIndex = idx; toggle(); } });
+    rev.addEventListener('click', show);
+    hid.addEventListener('click', hide);
+    clr.addEventListener('click', ()=>{ ta.value=''; localStorage.removeItem(key); ta.focus(); });
+
+    return li;
+  }
+
+  function render(){
+    list.innerHTML = '';
+    data.forEach((item, idx)=> list.appendChild(cardTemplate(item, idx)));
+  }
+
+  // Shuffle
+  document.getElementById('shuffle').addEventListener('click', ()=>{
+    for(let i=data.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [data[i], data[j]] = [data[j], data[i]];
+    }
+    render();
+  });
+
+  // Show/Hide all
+  document.getElementById('showAll').addEventListener('click', ()=>{
+    document.querySelectorAll('.answer').forEach(a=>{ a.style.display='block'; a.setAttribute('aria-hidden','false'); });
+  });
+  document.getElementById('hideAll').addEventListener('click', ()=>{
+    document.querySelectorAll('.answer').forEach(a=>{ a.style.display='none'; a.setAttribute('aria-hidden','true'); });
+  });
+
+  // Space toggles current card
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === ' ' && !/TEXTAREA|INPUT/i.test(document.activeElement.tagName)){
+      e.preventDefault();
+      const h = document.querySelectorAll('.q-head')[currentIndex];
+      if(h) h.click();
+    }
+  });
+
+  render();
+</script>
+</body>
+</html>
