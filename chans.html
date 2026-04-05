@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IPTV Guide Player</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    :root {
+      --text: #eef2ff;
+      --muted: #a9b4d0;
+      --accent: #4ea1ff;
+      --accent-2: #6f5cff;
+      --success: #31d17c;
+      --shadow: 0 16px 40px rgba(0,0,0,.45);
+      --border: rgba(255,255,255,.08);
+      --rail-collapsed: 88px;
+      --rail-expanded: 320px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(73, 55, 255, .22), transparent 24%),
+        radial-gradient(circle at top right, rgba(0, 173, 239, .16), transparent 28%),
+        linear-gradient(180deg, #020307, #05070e 28%, #020307 100%);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: var(--rail-collapsed) 1fr;
+      height: 100vh;
+      transition: grid-template-columns .25s ease;
+    }
+
+    .app.rail-open { grid-template-columns: var(--rail-expanded) 1fr; }
+    .app.hide-sidebar { grid-template-columns: 0 1fr !important; }
+    .app.hide-sidebar .sidebar {
+      width: 0;
+      min-width: 0;
+      opacity: 0;
+      pointer-events: none;
+      border-right: none;
+      box-shadow: none;
+    }
+
+    .sidebar {
+      position: relative;
+      background: linear-gradient(180deg, rgba(7, 10, 20, .98), rgba(8, 11, 24, .96));
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+      z-index: 4;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 18px 8px;
+      min-width: var(--rail-expanded);
+    }
+
+    .brand-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      letter-spacing: .04em;
+      box-shadow: 0 10px 26px rgba(78,161,255,.3);
+    }
+
+    .brand-copy h1 { margin: 0; font-size: 16px; line-height: 1.1; }
+    .brand-copy p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+
+    .sidebar-head {
+      padding: 6px 12px 14px;
+      min-width: var(--rail-expanded);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .search-box {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 12px 14px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .time-card {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      border-radius: 18px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .clock { font-size: 28px; font-weight: 800; letter-spacing: .02em; line-height: 1; }
+    .city { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--success);
+      box-shadow: 0 0 16px rgba(49,209,124,.7);
+      flex: 0 0 auto;
+    }
+
+    .channels {
+      padding: 4px 8px 100px;
+      overflow: auto;
+      height: calc(100vh - 210px);
+      min-width: var(--rail-expanded);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,.15) transparent;
+    }
+
+    .channel-item {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      margin: 6px 0;
+      border-radius: 18px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: inherit;
+      width: 100%;
+      cursor: pointer;
+      transition: .2s ease;
+      text-align: left;
+    }
+
+    .channel-item:hover {
+      background: rgba(255,255,255,.05);
+      border-color: rgba(255,255,255,.08);
+      transform: translateX(2px);
+    }
+
+    .channel-item.active {
+      background: linear-gradient(135deg, rgba(70, 92, 255, .22), rgba(0, 136, 255, .18));
+      border-color: rgba(133, 171, 255, .28);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 12px 24px rgba(0,0,0,.22);
+    }
+
+    .channel-logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      object-fit: contain;
+      background: rgba(255,255,255,.05);
+      padding: 8px;
+    }
+
+    .channel-fallback {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      font-weight: 800;
+      background: linear-gradient(135deg, rgba(78,161,255,.25), rgba(111,92,255,.25));
+      color: white;
+    }
+
+    .channel-name {
+      font-weight: 700;
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .channel-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .channel-tag {
+      color: #d7e4ff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .sidebar-footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 12px;
+      min-width: var(--rail-expanded);
+      background: linear-gradient(180deg, transparent, rgba(8,10,18,.96) 35%);
+    }
+
+    .toggle-btn {
+      width: 100%;
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: rgba(255,255,255,.04);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .main {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .main.hide-bottom-bar .bottom-bar {
+      transform: translateY(calc(100% + 24px));
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .main.hide-bottom-bar .guide-panel,
+    .main.hide-bottom-bar .shortcuts-panel {
+      bottom: 22px;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #000;
+      display: block;
+    }
+
+    .video-overlay {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at right top, rgba(255,255,255,.10), transparent 22%),
+        linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,0) 26%, rgba(0,0,0,0) 60%, rgba(0,0,0,.30));
+    }
+
+    .utility-dock {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 18px;
+      background: rgba(8, 10, 24, .58);
+      border: 1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+    }
+
+    .utility-btn {
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .utility-btn.active {
+      background: linear-gradient(135deg, rgba(78,161,255,.22), rgba(111,92,255,.22));
+      border-color: rgba(133,171,255,.28);
+    }
+
+    .top-panel {
+      position: absolute;
+      top: 28px;
+      left: 28px;
+      right: 28px;
+      max-width: min(1100px, calc(100vw - 160px));
+      background: linear-gradient(180deg, rgba(15, 18, 62, .90), rgba(20, 24, 92, .78));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      padding: 20px 22px;
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 22px;
+      z-index: 2;
+    }
+
+    .hero-logo { display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+    .hero-logo img, .hero-logo .big-fallback {
+      width: 130px;
+      height: 130px;
+      border-radius: 26px;
+      background: rgba(255,255,255,.05);
+      object-fit: contain;
+      padding: 18px;
+    }
+    .hero-logo .big-fallback {
+      display: grid;
+      place-items: center;
+      font-size: 48px;
+      font-weight: 900;
+      background: linear-gradient(135deg, rgba(78,161,255,.35), rgba(111,92,255,.35));
+    }
+    .hero-channel { font-size: 34px; font-weight: 800; line-height: 1.05; margin: 4px 0 12px; letter-spacing: -.02em; }
+    .hero-program { font-size: clamp(24px, 3vw, 42px); font-weight: 800; line-height: 1.05; margin: 0 0 14px; letter-spacing: -.025em; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #edf3ff;
+    }
+    .program-desc { font-size: 18px; color: #edf0ff; max-width: 900px; }
+
+    .shortcuts-panel, .guide-panel {
+      position: absolute;
+      bottom: 96px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(9, 12, 28, .88), rgba(10, 15, 32, .78));
+      border: 1px solid rgba(255,255,255,.10);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .shortcuts-panel { left: 26px; width: min(340px, calc(100vw - 140px)); }
+    .guide-panel { right: 26px; width: min(460px, calc(100vw - 140px)); max-height: 52vh; display: flex; flex-direction: column; }
+    .shortcuts-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      color: #dfe8ff;
+    }
+    .shortcuts-list { padding: 12px; display: grid; gap: 8px; }
+    .shortcut-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.04); }
+    .shortcut-key { font-weight: 900; font-size: 12px; padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.06); }
+    .shortcut-label { color: var(--muted); font-size: 13px; }
+
+    .guide-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .guide-title { font-size: 15px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; color: #dfe8ff; }
+    .guide-sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .guide-list { overflow: auto; padding: 10px; }
+    .guide-item { padding: 12px 12px 12px 14px; border-radius: 18px; background: rgba(255,255,255,.03); border: 1px solid transparent; margin-bottom: 8px; }
+    .guide-item.now { border-color: rgba(78,161,255,.35); background: linear-gradient(135deg, rgba(78,161,255,.14), rgba(111,92,255,.08)); }
+    .guide-time { color: #c7d7ff; font-size: 12px; font-weight: 800; margin-bottom: 6px; }
+    .guide-name { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+    .guide-desc { color: var(--muted); font-size: 13px; line-height: 1.4; }
+
+    .bottom-bar {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 18px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(10, 12, 32, .84), rgba(9, 12, 28, .82));
+      border: 1px solid rgba(255,255,255,.10);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 16px;
+      z-index: 2;
+      transition: transform .25s ease, opacity .25s ease;
+    }
+
+    .controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .control-btn, .ghost-input, .ghost-btn {
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-weight: 700;
+    }
+    .control-btn, .ghost-btn { cursor: pointer; }
+    .ghost-input { width: min(420px, 38vw); outline: none; }
+    .stats { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; white-space: nowrap; }
+    .live-badge { color: white; background: linear-gradient(135deg, #ff2b4f, #ff5d7a); border-radius: 999px; padding: 6px 10px; font-weight: 800; font-size: 11px; letter-spacing: .05em; }
+
+    .empty-state, .loading-state {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .empty-card {
+      background: rgba(8,11,24,.82);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 24px;
+      padding: 22px;
+      width: min(520px, calc(100vw - 60px));
+      text-align: center;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .empty-card h2 { margin: 0 0 8px; font-size: 28px; }
+    .empty-card p { color: var(--muted); margin: 0; line-height: 1.5; }
+
+    @media (max-width: 980px) {
+      .top-panel { grid-template-columns: 94px 1fr; padding: 16px; gap: 16px; }
+      .hero-logo img, .hero-logo .big-fallback { width: 94px; height: 94px; border-radius: 20px; padding: 12px; }
+      .guide-panel, .shortcuts-panel { width: calc(100vw - 140px); max-height: 38vh; }
+      .program-desc { font-size: 15px; }
+      .ghost-input { width: 230px; }
+    }
+
+    @media (max-width: 760px) {
+      .app, .app.rail-open { grid-template-columns: 1fr; }
+      .sidebar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: min(88vw, 320px);
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+      }
+      .app.rail-open .sidebar { transform: translateX(0); }
+      .top-panel { left: 14px; right: 14px; top: 14px; max-width: none; }
+      .guide-panel, .shortcuts-panel { left: 14px; right: 14px; width: auto; }
+      .guide-panel, .shortcuts-panel { bottom: 84px; }
+      .bottom-bar { left: 12px; right: 12px; bottom: 12px; flex-direction: column; align-items: stretch; }
+      .ghost-input { width: 100%; }
+      .stats { justify-content: space-between; }
+      .utility-dock { flex-wrap: wrap; left: 12px; right: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-badge">TV</div>
+        <div class="brand-copy">
+          <h1>Guide Player</h1>
+          <p>Glass UI • playlist + episode guide</p>
+        </div>
+      </div>
+
+      <div class="sidebar-head">
+        <input type="text" id="channelSearch" class="search-box" placeholder="Search channels..." />
+        <div class="time-card">
+          <div>
+            <div class="clock" id="clock">--:--</div>
+            <div class="city" id="timezoneLabel">Australia/Sydney</div>
+          </div>
+          <div class="status-dot"></div>
+        </div>
+      </div>
+
+      <div class="channels" id="channels"></div>
+
+      <div class="sidebar-footer">
+        <div style="display:grid; gap:10px;">
+          <button class="toggle-btn" id="toggleRail">Toggle channel rail</button>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <button class="toggle-btn" id="toggleSidebarBtn">Channels</button>
+            <button class="toggle-btn" id="toggleBottomBarBtn">Controls</button>
+            <button class="toggle-btn" id="toggleGuideBtn">Guide</button>
+            <button class="toggle-btn" id="toggleShortcutsBtn">Keys</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main" id="main">
+      <video id="video" autoplay playsinline controls></video>
+      <div class="video-overlay"></div>
+
+
+      <div class="loading-state" id="loadingState">
+        <div class="empty-card">
+          <h2>Loading playlist…</h2>
+          <p>Trying the remote playlist first. If the browser blocks it, the local file picker will still work.</p>
+        </div>
+      </div>
+
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="empty-card">
+          <h2>No channel selected</h2>
+          <p>Pick a channel from the left rail. If the playlist URL fails to load, use the file picker in the bottom bar. Browser security can block direct playlist fetches.</p>
+        </div>
+      </div>
+
+      <section class="top-panel" id="topPanel" style="display:none;">
+        <div class="hero-logo" id="heroLogo"></div>
+        <div>
+          <div class="hero-channel" id="heroChannel">Channel</div>
+          <div class="hero-program" id="heroProgram">Current programme</div>
+          <div class="meta-row" id="metaRow"></div>
+          <div class="program-desc" id="heroDesc">Description</div>
+        </div>
+      </section>
+
+      <section class="shortcuts-panel" id="shortcutsPanel">
+        <div class="shortcuts-head">Keyboard shortcuts</div>
+        <div class="shortcuts-list">
+          <div class="shortcut-row"><span class="shortcut-key">/</span><span class="shortcut-label">Focus channel search</span></div>
+          <div class="shortcut-row"><span class="shortcut-key">Ctrl+C</span><span class="shortcut-label">Show / hide channels</span></div>
+          <div class="shortcut-row"><span class="shortcut-key">Ctrl+B</span><span class="shortcut-label">Show / hide bottom bar</span></div>
+          <div class="shortcut-row"><span class="shortcut-key">Ctrl+G</span><span class="shortcut-label">Show / hide guide</span></div>
+          <div class="shortcut-row"><span class="shortcut-key">Ctrl+J</span><span class="shortcut-label">Show / hide shortcuts</span></div>
+          <div class="shortcut-row"><span class="shortcut-key">Ctrl+M</span><span class="shortcut-label">Expand / collapse rail</span></div>
+        </div>
+      </section>
+
+      <section class="guide-panel" id="guidePanel" style="display:none;">
+        <div class="guide-head">
+          <div>
+            <div class="guide-title">Episode Guide</div>
+            <div class="guide-sub" id="guideSub">Now & next</div>
+          </div>
+          <button class="ghost-btn" id="toggleGuide">Hide</button>
+        </div>
+        <div class="guide-list" id="guideList"></div>
+      </section>
+
+      <section class="bottom-bar">
+        <div class="controls">
+          <button class="control-btn" id="menuBtn">☰</button>
+          <button class="control-btn" id="playPauseBtn">⏯</button>
+          <button class="control-btn" id="muteBtn">🔊</button>
+          <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" class="ghost-input" style="width:140px; padding:0; height:42px;" />
+          <input class="ghost-input" id="m3uInput" value="https://i.mjh.nz/au/Sydney/raw-tv.m3u8" />
+          <input class="ghost-input" id="epgInput" value="https://raw.githubusercontent.com/matthuisman/i.mjh.nz/refs/heads/master/au/Sydney/epg.xml" placeholder="Optional XMLTV / EPG URL" />
+          <input type="file" id="m3uFile" accept=".m3u,.m3u8,text/plain" class="ghost-btn" />
+          <button class="ghost-btn" id="hideBottomBtn">Hide controls</button>
+          <button class="ghost-btn" id="reloadBtn">Reload sources</button>
+        </div>
+        <div class="stats">
+          <span class="live-badge">LIVE</span>
+          <span id="channelCount">0 channels</span>
+          <span id="streamInfo">No stream</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      channels: [],
+      currentChannel: null,
+      hls: null,
+      epg: new Map(),
+      guideVisible: true,
+      shortcutsVisible: true,
+      timezone: 'Australia/Sydney',
+      heroTimer: null,
+      heroPinned: false,
+      sidebarVisible: true,
+      bottomBarVisible: true,
+      channelFilter: '',
+    };
+
+    const els = {
+      app: document.getElementById('app'),
+      main: document.getElementById('main'),
+      video: document.getElementById('video'),
+      channels: document.getElementById('channels'),
+      heroLogo: document.getElementById('heroLogo'),
+      heroChannel: document.getElementById('heroChannel'),
+      heroProgram: document.getElementById('heroProgram'),
+      heroDesc: document.getElementById('heroDesc'),
+      metaRow: document.getElementById('metaRow'),
+      guideList: document.getElementById('guideList'),
+      guidePanel: document.getElementById('guidePanel'),
+      guideSub: document.getElementById('guideSub'),
+      shortcutsPanel: document.getElementById('shortcutsPanel'),
+      topPanel: document.getElementById('topPanel'),
+      loadingState: document.getElementById('loadingState'),
+      emptyState: document.getElementById('emptyState'),
+      channelCount: document.getElementById('channelCount'),
+      streamInfo: document.getElementById('streamInfo'),
+      channelSearch: document.getElementById('channelSearch'),
+      clock: document.getElementById('clock'),
+      timezoneLabel: document.getElementById('timezoneLabel'),
+      m3uInput: document.getElementById('m3uInput'),
+      m3uFile: document.getElementById('m3uFile'),
+      epgInput: document.getElementById('epgInput'),
+      menuBtn: document.getElementById('menuBtn'),
+      toggleRail: document.getElementById('toggleRail'),
+      reloadBtn: document.getElementById('reloadBtn'),
+      toggleGuide: document.getElementById('toggleGuide'),
+      playPauseBtn: document.getElementById('playPauseBtn'),
+      muteBtn: document.getElementById('muteBtn'),
+      volumeSlider: document.getElementById('volumeSlider'),
+      toggleSidebarBtn: document.getElementById('toggleSidebarBtn'),
+      toggleBottomBarBtn: document.getElementById('toggleBottomBarBtn'),
+      toggleGuideBtn: document.getElementById('toggleGuideBtn'),
+      toggleShortcutsBtn: document.getElementById('toggleShortcutsBtn'),
+      hideBottomBtn: document.getElementById('hideBottomBtn'),
+    };
+
+    function escapeHtml(str = '') {
+      return str.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+    }
+
+    function getAttr(line, attr) {
+      const match = line.match(new RegExp(`${attr}="([^"]*)"`, 'i'));
+      return match ? match[1] : '';
+    }
+
+    function parseM3U(text) {
+      const raw = text.replace(/^\uFEFF/, '');
+      const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const channels = [];
+      let pending = {};
+      let inferredEpg = '';
+      const header = lines.find(l => l.startsWith('#EXTM3U')) || '';
+      inferredEpg = getAttr(header, 'x-tvg-url') || getAttr(header, 'url-tvg') || '';
+
+      for (const line of lines) {
+        if (line.startsWith('#EXTINF')) {
+          const name = (line.split(',').slice(1).join(',') || '').trim() || 'Unknown Channel';
+          pending = {
+            name,
+            id: getAttr(line, 'tvg-id') || getAttr(line, 'channel-id') || name,
+            logo: getAttr(line, 'tvg-logo'),
+            group: getAttr(line, 'group-title') || 'TV',
+            epgChannel: getAttr(line, 'tvg-id') || getAttr(line, 'channel-id') || name,
+          };
+          continue;
+        }
+        if (!line.startsWith('#') && pending.name) {
+          channels.push({ ...pending, url: line });
+          pending = {};
+        }
+      }
+      return { channels, inferredEpg };
+    }
+
+    async function fetchText(url) {
+      const attempts = [
+        url,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        `https://cors.isomorphic-git.org/${url}`,
+      ];
+
+      let lastError = null;
+      for (const attempt of attempts) {
+        try {
+          const response = await fetch(attempt);
+          if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
+          return await response.text();
+        } catch (error) {
+          lastError = error;
+        }
+      }
+      throw lastError || new Error('Failed to fetch remote resource');
+    }
+
+    async function loadPlaylist() {
+      try {
+        els.loadingState.style.display = 'grid';
+        els.emptyState.style.display = 'none';
+        let m3uText = '';
+        const file = els.m3uFile.files?.[0];
+
+        if (file) {
+          m3uText = await file.text();
+        } else {
+          m3uText = await fetchText(els.m3uInput.value.trim());
+        }
+
+        const { channels, inferredEpg } = parseM3U(m3uText);
+        state.channels = channels;
+        if (!els.epgInput.value.trim() && inferredEpg) els.epgInput.value = inferredEpg;
+        renderChannels();
+        els.loadingState.style.display = 'none';
+
+        if (channels.length) {
+          playChannel(channels[0].id);
+        } else {
+          els.emptyState.style.display = 'grid';
+          els.streamInfo.textContent = 'No channels found in playlist';
+        }
+
+        const epgUrl = els.epgInput.value.trim();
+        if (epgUrl) {
+          loadEpg(epgUrl).catch(() => renderGuide([]));
+        } else {
+          renderGuide([]);
+        }
+      } catch (error) {
+        console.error(error);
+        els.loadingState.style.display = 'none';
+        els.emptyState.style.display = 'grid';
+        els.streamInfo.textContent = 'Remote playlist blocked by browser. Use the file picker or run from a local web server.';
+        state.channels = [];
+        renderChannels();
+      }
+    }
+
+    function renderChannels() {
+      const currentId = state.currentChannel?.id;
+      const query = state.channelFilter.trim().toLowerCase();
+      const filtered = state.channels.filter(ch => !query || [ch.name, ch.group, ch.id].filter(Boolean).some(v => v.toLowerCase().includes(query)));
+      els.channelCount.textContent = `${filtered.length} / ${state.channels.length} channels`;
+
+      els.channels.innerHTML = filtered.map((ch, index) => {
+        const active = ch.id === currentId ? 'active' : '';
+        const logo = ch.logo
+          ? `<img class="channel-logo" src="${escapeHtml(ch.logo)}" alt="${escapeHtml(ch.name)}" loading="lazy" />`
+          : `<div class="channel-fallback">${escapeHtml((ch.name || '?').charAt(0).toUpperCase())}</div>`;
+        return `
+          <button class="channel-item ${active}" data-id="${escapeHtml(ch.id)}">
+            ${logo}
+            <div>
+              <div class="channel-name">${escapeHtml(ch.name)}</div>
+              <div class="channel-meta">${escapeHtml(ch.group || 'TV')} • ${String(index + 1).padStart(2, '0')}</div>
+            </div>
+            <div class="channel-tag">LIVE</div>
+          </button>
+        `;
+      }).join('');
+
+      els.channels.querySelectorAll('.channel-item').forEach(btn => btn.addEventListener('click', () => playChannel(btn.dataset.id)));
+    }
+
+    function destroyPlayer() {
+      if (state.hls) {
+        state.hls.destroy();
+        state.hls = null;
+      }
+      els.video.pause();
+      els.video.removeAttribute('src');
+      els.video.load();
+    }
+
+    function playChannel(id) {
+      const channel = state.channels.find(ch => ch.id === id);
+      if (!channel) return;
+      state.currentChannel = channel;
+      renderChannels();
+      updateHero(channel);
+      renderGuide(getProgrammesForChannel(channel));
+      showHeroTemporarily();
+      els.emptyState.style.display = 'none';
+      els.streamInfo.textContent = channel.name;
+
+      destroyPlayer();
+      const src = channel.url;
+      els.video.muted = false;
+      els.video.volume = parseFloat(els.volumeSlider.value || '1');
+      updateMuteButton();
+      updatePlayPauseButton();
+
+      if (els.video.canPlayType('application/vnd.apple.mpegurl')) {
+        els.video.src = src;
+        els.video.play().then(attemptUnmutePlayback).catch(() => {});
+      } else if (window.Hls && Hls.isSupported()) {
+        state.hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+        state.hls.loadSource(src);
+        state.hls.attachMedia(els.video);
+        state.hls.on(Hls.Events.MANIFEST_PARSED, () => els.video.play().then(attemptUnmutePlayback).catch(() => {}));
+        state.hls.on(Hls.Events.ERROR, (_event, data) => {
+          if (data?.fatal) els.streamInfo.textContent = 'Stream error / possibly blocked by source';
+        });
+      } else {
+        els.streamInfo.textContent = 'HLS not supported in this browser';
+      }
+    }
+
+    function updateHero(channel) {
+      const programmes = getProgrammesForChannel(channel);
+      const nowItem = programmes.find(p => p.now) || programmes[0];
+      els.heroLogo.innerHTML = channel.logo
+        ? `<img src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`
+        : `<div class="big-fallback">${escapeHtml((channel.name || '?').charAt(0).toUpperCase())}</div>`;
+      els.heroChannel.textContent = channel.name;
+      els.heroProgram.textContent = nowItem?.title || 'Live broadcast';
+      els.heroDesc.textContent = nowItem?.desc || 'No programme description available. Add an XMLTV / EPG URL to populate the guide with now and next details.';
+      els.metaRow.innerHTML = '';
+      [channel.group || 'TV', nowItem ? `${formatTime(nowItem.start)} - ${formatTime(nowItem.stop)}` : 'Live now', state.currentChannel?.url?.includes('.m3u8') ? 'HLS stream' : 'Stream']
+        .forEach(label => {
+          const pill = document.createElement('div');
+          pill.className = 'pill';
+          pill.textContent = label;
+          els.metaRow.appendChild(pill);
+        });
+    }
+
+    function showHeroTemporarily() {
+      els.topPanel.style.display = 'grid';
+      clearTimeout(state.heroTimer);
+      state.heroTimer = setTimeout(() => {
+        if (!state.heroPinned) els.topPanel.style.display = 'none';
+      }, 4500);
+    }
+
+    function attemptUnmutePlayback() {
+      els.video.muted = false;
+      const playPromise = els.video.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {
+          els.video.muted = true;
+          updateMuteButton();
+          els.streamInfo.textContent = 'Tap play or unmute to enable sound';
+        });
+      }
+      updateMuteButton();
+      updatePlayPauseButton();
+    }
+
+    function updateMuteButton() { els.muteBtn.textContent = els.video.muted || els.video.volume === 0 ? '🔇' : '🔊'; }
+    function updatePlayPauseButton() { els.playPauseBtn.textContent = els.video.paused ? '▶' : '⏸'; }
+
+    async function loadEpg(url) {
+      const xmlText = await fetchText(url);
+      const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
+      const programmes = [...xml.querySelectorAll('programme')].map(node => ({
+        channel: node.getAttribute('channel') || '',
+        start: parseXmltvDate(node.getAttribute('start')),
+        stop: parseXmltvDate(node.getAttribute('stop')),
+        title: node.querySelector('title')?.textContent?.trim() || 'Untitled',
+        desc: node.querySelector('desc')?.textContent?.trim() || '',
+      })).filter(p => p.channel && p.start && p.stop);
+
+      state.epg = programmes.reduce((map, item) => {
+        if (!map.has(item.channel)) map.set(item.channel, []);
+        map.get(item.channel).push(item);
+        return map;
+      }, new Map());
+
+      for (const entries of state.epg.values()) entries.sort((a, b) => a.start - b.start);
+      if (state.currentChannel) {
+        updateHero(state.currentChannel);
+        renderGuide(getProgrammesForChannel(state.currentChannel));
+      }
+    }
+
+    function parseXmltvDate(value) {
+      if (!value) return null;
+      const match = value.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+      if (!match) return null;
+      const [, y, m, d, hh, mm, ss] = match;
+      return new Date(`${y}-${m}-${d}T${hh}:${mm}:${ss}`);
+    }
+
+    function getProgrammesForChannel(channel) {
+      const keys = [channel.epgChannel, channel.id, channel.name].filter(Boolean);
+      let programmes = [];
+      for (const key of keys) {
+        if (state.epg.has(key)) {
+          programmes = state.epg.get(key);
+          break;
+        }
+      }
+      const now = new Date();
+      return programmes.filter(p => p.stop > new Date(now.getTime() - 30 * 60 * 1000)).slice(0, 8).map(p => ({ ...p, now: p.start <= now && p.stop >= now }));
+    }
+
+    function renderGuide(programmes) {
+      if (!state.guideVisible) {
+        els.guidePanel.style.display = 'none';
+        updateToggleButtons();
+        return;
+      }
+      els.guidePanel.style.display = 'flex';
+      if (!programmes.length) {
+        els.guideSub.textContent = 'Add XMLTV / EPG URL';
+        els.guideList.innerHTML = '<div class="guide-item now"><div class="guide-time">Guide unavailable</div><div class="guide-name">No episode data loaded</div><div class="guide-desc">Paste an XMLTV / EPG URL in the bottom bar and hit reload. The channel list and player will still work without it.</div></div>';
+        return;
+      }
+      els.guideSub.textContent = `${programmes.length} upcoming items`;
+      els.guideList.innerHTML = programmes.map(item => `<div class="guide-item ${item.now ? 'now' : ''}"><div class="guide-time">${formatTime(item.start)} - ${formatTime(item.stop)}${item.now ? ' • NOW' : ''}</div><div class="guide-name">${escapeHtml(item.title)}</div><div class="guide-desc">${escapeHtml(item.desc || 'No description')}</div></div>`).join('');
+    }
+
+    function formatTime(date) {
+      if (!date) return '--:--';
+      return new Intl.DateTimeFormat('en-AU', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: state.timezone }).format(date);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      els.clock.textContent = new Intl.DateTimeFormat('en-AU', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: state.timezone }).format(now);
+      els.timezoneLabel.textContent = state.timezone;
+    }
+
+    function toggleRail(force) {
+      const open = typeof force === 'boolean' ? force : !els.app.classList.contains('rail-open');
+      els.app.classList.toggle('rail-open', open);
+    }
+
+    function toggleSidebar(force) {
+      state.sidebarVisible = typeof force === 'boolean' ? force : !state.sidebarVisible;
+      els.app.classList.toggle('hide-sidebar', !state.sidebarVisible);
+      updateToggleButtons();
+    }
+
+    function toggleBottomBar(force) {
+      state.bottomBarVisible = typeof force === 'boolean' ? force : !state.bottomBarVisible;
+      els.main.classList.toggle('hide-bottom-bar', !state.bottomBarVisible);
+      updateToggleButtons();
+    }
+
+    function toggleGuide(force) {
+      state.guideVisible = typeof force === 'boolean' ? force : !state.guideVisible;
+      els.toggleGuide.textContent = state.guideVisible ? 'Hide' : 'Show';
+      renderGuide(state.currentChannel ? getProgrammesForChannel(state.currentChannel) : []);
+      updateToggleButtons();
+    }
+
+    function toggleShortcuts(force) {
+      state.shortcutsVisible = typeof force === 'boolean' ? force : !state.shortcutsVisible;
+      els.shortcutsPanel.style.display = state.shortcutsVisible ? 'block' : 'none';
+      updateToggleButtons();
+    }
+
+    function updateToggleButtons() {
+      els.toggleSidebarBtn.classList.toggle('active', state.sidebarVisible);
+      els.toggleBottomBarBtn.classList.toggle('active', state.bottomBarVisible);
+      els.toggleGuideBtn.classList.toggle('active', state.guideVisible);
+      els.toggleShortcutsBtn.classList.toggle('active', state.shortcutsVisible);
+    }
+
+    els.menuBtn.addEventListener('click', () => toggleRail());
+    els.playPauseBtn.addEventListener('click', async () => {
+      if (els.video.paused) {
+        try { await els.video.play(); els.video.muted = false; } catch { els.streamInfo.textContent = 'Playback blocked until you interact'; }
+      } else {
+        els.video.pause();
+      }
+      updatePlayPauseButton();
+      updateMuteButton();
+    });
+
+    els.muteBtn.addEventListener('click', async () => {
+      els.video.muted = !els.video.muted;
+      if (!els.video.paused) { try { await els.video.play(); } catch {} }
+      updateMuteButton();
+    });
+
+    els.volumeSlider.addEventListener('input', () => {
+      els.video.volume = parseFloat(els.volumeSlider.value || '1');
+      if (els.video.volume > 0 && els.video.muted) els.video.muted = false;
+      updateMuteButton();
+    });
+
+    els.video.addEventListener('play', updatePlayPauseButton);
+    els.video.addEventListener('pause', updatePlayPauseButton);
+    els.video.addEventListener('volumechange', updateMuteButton);
+    els.topPanel.addEventListener('mouseenter', () => { state.heroPinned = true; clearTimeout(state.heroTimer); els.topPanel.style.display = 'grid'; });
+    els.topPanel.addEventListener('mouseleave', () => { state.heroPinned = false; showHeroTemporarily(); });
+    els.toggleRail.addEventListener('click', () => toggleRail());
+    els.reloadBtn.addEventListener('click', loadPlaylist);
+    els.toggleGuide.addEventListener('click', () => toggleGuide());
+    els.toggleSidebarBtn.addEventListener('click', () => toggleSidebar());
+    els.toggleBottomBarBtn.addEventListener('click', () => toggleBottomBar());
+    els.toggleGuideBtn.addEventListener('click', () => toggleGuide());
+    els.toggleShortcutsBtn.addEventListener('click', () => toggleShortcuts());
+    els.hideBottomBtn.addEventListener('click', () => toggleBottomBar(false));
+    els.channelSearch.addEventListener('input', () => { state.channelFilter = els.channelSearch.value; renderChannels(); });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/') {
+        e.preventDefault();
+        els.channelSearch.focus();
+        els.channelSearch.select();
+        return;
+      }
+      if (!e.ctrlKey) return;
+      if (e.key.toLowerCase() === 'm') toggleRail();
+      if (e.key.toLowerCase() === 'c') toggleSidebar();
+      if (e.key.toLowerCase() === 'b') toggleBottomBar();
+      if (e.key.toLowerCase() === 'g') toggleGuide();
+      if (e.key.toLowerCase() === 'j') toggleShortcuts();
+    });
+
+    updateClock();
+    setInterval(updateClock, 1000);
+    toggleRail(true);
+    els.video.volume = 1;
+    updateMuteButton();
+    updatePlayPauseButton();
+    updateToggleButtons();
+    toggleShortcuts(true);
+    loadPlaylist();
+  </script>
+</body>
+</html>
