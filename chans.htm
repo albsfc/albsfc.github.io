@@ -14,7 +14,7 @@
       --success: #31d17c;
       --shadow: 0 16px 40px rgba(0,0,0,.45);
       --border: rgba(255,255,255,.08);
-      --rail-collapsed: 88px;
+      --rail-collapsed: 96px;
       --rail-expanded: 320px;
     }
 
@@ -39,18 +39,15 @@
       display: grid;
       grid-template-columns: var(--rail-collapsed) 1fr;
       height: 100vh;
-      transition: grid-template-columns .25s ease;
+      transition: grid-template-columns .22s ease;
     }
 
-    .app.rail-open { grid-template-columns: var(--rail-expanded) 1fr; }
-    .app.hide-sidebar { grid-template-columns: 0 1fr !important; }
-    .app.hide-sidebar .sidebar {
-      width: 0;
-      min-width: 0;
-      opacity: 0;
-      pointer-events: none;
-      border-right: none;
-      box-shadow: none;
+    .app.rail-open {
+      grid-template-columns: var(--rail-expanded) 1fr;
+    }
+
+    .app.hide-sidebar {
+      grid-template-columns: 0 1fr !important;
     }
 
     .sidebar {
@@ -62,35 +59,89 @@
       box-shadow: var(--shadow);
     }
 
+    .app.hide-sidebar .sidebar {
+      opacity: 0;
+      pointer-events: none;
+      border-right: none;
+      box-shadow: none;
+    }
+
+    .sidebar-inner {
+      width: var(--rail-expanded);
+      height: 100%;
+      transition: opacity .18s ease;
+    }
+
+    .brand,
+    .sidebar-head,
+    .sidebar-footer {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
     .brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 18px 18px 8px;
-      min-width: var(--rail-expanded);
+      padding-top: 18px;
+      padding-bottom: 8px;
+      min-height: 76px;
     }
 
     .brand-badge {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       display: grid;
       place-items: center;
       font-weight: 800;
-      letter-spacing: .04em;
+      font-size: 26px;
+      letter-spacing: .02em;
+      flex: 0 0 auto;
       box-shadow: 0 10px 26px rgba(78,161,255,.3);
+    }
+
+    .brand-copy {
+      min-width: 0;
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events: none;
+    }
+
+    .app.rail-open .brand-copy {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
     }
 
     .brand-copy h1 { margin: 0; font-size: 16px; line-height: 1.1; }
     .brand-copy p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
 
     .sidebar-head {
-      padding: 6px 12px 14px;
-      min-width: var(--rail-expanded);
       display: flex;
       flex-direction: column;
       gap: 10px;
+      padding-top: 6px;
+      padding-bottom: 14px;
+    }
+
+    .search-box,
+    .time-card,
+    .sidebar-footer .toggle-group {
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events: none;
+    }
+
+    .app.rail-open .search-box,
+    .app.rail-open .time-card,
+    .app.rail-open .sidebar-footer .toggle-group {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
     }
 
     .search-box {
@@ -128,10 +179,9 @@
     }
 
     .channels {
-      padding: 4px 8px 100px;
+      padding: 4px 8px 130px;
       overflow: auto;
       height: calc(100vh - 210px);
-      min-width: var(--rail-expanded);
       scrollbar-width: thin;
       scrollbar-color: rgba(255,255,255,.15) transparent;
     }
@@ -192,6 +242,23 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .channel-meta,
+    .channel-tag {
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .app.rail-open .channel-name,
+    .app.rail-open .channel-meta,
+    .app.rail-open .channel-tag {
+      opacity: 1;
+      transform: translateX(0);
     }
 
     .channel-meta {
@@ -218,8 +285,8 @@
       left: 0;
       right: 0;
       bottom: 0;
-      padding: 12px;
-      min-width: var(--rail-expanded);
+      padding-top: 12px;
+      padding-bottom: 12px;
       background: linear-gradient(180deg, transparent, rgba(8,10,18,.96) 35%);
     }
 
@@ -234,6 +301,17 @@
       cursor: pointer;
     }
 
+    .toggle-group {
+      display: grid;
+      gap: 10px;
+    }
+
+    .toggle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
     .main {
       position: relative;
       min-width: 0;
@@ -241,21 +319,17 @@
       background: #000;
     }
 
-    .main.hide-bottom-bar .bottom-bar {
+    .main.hide-bottom-bar .bottom-bar,
+    .bottom-bar.auto-hidden {
       transform: translateY(calc(100% + 24px));
       opacity: 0;
       pointer-events: none;
     }
 
-    .main.hide-bottom-bar .guide-panel,
-    .main.hide-bottom-bar .shortcuts-panel {
-      bottom: 22px;
-    }
-
     video {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       background: #000;
       display: block;
     }
@@ -267,37 +341,6 @@
       background:
         radial-gradient(circle at right top, rgba(255,255,255,.10), transparent 22%),
         linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,0) 26%, rgba(0,0,0,0) 60%, rgba(0,0,0,.30));
-    }
-
-    .utility-dock {
-      position: absolute;
-      top: 18px;
-      right: 18px;
-      z-index: 3;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px;
-      border-radius: 18px;
-      background: rgba(8, 10, 24, .58);
-      border: 1px solid rgba(255,255,255,.08);
-      backdrop-filter: blur(16px);
-      box-shadow: var(--shadow);
-    }
-
-    .utility-btn {
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .utility-btn.active {
-      background: linear-gradient(135deg, rgba(78,161,255,.22), rgba(111,92,255,.22));
-      border-color: rgba(133,171,255,.28);
     }
 
     .top-panel {
@@ -318,8 +361,8 @@
       z-index: 2;
     }
 
-    .hero-logo { display: flex; flex-direction: column; justify-content: center; gap: 14px; }
-    .hero-logo img, .hero-logo .big-fallback {
+    .hero-logo img,
+    .hero-logo .big-fallback {
       width: 130px;
       height: 130px;
       border-radius: 26px;
@@ -327,6 +370,7 @@
       object-fit: contain;
       padding: 18px;
     }
+
     .hero-logo .big-fallback {
       display: grid;
       place-items: center;
@@ -334,26 +378,116 @@
       font-weight: 900;
       background: linear-gradient(135deg, rgba(78,161,255,.35), rgba(111,92,255,.35));
     }
+
     .hero-channel { font-size: 34px; font-weight: 800; line-height: 1.05; margin: 4px 0 12px; letter-spacing: -.02em; }
     .hero-program { font-size: clamp(24px, 3vw, 42px); font-weight: 800; line-height: 1.05; margin: 0 0 14px; letter-spacing: -.025em; }
     .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #edf3ff;
-    }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.10); border-radius: 999px; font-size: 13px; font-weight: 700; color: #edf3ff; }
     .program-desc { font-size: 18px; color: #edf0ff; max-width: 900px; }
 
-    .shortcuts-panel, .guide-panel {
+    .guide-flyout {
       position: absolute;
+      top: 18px;
+      left: calc(var(--rail-collapsed) + 14px);
+      width: min(1180px, calc(100vw - 130px));
+      min-height: 240px;
+      max-height: calc(100vh - 36px);
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(17, 20, 88, .92), rgba(11, 16, 66, .82));
+      border: 1px solid rgba(255,255,255,.10);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      z-index: 3;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-10px);
+      transition: opacity .18s ease, transform .18s ease, left .22s ease;
+    }
+
+    .app.rail-open .guide-flyout { left: calc(var(--rail-expanded) + 14px); }
+    .guide-flyout.visible { opacity: 1; pointer-events: auto; transform: translateX(0); }
+
+    .guide-flyout-head {
+      display: grid;
+      grid-template-columns: 96px 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0));
+    }
+
+    .guide-flyout-logo {
+      width: 96px;
+      height: 96px;
+      border-radius: 20px;
+      object-fit: contain;
+      background: rgba(255,255,255,.06);
+      padding: 12px;
+    }
+
+    .guide-flyout-fallback {
+      width: 96px;
+      height: 96px;
+      display: grid;
+      place-items: center;
+      border-radius: 20px;
+      font-size: 32px;
+      font-weight: 900;
+      background: linear-gradient(135deg, rgba(78,161,255,.35), rgba(111,92,255,.35));
+    }
+
+    .guide-flyout-channel { font-size: 30px; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+    .guide-flyout-meta { color: var(--muted); font-size: 13px; }
+
+    .guide-flyout-close {
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .guide-timeline {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(210px, 1fr);
+      gap: 8px;
+      padding: 14px;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .guide-slot {
+      min-height: 136px;
+      border-radius: 16px;
+      padding: 12px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .guide-slot.now {
+      background: linear-gradient(135deg, rgba(78,161,255,.18), rgba(111,92,255,.14));
+      border-color: rgba(133,171,255,.30);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+
+    .guide-slot-time { color: #c7d7ff; font-size: 12px; font-weight: 800; margin-bottom: 8px; }
+    .guide-slot-name { font-size: 16px; font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+    .guide-slot-desc { color: var(--muted); font-size: 13px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .guide-slot-tag { align-self: flex-start; margin-top: 10px; padding: 6px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.08); }
+
+    .shortcuts-panel {
+      position: absolute;
+      left: 26px;
       bottom: 96px;
+      width: min(340px, calc(100vw - 140px));
       border-radius: 24px;
       background: linear-gradient(180deg, rgba(9, 12, 28, .88), rgba(10, 15, 32, .78));
       border: 1px solid rgba(255,255,255,.10);
@@ -363,38 +497,11 @@
       overflow: hidden;
     }
 
-    .shortcuts-panel { left: 26px; width: min(340px, calc(100vw - 140px)); }
-    .guide-panel { right: 26px; width: min(460px, calc(100vw - 140px)); max-height: 52vh; display: flex; flex-direction: column; }
-    .shortcuts-head {
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      font-size: 14px;
-      font-weight: 800;
-      letter-spacing: .02em;
-      text-transform: uppercase;
-      color: #dfe8ff;
-    }
+    .shortcuts-head { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.08); font-size: 14px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; color: #dfe8ff; }
     .shortcuts-list { padding: 12px; display: grid; gap: 8px; }
     .shortcut-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.04); }
     .shortcut-key { font-weight: 900; font-size: 12px; padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.06); }
     .shortcut-label { color: var(--muted); font-size: 13px; }
-
-    .guide-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 16px 18px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-    }
-    .guide-title { font-size: 15px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; color: #dfe8ff; }
-    .guide-sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
-    .guide-list { overflow: auto; padding: 10px; }
-    .guide-item { padding: 12px 12px 12px 14px; border-radius: 18px; background: rgba(255,255,255,.03); border: 1px solid transparent; margin-bottom: 8px; }
-    .guide-item.now { border-color: rgba(78,161,255,.35); background: linear-gradient(135deg, rgba(78,161,255,.14), rgba(111,92,255,.08)); }
-    .guide-time { color: #c7d7ff; font-size: 12px; font-weight: 800; margin-bottom: 6px; }
-    .guide-name { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
-    .guide-desc { color: var(--muted); font-size: 13px; line-height: 1.4; }
 
     .bottom-bar {
       position: absolute;
@@ -416,16 +523,8 @@
     }
 
     .controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .control-btn, .ghost-input, .ghost-btn {
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      color: var(--text);
-      border-radius: 14px;
-      padding: 10px 12px;
-      font-weight: 700;
-    }
+    .control-btn, .ghost-btn { border: 1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.05); color: var(--text); border-radius: 14px; padding: 10px 12px; font-weight: 700; }
     .control-btn, .ghost-btn { cursor: pointer; }
-    .ghost-input { width: min(420px, 38vw); outline: none; }
     .stats { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; white-space: nowrap; }
     .live-badge { color: white; background: linear-gradient(135deg, #ff2b4f, #ff5d7a); border-radius: 999px; padding: 6px 10px; font-weight: 800; font-size: 11px; letter-spacing: .05em; }
 
@@ -437,6 +536,7 @@
       z-index: 1;
       pointer-events: none;
     }
+
     .empty-card {
       background: rgba(8,11,24,.82);
       border: 1px solid rgba(255,255,255,.08);
@@ -447,15 +547,17 @@
       box-shadow: var(--shadow);
       backdrop-filter: blur(18px);
     }
+
     .empty-card h2 { margin: 0 0 8px; font-size: 28px; }
     .empty-card p { color: var(--muted); margin: 0; line-height: 1.5; }
 
     @media (max-width: 980px) {
       .top-panel { grid-template-columns: 94px 1fr; padding: 16px; gap: 16px; }
       .hero-logo img, .hero-logo .big-fallback { width: 94px; height: 94px; border-radius: 20px; padding: 12px; }
-      .guide-panel, .shortcuts-panel { width: calc(100vw - 140px); max-height: 38vh; }
-      .program-desc { font-size: 15px; }
-      .ghost-input { width: 230px; }
+      .shortcuts-panel { width: calc(100vw - 140px); max-height: 38vh; }
+      .guide-flyout { width: calc(100vw - 140px); }
+      .guide-flyout-head { grid-template-columns: 80px 1fr auto; }
+      .guide-flyout-logo, .guide-flyout-fallback { width: 80px; height: 80px; }
     }
 
     @media (max-width: 760px) {
@@ -469,49 +571,52 @@
         transform: translateX(-100%);
         transition: transform .25s ease;
       }
+      .sidebar-inner { width: min(88vw, 320px); }
       .app.rail-open .sidebar { transform: translateX(0); }
       .top-panel { left: 14px; right: 14px; top: 14px; max-width: none; }
-      .guide-panel, .shortcuts-panel { left: 14px; right: 14px; width: auto; }
-      .guide-panel, .shortcuts-panel { bottom: 84px; }
+      .shortcuts-panel { left: 14px; right: 14px; width: auto; bottom: 84px; }
+      .guide-flyout { left: 14px !important; right: 14px; width: auto; top: 14px; max-height: calc(100vh - 28px); }
+      .guide-flyout-head { grid-template-columns: 64px 1fr auto; }
+      .guide-flyout-logo, .guide-flyout-fallback { width: 64px; height: 64px; border-radius: 16px; }
       .bottom-bar { left: 12px; right: 12px; bottom: 12px; flex-direction: column; align-items: stretch; }
-      .ghost-input { width: 100%; }
       .stats { justify-content: space-between; }
-      .utility-dock { flex-wrap: wrap; left: 12px; right: 12px; }
     }
   </style>
 </head>
 <body>
   <div class="app" id="app">
     <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-badge">TV</div>
-        <div class="brand-copy">
-          <h1>Guide Player</h1>
-          <p>Glass UI • playlist + episode guide</p>
-        </div>
-      </div>
-
-      <div class="sidebar-head">
-        <input type="text" id="channelSearch" class="search-box" placeholder="Search channels..." />
-        <div class="time-card">
-          <div>
-            <div class="clock" id="clock">--:--</div>
-            <div class="city" id="timezoneLabel">Australia/Sydney</div>
+      <div class="sidebar-inner">
+        <div class="brand">
+          <div class="brand-badge">TV</div>
+          <div class="brand-copy">
+            <h1>Guide Player</h1>
+            <p>Glass UI • playlist + episode guide</p>
           </div>
-          <div class="status-dot"></div>
         </div>
-      </div>
 
-      <div class="channels" id="channels"></div>
+        <div class="sidebar-head">
+          <input type="text" id="channelSearch" class="search-box" placeholder="Search channels..." />
+          <div class="time-card">
+            <div>
+              <div class="clock" id="clock">--:--</div>
+              <div class="city" id="timezoneLabel">Australia/Sydney</div>
+            </div>
+            <div class="status-dot"></div>
+          </div>
+        </div>
 
-      <div class="sidebar-footer">
-        <div style="display:grid; gap:10px;">
-          <button class="toggle-btn" id="toggleRail">Toggle channel rail</button>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <button class="toggle-btn" id="toggleSidebarBtn">Channels</button>
-            <button class="toggle-btn" id="toggleBottomBarBtn">Controls</button>
-            <button class="toggle-btn" id="toggleGuideBtn">Guide</button>
-            <button class="toggle-btn" id="toggleShortcutsBtn">Keys</button>
+        <div class="channels" id="channels"></div>
+
+        <div class="sidebar-footer">
+          <div class="toggle-group">
+            <button class="toggle-btn" id="toggleRail">Toggle channel rail</button>
+            <div class="toggle-grid">
+              <button class="toggle-btn" id="toggleSidebarBtn">Channels</button>
+              <button class="toggle-btn" id="toggleBottomBarBtn">Controls</button>
+              <button class="toggle-btn" id="toggleGuideBtn">Guide</button>
+              <button class="toggle-btn" id="toggleShortcutsBtn">Keys</button>
+            </div>
           </div>
         </div>
       </div>
@@ -520,7 +625,6 @@
     <main class="main" id="main">
       <video id="video" autoplay playsinline controls></video>
       <div class="video-overlay"></div>
-
 
       <div class="loading-state" id="loadingState">
         <div class="empty-card">
@@ -532,7 +636,7 @@
       <div class="empty-state" id="emptyState" style="display:none;">
         <div class="empty-card">
           <h2>No channel selected</h2>
-          <p>Pick a channel from the left rail. If the playlist URL fails to load, use the file picker in the bottom bar. Browser security can block direct playlist fetches.</p>
+          <p>Pick a channel from the left rail. If the playlist URL fails to load, use the file picker in the bottom bar.</p>
         </div>
       </div>
 
@@ -546,37 +650,36 @@
         </div>
       </section>
 
+      <section class="guide-flyout" id="guideFlyout">
+        <div class="guide-flyout-head">
+          <div id="guideFlyoutLogo"></div>
+          <div>
+            <div class="guide-flyout-channel" id="guideFlyoutChannel">Channel</div>
+            <div class="guide-flyout-meta" id="guideFlyoutMeta">Hover a channel to preview its guide</div>
+          </div>
+          <button class="guide-flyout-close" id="closeGuideBtn">Close</button>
+        </div>
+        <div class="guide-timeline" id="guideFlyoutTimeline"></div>
+      </section>
+
       <section class="shortcuts-panel" id="shortcutsPanel">
         <div class="shortcuts-head">Keyboard shortcuts</div>
         <div class="shortcuts-list">
           <div class="shortcut-row"><span class="shortcut-key">/</span><span class="shortcut-label">Focus channel search</span></div>
           <div class="shortcut-row"><span class="shortcut-key">Ctrl+C</span><span class="shortcut-label">Show / hide channels</span></div>
           <div class="shortcut-row"><span class="shortcut-key">Ctrl+B</span><span class="shortcut-label">Show / hide bottom bar</span></div>
-          <div class="shortcut-row"><span class="shortcut-key">Ctrl+G</span><span class="shortcut-label">Show / hide guide</span></div>
+          <div class="shortcut-row"><span class="shortcut-key">Ctrl+G</span><span class="shortcut-label">Enable / disable hover guide</span></div>
           <div class="shortcut-row"><span class="shortcut-key">Ctrl+J</span><span class="shortcut-label">Show / hide shortcuts</span></div>
           <div class="shortcut-row"><span class="shortcut-key">Ctrl+M</span><span class="shortcut-label">Expand / collapse rail</span></div>
         </div>
       </section>
 
-      <section class="guide-panel" id="guidePanel" style="display:none;">
-        <div class="guide-head">
-          <div>
-            <div class="guide-title">Episode Guide</div>
-            <div class="guide-sub" id="guideSub">Now & next</div>
-          </div>
-          <button class="ghost-btn" id="toggleGuide">Hide</button>
-        </div>
-        <div class="guide-list" id="guideList"></div>
-      </section>
-
-      <section class="bottom-bar">
+      <section class="bottom-bar" id="bottomBar">
         <div class="controls">
           <button class="control-btn" id="menuBtn">☰</button>
           <button class="control-btn" id="playPauseBtn">⏯</button>
           <button class="control-btn" id="muteBtn">🔊</button>
-          <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" class="ghost-input" style="width:140px; padding:0; height:42px;" />
-          <input class="ghost-input" id="m3uInput" value="https://i.mjh.nz/au/Sydney/raw-tv.m3u8" />
-          <input class="ghost-input" id="epgInput" value="https://raw.githubusercontent.com/matthuisman/i.mjh.nz/refs/heads/master/au/Sydney/epg.xml" placeholder="Optional XMLTV / EPG URL" />
+          <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" style="width:140px; height:42px;" />
           <input type="file" id="m3uFile" accept=".m3u,.m3u8,text/plain" class="ghost-btn" />
           <button class="ghost-btn" id="hideBottomBtn">Hide controls</button>
           <button class="ghost-btn" id="reloadBtn">Reload sources</button>
@@ -597,6 +700,7 @@
       hls: null,
       epg: new Map(),
       guideVisible: true,
+      guideHoverTimer: null,
       shortcutsVisible: true,
       timezone: 'Australia/Sydney',
       heroTimer: null,
@@ -604,6 +708,9 @@
       sidebarVisible: true,
       bottomBarVisible: true,
       channelFilter: '',
+      bottomBarTimer: null,
+      defaultM3uUrl: 'https://i.mjh.nz/au/Sydney/raw-tv.m3u8',
+      defaultEpgUrl: 'https://raw.githubusercontent.com/matthuisman/i.mjh.nz/refs/heads/master/au/Sydney/epg.xml',
     };
 
     const els = {
@@ -616,9 +723,12 @@
       heroProgram: document.getElementById('heroProgram'),
       heroDesc: document.getElementById('heroDesc'),
       metaRow: document.getElementById('metaRow'),
-      guideList: document.getElementById('guideList'),
-      guidePanel: document.getElementById('guidePanel'),
-      guideSub: document.getElementById('guideSub'),
+      guideFlyout: document.getElementById('guideFlyout'),
+      guideFlyoutLogo: document.getElementById('guideFlyoutLogo'),
+      guideFlyoutChannel: document.getElementById('guideFlyoutChannel'),
+      guideFlyoutMeta: document.getElementById('guideFlyoutMeta'),
+      guideFlyoutTimeline: document.getElementById('guideFlyoutTimeline'),
+      closeGuideBtn: document.getElementById('closeGuideBtn'),
       shortcutsPanel: document.getElementById('shortcutsPanel'),
       topPanel: document.getElementById('topPanel'),
       loadingState: document.getElementById('loadingState'),
@@ -628,13 +738,10 @@
       channelSearch: document.getElementById('channelSearch'),
       clock: document.getElementById('clock'),
       timezoneLabel: document.getElementById('timezoneLabel'),
-      m3uInput: document.getElementById('m3uInput'),
       m3uFile: document.getElementById('m3uFile'),
-      epgInput: document.getElementById('epgInput'),
       menuBtn: document.getElementById('menuBtn'),
       toggleRail: document.getElementById('toggleRail'),
       reloadBtn: document.getElementById('reloadBtn'),
-      toggleGuide: document.getElementById('toggleGuide'),
       playPauseBtn: document.getElementById('playPauseBtn'),
       muteBtn: document.getElementById('muteBtn'),
       volumeSlider: document.getElementById('volumeSlider'),
@@ -643,6 +750,7 @@
       toggleGuideBtn: document.getElementById('toggleGuideBtn'),
       toggleShortcutsBtn: document.getElementById('toggleShortcutsBtn'),
       hideBottomBtn: document.getElementById('hideBottomBtn'),
+      bottomBar: document.getElementById('bottomBar'),
     };
 
     function escapeHtml(str = '') {
@@ -658,10 +766,9 @@
       const raw = text.replace(/^\uFEFF/, '');
       const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
       const channels = [];
-      let pending = {};
-      let inferredEpg = '';
       const header = lines.find(l => l.startsWith('#EXTM3U')) || '';
-      inferredEpg = getAttr(header, 'x-tvg-url') || getAttr(header, 'url-tvg') || '';
+      const inferredEpg = getAttr(header, 'x-tvg-url') || getAttr(header, 'url-tvg') || '';
+      let pending = {};
 
       for (const line of lines) {
         if (line.startsWith('#EXTINF')) {
@@ -689,7 +796,6 @@
         `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
         `https://cors.isomorphic-git.org/${url}`,
       ];
-
       let lastError = null;
       for (const attempt of attempts) {
         try {
@@ -709,16 +815,14 @@
         els.emptyState.style.display = 'none';
         let m3uText = '';
         const file = els.m3uFile.files?.[0];
-
         if (file) {
           m3uText = await file.text();
         } else {
-          m3uText = await fetchText(els.m3uInput.value.trim());
+          m3uText = await fetchText(state.defaultM3uUrl);
         }
 
-        const { channels, inferredEpg } = parseM3U(m3uText);
+        const { channels } = parseM3U(m3uText);
         state.channels = channels;
-        if (!els.epgInput.value.trim() && inferredEpg) els.epgInput.value = inferredEpg;
         renderChannels();
         els.loadingState.style.display = 'none';
 
@@ -729,11 +833,8 @@
           els.streamInfo.textContent = 'No channels found in playlist';
         }
 
-        const epgUrl = els.epgInput.value.trim();
-        if (epgUrl) {
-          loadEpg(epgUrl).catch(() => renderGuide([]));
-        } else {
-          renderGuide([]);
+        if (state.defaultEpgUrl) {
+          loadEpg(state.defaultEpgUrl).catch(() => {});
         }
       } catch (error) {
         console.error(error);
@@ -768,7 +869,10 @@
         `;
       }).join('');
 
-      els.channels.querySelectorAll('.channel-item').forEach(btn => btn.addEventListener('click', () => playChannel(btn.dataset.id)));
+      els.channels.querySelectorAll('.channel-item').forEach(btn => {
+        btn.addEventListener('click', () => playChannel(btn.dataset.id));
+        btn.addEventListener('mouseenter', () => showGuidePreview(btn.dataset.id));
+      });
     }
 
     function destroyPlayer() {
@@ -787,8 +891,7 @@
       state.currentChannel = channel;
       renderChannels();
       updateHero(channel);
-      renderGuide(getProgrammesForChannel(channel));
-      showHeroTemporarily();
+      showGuidePreview(channel.id);
       els.emptyState.style.display = 'none';
       els.streamInfo.textContent = channel.name;
 
@@ -823,9 +926,9 @@
         : `<div class="big-fallback">${escapeHtml((channel.name || '?').charAt(0).toUpperCase())}</div>`;
       els.heroChannel.textContent = channel.name;
       els.heroProgram.textContent = nowItem?.title || 'Live broadcast';
-      els.heroDesc.textContent = nowItem?.desc || 'No programme description available. Add an XMLTV / EPG URL to populate the guide with now and next details.';
+      els.heroDesc.textContent = nowItem?.desc || 'No programme description available.';
       els.metaRow.innerHTML = '';
-      [channel.group || 'TV', nowItem ? `${formatTime(nowItem.start)} - ${formatTime(nowItem.stop)}` : 'Live now', state.currentChannel?.url?.includes('.m3u8') ? 'HLS stream' : 'Stream']
+      [channel.group || 'TV', nowItem ? `${formatClock(nowItem.start)} - ${formatClock(nowItem.stop)}` : 'Live now', state.currentChannel?.url?.includes('.m3u8') ? 'HLS stream' : 'Stream']
         .forEach(label => {
           const pill = document.createElement('div');
           pill.className = 'pill';
@@ -842,6 +945,46 @@
       }, 4500);
     }
 
+    function showGuidePreview(channelId) {
+      clearTimeout(state.guideHoverTimer);
+      if (!state.guideVisible) return;
+      const channel = state.channels.find(ch => ch.id === channelId);
+      if (!channel) return;
+      const items = getProgrammesForChannel(channel);
+
+      els.guideFlyoutLogo.innerHTML = channel.logo
+        ? `<img class="guide-flyout-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`
+        : `<div class="guide-flyout-fallback">${escapeHtml((channel.name || '?').charAt(0).toUpperCase())}</div>`;
+      els.guideFlyoutChannel.textContent = channel.name;
+      els.guideFlyoutMeta.textContent = items.length ? `${items.length} upcoming items • hover a channel to preview` : 'No guide information available';
+
+      if (!items.length) {
+        els.guideFlyoutTimeline.innerHTML = '<div class="guide-slot now"><div><div class="guide-slot-time">Guide unavailable</div><div class="guide-slot-name">No episode data loaded</div><div class="guide-slot-desc">This channel does not currently have guide information.</div></div><div class="guide-slot-tag">No info</div></div>';
+      } else {
+        els.guideFlyoutTimeline.innerHTML = items.map(item => `<div class="guide-slot ${item.now ? 'now' : ''}"><div><div class="guide-slot-time">${formatClock(item.start)} - ${formatClock(item.stop)}${item.now ? ' • NOW' : ''}</div><div class="guide-slot-name">${escapeHtml(item.title)}</div><div class="guide-slot-desc">${escapeHtml(item.desc || 'No description')}</div></div><div class="guide-slot-tag">${item.now ? 'On now' : 'Up next'}</div></div>`).join('');
+      }
+
+      els.guideFlyout.classList.add('visible');
+    }
+
+    function hideGuidePreview() {
+      clearTimeout(state.guideHoverTimer);
+      state.guideHoverTimer = setTimeout(() => {
+        els.guideFlyout.classList.remove('visible');
+      }, 160);
+    }
+
+    function showBottomBarTemporarily() {
+      if (!state.bottomBarVisible) return;
+      clearTimeout(state.bottomBarTimer);
+      els.bottomBar.classList.remove('auto-hidden');
+      state.bottomBarTimer = setTimeout(() => {
+        if (state.bottomBarVisible && !els.video.paused) {
+          els.bottomBar.classList.add('auto-hidden');
+        }
+      }, 2600);
+    }
+
     function attemptUnmutePlayback() {
       els.video.muted = false;
       const playPromise = els.video.play();
@@ -854,6 +997,8 @@
       }
       updateMuteButton();
       updatePlayPauseButton();
+      showHeroTemporarily();
+      showBottomBarTemporarily();
     }
 
     function updateMuteButton() { els.muteBtn.textContent = els.video.muted || els.video.volume === 0 ? '🔇' : '🔊'; }
@@ -877,10 +1022,7 @@
       }, new Map());
 
       for (const entries of state.epg.values()) entries.sort((a, b) => a.start - b.start);
-      if (state.currentChannel) {
-        updateHero(state.currentChannel);
-        renderGuide(getProgrammesForChannel(state.currentChannel));
-      }
+      if (state.currentChannel) showGuidePreview(state.currentChannel.id);
     }
 
     function parseXmltvDate(value) {
@@ -904,25 +1046,9 @@
       return programmes.filter(p => p.stop > new Date(now.getTime() - 30 * 60 * 1000)).slice(0, 8).map(p => ({ ...p, now: p.start <= now && p.stop >= now }));
     }
 
-    function renderGuide(programmes) {
-      if (!state.guideVisible) {
-        els.guidePanel.style.display = 'none';
-        updateToggleButtons();
-        return;
-      }
-      els.guidePanel.style.display = 'flex';
-      if (!programmes.length) {
-        els.guideSub.textContent = 'Add XMLTV / EPG URL';
-        els.guideList.innerHTML = '<div class="guide-item now"><div class="guide-time">Guide unavailable</div><div class="guide-name">No episode data loaded</div><div class="guide-desc">Paste an XMLTV / EPG URL in the bottom bar and hit reload. The channel list and player will still work without it.</div></div>';
-        return;
-      }
-      els.guideSub.textContent = `${programmes.length} upcoming items`;
-      els.guideList.innerHTML = programmes.map(item => `<div class="guide-item ${item.now ? 'now' : ''}"><div class="guide-time">${formatTime(item.start)} - ${formatTime(item.stop)}${item.now ? ' • NOW' : ''}</div><div class="guide-name">${escapeHtml(item.title)}</div><div class="guide-desc">${escapeHtml(item.desc || 'No description')}</div></div>`).join('');
-    }
-
-    function formatTime(date) {
+    function formatClock(date) {
       if (!date) return '--:--';
-      return new Intl.DateTimeFormat('en-AU', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: state.timezone }).format(date);
+      return new Intl.DateTimeFormat('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: state.timezone }).format(date);
     }
 
     function updateClock() {
@@ -945,13 +1071,14 @@
     function toggleBottomBar(force) {
       state.bottomBarVisible = typeof force === 'boolean' ? force : !state.bottomBarVisible;
       els.main.classList.toggle('hide-bottom-bar', !state.bottomBarVisible);
+      if (!state.bottomBarVisible) els.bottomBar.classList.remove('auto-hidden');
+      else showBottomBarTemporarily();
       updateToggleButtons();
     }
 
     function toggleGuide(force) {
       state.guideVisible = typeof force === 'boolean' ? force : !state.guideVisible;
-      els.toggleGuide.textContent = state.guideVisible ? 'Hide' : 'Show';
-      renderGuide(state.currentChannel ? getProgrammesForChannel(state.currentChannel) : []);
+      if (!state.guideVisible) els.guideFlyout.classList.remove('visible');
       updateToggleButtons();
     }
 
@@ -977,28 +1104,40 @@
       }
       updatePlayPauseButton();
       updateMuteButton();
+      showBottomBarTemporarily();
     });
 
     els.muteBtn.addEventListener('click', async () => {
       els.video.muted = !els.video.muted;
       if (!els.video.paused) { try { await els.video.play(); } catch {} }
       updateMuteButton();
+      showBottomBarTemporarily();
     });
 
     els.volumeSlider.addEventListener('input', () => {
       els.video.volume = parseFloat(els.volumeSlider.value || '1');
       if (els.video.volume > 0 && els.video.muted) els.video.muted = false;
       updateMuteButton();
+      showBottomBarTemporarily();
     });
 
-    els.video.addEventListener('play', updatePlayPauseButton);
-    els.video.addEventListener('pause', updatePlayPauseButton);
+    els.video.addEventListener('play', () => {
+      updatePlayPauseButton();
+      showBottomBarTemporarily();
+    });
+    els.video.addEventListener('pause', () => {
+      updatePlayPauseButton();
+      els.bottomBar.classList.remove('auto-hidden');
+    });
     els.video.addEventListener('volumechange', updateMuteButton);
     els.topPanel.addEventListener('mouseenter', () => { state.heroPinned = true; clearTimeout(state.heroTimer); els.topPanel.style.display = 'grid'; });
     els.topPanel.addEventListener('mouseleave', () => { state.heroPinned = false; showHeroTemporarily(); });
+    els.guideFlyout.addEventListener('mouseenter', () => clearTimeout(state.guideHoverTimer));
+    els.guideFlyout.addEventListener('mouseleave', hideGuidePreview);
+    els.channels.addEventListener('mouseleave', hideGuidePreview);
+    els.closeGuideBtn.addEventListener('click', () => els.guideFlyout.classList.remove('visible'));
     els.toggleRail.addEventListener('click', () => toggleRail());
     els.reloadBtn.addEventListener('click', loadPlaylist);
-    els.toggleGuide.addEventListener('click', () => toggleGuide());
     els.toggleSidebarBtn.addEventListener('click', () => toggleSidebar());
     els.toggleBottomBarBtn.addEventListener('click', () => toggleBottomBar());
     els.toggleGuideBtn.addEventListener('click', () => toggleGuide());
@@ -1006,9 +1145,14 @@
     els.hideBottomBtn.addEventListener('click', () => toggleBottomBar(false));
     els.channelSearch.addEventListener('input', () => { state.channelFilter = els.channelSearch.value; renderChannels(); });
 
+    ['mousemove', 'click', 'keydown', 'touchstart'].forEach(evt => {
+      els.main.addEventListener(evt, showBottomBarTemporarily, { passive: true });
+    });
+
     document.addEventListener('keydown', (e) => {
       if (e.key === '/') {
         e.preventDefault();
+        if (!els.app.classList.contains('rail-open')) toggleRail(true);
         els.channelSearch.focus();
         els.channelSearch.select();
         return;
@@ -1023,12 +1167,11 @@
 
     updateClock();
     setInterval(updateClock, 1000);
-    toggleRail(true);
-    els.video.volume = 1;
+    toggleRail(false);
     updateMuteButton();
     updatePlayPauseButton();
     updateToggleButtons();
-    toggleShortcuts(true);
+    showBottomBarTemporarily();
     loadPlaylist();
   </script>
 </body>
