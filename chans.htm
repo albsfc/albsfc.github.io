@@ -83,6 +83,18 @@
       font-size: 22px;
       flex: 0 0 auto;
       box-shadow: 0 10px 26px rgba(78,161,255,.3);
+      cursor: pointer;
+      user-select: none;
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+    .brand-badge:hover, .brand-badge:focus-visible {
+      transform: translateY(-1px) scale(1.03);
+      box-shadow: 0 14px 30px rgba(78,161,255,.38);
+      filter: brightness(1.05);
+      outline: none;
+    }
+    .brand-badge:active {
+      transform: scale(.98);
     }
     .brand-copy, .search-box, .time-card, .channel-name, .channel-meta, .channel-tag {
       opacity: 0;
@@ -367,7 +379,7 @@
           <button class="rail-toggle-top" id="railToggleTop" aria-label="Toggle channels">☰</button>
         </div>
         <div class="brand">
-          <div class="brand-badge">TV</div>
+          <button class="brand-badge" id="brandSettingsBtn" type="button" aria-label="Open playlist settings">TV</button>
           <div class="brand-copy">
             <h1>Guide Player</h1>
             <p>Glass UI • playlist + episode guide</p>
@@ -441,7 +453,6 @@
         </div>
         <div class="controls">
           <button class="control-btn" id="epgBtn">EPG</button>
-          <button class="control-btn" id="infoBtn">Info</button>
           <button class="control-btn" id="fullscreenBtn">⛶</button>
           <button class="control-btn" id="playPauseBtn">⏯</button>
           <button class="control-btn" id="muteBtn">🔊</button>
@@ -489,7 +500,7 @@
       clock: document.getElementById('clock'),
       timezoneLabel: document.getElementById('timezoneLabel'),
       epgBtn: document.getElementById('epgBtn'),
-      infoBtn: document.getElementById('infoBtn'),
+      brandSettingsBtn: document.getElementById('brandSettingsBtn'),
       fullscreenBtn: document.getElementById('fullscreenBtn'),
       playPauseBtn: document.getElementById('playPauseBtn'),
       muteBtn: document.getElementById('muteBtn'),
@@ -851,6 +862,18 @@
         await els.video.play();
         showBottomBarTemporarily();
         showAutoplayNote('Autoplay started muted — tap 🔊 for sound');
+
+        setTimeout(async () => {
+          try {
+            els.video.muted = false;
+            els.video.volume = parseFloat(els.volumeSlider.value || '1');
+            updateMuteButton();
+            await els.video.play();
+          } catch (e) {
+            els.video.muted = true;
+            updateMuteButton();
+          }
+        }, 300);
       } catch (e) {}
     }
   };
@@ -865,6 +888,7 @@
     state.hls.on(Hls.Events.MANIFEST_PARSED, tryPlay);
   }
 }
+
     function showBottomBarTemporarily(){ clearTimeout(state.bottomBarTimer); els.bottomBar.classList.remove('auto-hidden'); state.bottomBarTimer=setTimeout(()=>{ if(!els.video.paused){ els.bottomBar.classList.add('auto-hidden'); } },2600); }
     function updateMuteButton(){ els.muteBtn.textContent=els.video.muted||els.video.volume===0?'🔇':'🔊'; }
     function updatePlayPauseButton(){ els.playPauseBtn.textContent=els.video.paused?'▶':'⏸'; }
@@ -878,7 +902,7 @@
 
     els.railToggleTop.addEventListener('click',()=>toggleRail());
     els.epgBtn.addEventListener('click',toggleEpg);
-    els.infoBtn.addEventListener('click',openInfoModal);
+    els.brandSettingsBtn.addEventListener('click',openInfoModal);
     els.closeGuideBtn.addEventListener('click',()=>{ state.guideVisible=false; els.epgBtn.classList.remove('active'); els.guideDrawer.classList.remove('visible'); });
     els.infoCloseBtn.addEventListener('click',closeInfoModal);
     els.infoBackdrop.addEventListener('click',closeInfoModal);
