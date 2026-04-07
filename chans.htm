@@ -148,10 +148,13 @@
 
     .channels {
       padding: 4px 8px 110px;
-      overflow: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
       height: calc(100vh - 210px);
       scrollbar-width: thin;
       scrollbar-color: rgba(255,255,255,.15) transparent;
+      touch-action: pan-y;
+      overscroll-behavior-x: contain;
     }
 
     .channel-item {
@@ -169,6 +172,7 @@
       cursor: pointer;
       transition: .2s ease;
       text-align: left;
+      touch-action: pan-y;
     }
 
     .channel-item:hover {
@@ -577,12 +581,20 @@
         left: 0;
         top: 0;
         bottom: 0;
-        width: min(88vw, 320px);
+        width: min(82vw, 320px);
+        max-width: 320px;
         transform: translateX(-100%);
         transition: transform .25s ease;
+        z-index: 6;
       }
-      .sidebar-inner { width: min(88vw, 320px); }
+      .sidebar-inner { width: min(82vw, 320px); }
       .app.rail-open .sidebar { transform: translateX(0); }
+      .app.hide-sidebar .sidebar {
+        opacity: 1;
+        pointer-events: auto;
+        border-right: 1px solid var(--border);
+        box-shadow: var(--shadow);
+      }
       .top-panel {
         left: 14px;
         right: 14px;
@@ -843,6 +855,11 @@
     function toggleRail(force) {
       const open = typeof force === 'boolean' ? force : !els.app.classList.contains('rail-open');
       els.app.classList.toggle('rail-open', open);
+      if (isMobileLayout()) {
+        state.sidebarVisible = open;
+        els.app.classList.remove('hide-sidebar');
+        updateToggleButtons();
+      }
     }
 
     function positionPanelMenu() {
@@ -862,7 +879,20 @@
       
     }
 
+    function isMobileLayout() {
+      return window.innerWidth <= 760;
+    }
+
     function toggleSidebar(force) {
+      if (isMobileLayout()) {
+        const open = typeof force === 'boolean' ? force : !els.app.classList.contains('rail-open');
+        els.app.classList.toggle('rail-open', open);
+        state.sidebarVisible = open;
+        els.app.classList.remove('hide-sidebar');
+        updateToggleButtons();
+        return;
+      }
+
       state.sidebarVisible = typeof force === 'boolean' ? force : !state.sidebarVisible;
       els.app.classList.toggle('hide-sidebar', !state.sidebarVisible);
       updateToggleButtons();
@@ -1160,6 +1190,7 @@
     els.menuToggleChannels.addEventListener('click', () => {
       toggleSidebar();
       updateToggleButtons();
+      if (state.panelMenuVisible) positionPanelMenu();
     });
     els.menuToggleRail.addEventListener('click', () => {
       toggleRail();
@@ -1206,11 +1237,28 @@
 
     window.addEventListener('resize', () => {
       if (state.panelMenuVisible) positionPanelMenu();
+      if (isMobileLayout()) {
+        els.app.classList.remove('hide-sidebar');
+        state.sidebarVisible = els.app.classList.contains('rail-open');
+      }
+      updateToggleButtons();
     });
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         togglePanelMenu(false);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!isMobileLayout()) return;
+      if (!els.app.classList.contains('rail-open')) return;
+      const clickedInsideSidebar = e.target.closest('.sidebar');
+      const clickedMenu = e.target.closest('#menuBtn') || e.target.closest('#menuToggleChannels');
+      if (!clickedInsideSidebar && !clickedMenu) {
+        els.app.classList.remove('rail-open');
+        state.sidebarVisible = false;
+        updateToggleButtons();
       }
     });
 
