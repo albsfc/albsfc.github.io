@@ -17,7 +17,7 @@
       --border: rgba(255,255,255,.08);
       --rail-collapsed: 82px;
       --rail-expanded: 320px;
-      --mobile-rail-collapsed: 72px;'
+      --mobile-rail-collapsed: 72px;
       --mobile-rail-expanded: min(82vw, 320px);
     }
     * { box-sizing: border-box; }
@@ -816,9 +816,9 @@
       state.booting = false;
     }
 
-    function playChannel(id, options={}){
+    function playChannel(id, options = {}) {
   const channel = state.channels.find(ch => ch.id === id);
-  if(!channel) return;
+  if (!channel) return;
 
   const autoplay = options.autoplay !== false;
   const forceMuted = options.forceMuted === true;
@@ -826,51 +826,55 @@
   state.currentChannel = channel;
   renderChannels();
   updateNowbar(channel);
-  if(state.guideVisible) renderGuideDrawer(channel);
+  if (state.guideVisible) renderGuideDrawer(channel);
 
   destroyPlayer();
 
   const src = channel.url;
   els.video.volume = parseFloat(els.volumeSlider.value || '1');
-  els.video.muted = false;
+  els.video.muted = !!forceMuted;
   updateMuteButton();
   updatePlayPauseButton();
 
-  const safePlay = () => {
-    if(!autoplay) return;
+  const tryPlay = async () => {
+    if (!autoplay) return;
 
-    els.video.play().then(() => {
+    try {
+      els.video.muted = !!forceMuted;
+      await els.video.play();
       updateMuteButton();
       showBottomBarTemporarily();
+    } catch (err) {
+      try {
+        els.video.muted = true;
+        updateMuteButton();
+        await els.video.play();
+        showBottomBarTemporarily();
+        showAutoplayNote('Autoplay started muted — tap 🔊 for sound');
 
-      if (!forceMuted) {
-        setTimeout(() => {
+        setTimeout(async () => {
           try {
             els.video.muted = false;
             els.video.volume = parseFloat(els.volumeSlider.value || '1');
             updateMuteButton();
-          } catch(e) {}
-        }, 250);
-      }
-    }).catch(() => {
-      els.video.muted = true;
-      updateMuteButton();
-
-      els.video.play().then(() => {
-        showBottomBarTemporarily();
-        showAutoplayNote('Autoplay started muted — tap 🔊 for sound');
-      }).catch(() => {});
-    });
+            await els.video.play();
+          } catch (e) {
+            els.video.muted = true;
+            updateMuteButton();
+          }
+        }, 300);
+      } catch (e) {}
+    }
   };
 
   if (els.video.canPlayType('application/vnd.apple.mpegurl')) {
     els.video.src = src;
-    safePlay();
+    tryPlay();
   } else if (window.Hls && Hls.isSupported()) {
     state.hls = new Hls({ enableWorker: true, lowLatencyMode: true });
     state.hls.loadSource(src);
     state.hls.attachMedia(els.video);
-    state.hls.on(Hls.Events.MANIFEST_PARSED, safePlay);
+    state.hls.on(Hls.Events.MANIFEST_PARSED, tryPlay);
   }
 }
 
