@@ -677,10 +677,11 @@
     function parseXmltvDate(value){ if(!value) return null; const match=value.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/); if(!match) return null; const [,y,m,d,hh,mm,ss]=match; return new Date(`${y}-${m}-${d}T${hh}:${mm}:${ss}`); }
 
     function getPlaylistRequest(options={}){
+      const explicitFile = options.file || null;
       const preferFile = options.preferFile !== false;
-      const file = preferFile ? els.m3uFileField.files?.[0] : null;
+      const file = explicitFile || (preferFile ? els.m3uFileField.files?.[0] : null);
       const urlFromField = els.playlistUrlField?.value?.trim();
-      const url = urlFromField || state.playlistUrl;
+      const url = options.url || urlFromField || state.playlistUrl;
       if(file){
         return { type:'file', file, sourceKey:`file_${file.name}_${file.size}` };
       }
@@ -906,9 +907,22 @@
     els.closeGuideBtn.addEventListener('click',()=>{ state.guideVisible=false; els.epgBtn.classList.remove('active'); els.guideDrawer.classList.remove('visible'); });
     els.infoCloseBtn.addEventListener('click',closeInfoModal);
     els.infoBackdrop.addEventListener('click',closeInfoModal);
-    els.applyPlaylistUrlBtn.addEventListener('click',()=>{ state.playlistUrl=els.playlistUrlField.value.trim()||state.playlistUrl; loadPlaylist({preferFile:false,bypassCache:true,backgroundRefresh:false}); });
+    els.applyPlaylistUrlBtn.addEventListener('click', async ()=>{
+      const newUrl = els.playlistUrlField.value.trim();
+      if(!newUrl) return;
+      state.playlistUrl = newUrl;
+      try{ els.m3uFileField.value = ''; }catch{}
+      await loadPlaylist({preferFile:false, url:newUrl, bypassCache:true, backgroundRefresh:false}).catch(()=>{});
+      closeInfoModal();
+    });
     els.applyEpgUrlBtn.addEventListener('click',()=>{ state.epgUrl=els.epgUrlField.value.trim()||state.epgUrl; loadEpg(state.epgUrl,false).catch(()=>{}); });
-    els.reloadAllBtn.addEventListener('click',()=>{ state.playlistUrl=els.playlistUrlField.value.trim()||state.playlistUrl; state.epgUrl=els.epgUrlField.value.trim()||state.epgUrl; loadPlaylist({preferFile:false,bypassCache:true,backgroundRefresh:false}); closeInfoModal(); });
+    els.reloadAllBtn.addEventListener('click', async ()=>{
+      state.playlistUrl = els.playlistUrlField.value.trim() || state.playlistUrl;
+      state.epgUrl = els.epgUrlField.value.trim() || state.epgUrl;
+      try{ els.m3uFileField.value = ''; }catch{}
+      await loadPlaylist({preferFile:false, url:state.playlistUrl, bypassCache:true, backgroundRefresh:false}).catch(()=>{});
+      closeInfoModal();
+    });
     els.fullscreenBtn.addEventListener('click',toggleVideoFullscreenMode);
     els.playPauseBtn.addEventListener('click',async()=>{ state.userInteracted=true; if(els.autoplayNote) els.autoplayNote.classList.remove('visible'); if(els.video.paused){ try{ if(els.video.muted && els.video.volume>0) els.video.muted=false; await els.video.play(); }catch{} } else els.video.pause(); updatePlayPauseButton(); updateMuteButton(); showBottomBarTemporarily(); });
     els.muteBtn.addEventListener('click',async()=>{ state.userInteracted=true; if(els.autoplayNote) els.autoplayNote.classList.remove('visible'); els.video.muted=!els.video.muted; if(!els.video.paused){ try{ await els.video.play(); }catch{} } updateMuteButton(); showBottomBarTemporarily(); });
@@ -917,7 +931,13 @@
     els.video.addEventListener('pause',()=>{ updatePlayPauseButton(); els.bottomBar.classList.remove('auto-hidden'); });
     els.video.addEventListener('volumechange',updateMuteButton);
     els.channelSearch.addEventListener('input',()=>{ state.channelFilter=els.channelSearch.value; renderChannels(); });
-    els.m3uFileField.addEventListener('change',()=>loadPlaylist({preferFile:true}));
+    els.m3uFileField.addEventListener('change', async ()=>{
+      const file = els.m3uFileField.files?.[0];
+      if(!file) return;
+      await loadPlaylist({preferFile:true, file, bypassCache:true, backgroundRefresh:false}).catch(()=>{});
+      closeInfoModal();
+    });
+    els.playlistUrlField.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); els.applyPlaylistUrlBtn.click(); } });
     ['mousemove','click','keydown','touchstart'].forEach(evt=>{ els.main.addEventListener(evt,showBottomBarTemporarily,{passive:true}); });
     window.addEventListener('resize',()=>applyLayout());
     document.addEventListener('click',e=>{ if(!isMobileLayout()) return; if(!els.app.classList.contains('rail-open')) return; const clickedInsideSidebar=e.target.closest('.sidebar'); const clickedToggle=e.target.closest('#railToggleTop'); if(!clickedInsideSidebar && !clickedToggle){ els.app.classList.remove('rail-open'); } });
