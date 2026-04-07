@@ -166,6 +166,17 @@
     .channel-name { font-weight: 700; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .channel-meta { color: var(--muted); font-size: 11px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .channel-tag { color: #d7e4ff; font-size: 10px; font-weight: 700; padding: 5px 8px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.08); }
+    .channel-section-label {
+      margin: 10px 6px 4px;
+      padding: 0 6px;
+      color: #c7d7ff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      opacity: .88;
+    }
+
 
     .app:not(.rail-open) .brand-copy,
     .app:not(.rail-open) .search-box,
@@ -197,6 +208,7 @@
       padding: 6px 0;
       margin: 2px 0;
     }
+    .app:not(.rail-open) .channel-section-label,
     .app:not(.rail-open) .channel-item > div,
     .app:not(.rail-open) .channel-tag {
       display: none;
@@ -453,6 +465,7 @@
         </div>
         <div class="controls">
           <button class="control-btn" id="epgBtn">EPG</button>
+          <button class="control-btn" id="favoriteBtn" aria-label="Toggle favourite">☆</button>
           <button class="control-btn" id="fullscreenBtn">⛶</button>
           <button class="control-btn" id="playPauseBtn">⏯</button>
           <button class="control-btn" id="muteBtn">🔊</button>
@@ -482,6 +495,7 @@
       playlistUrl: 'https://i.mjh.nz/au/Sydney/raw-tv.m3u8',
       epgUrl: 'https://raw.githubusercontent.com/matthuisman/i.mjh.nz/refs/heads/master/au/all/epg.xml',
       videoFullscreenMode: false,
+      favoriteIds: new Set(),
     };
 
     const DEFAULT_EMBEDDED_PLAYLIST_URL='https://i.mjh.nz/au/Sydney/raw-tv.m3u8';
@@ -500,6 +514,7 @@
       clock: document.getElementById('clock'),
       timezoneLabel: document.getElementById('timezoneLabel'),
       epgBtn: document.getElementById('epgBtn'),
+      favoriteBtn: document.getElementById('favoriteBtn'),
       brandSettingsBtn: document.getElementById('brandSettingsBtn'),
       fullscreenBtn: document.getElementById('fullscreenBtn'),
       playPauseBtn: document.getElementById('playPauseBtn'),
@@ -529,6 +544,48 @@
     function isMobileLayout(){ return false; }
     function applyLayout(){ els.main.style.marginLeft='0px'; }
     function toggleRail(force){ const open=typeof force==='boolean'?force:!els.app.classList.contains('rail-open'); els.app.classList.toggle('rail-open', open); if(open) els.app.classList.remove('sidebar-hidden'); }
+    const FAVORITES_KEY = 'iptv_favorite_channel_ids_v1';
+    function loadFavorites(){
+      try{
+        const raw = localStorage.getItem(FAVORITES_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        state.favoriteIds = new Set(Array.isArray(parsed) ? parsed.filter(Boolean) : []);
+      }catch{
+        state.favoriteIds = new Set();
+      }
+    }
+    function saveFavorites(){
+      try{ localStorage.setItem(FAVORITES_KEY, JSON.stringify([...state.favoriteIds])); }catch{}
+    }
+    function isFavoriteChannel(channel){ return !!channel && state.favoriteIds.has(channel.id); }
+    function sortChannelsWithFavorites(channels){
+      const favorites = [];
+      const rest = [];
+      for(const ch of channels){
+        if(isFavoriteChannel(ch)) favorites.push(ch); else rest.push(ch);
+      }
+      return { favorites, rest };
+    }
+    function updateFavoriteButton(){
+      if(!els.favoriteBtn) return;
+      const active = isFavoriteChannel(state.currentChannel);
+      els.favoriteBtn.textContent = active ? '★' : '☆';
+      els.favoriteBtn.classList.toggle('active', active);
+      els.favoriteBtn.disabled = !state.currentChannel;
+      els.favoriteBtn.style.opacity = state.currentChannel ? '1' : '.55';
+      els.favoriteBtn.title = active ? 'Remove from favourites' : 'Add to favourites';
+      els.favoriteBtn.setAttribute('aria-label', active ? 'Remove from favourites' : 'Add to favourites');
+    }
+    function toggleCurrentFavorite(){
+      const channel = state.currentChannel;
+      if(!channel) return;
+      if(state.favoriteIds.has(channel.id)) state.favoriteIds.delete(channel.id);
+      else state.favoriteIds.add(channel.id);
+      saveFavorites();
+      renderChannels();
+      updateFavoriteButton();
+      showBottomBarTemporarily();
+    }
     function updateFullscreenButton(){ els.fullscreenBtn.textContent = state.videoFullscreenMode ? '🗗' : '⛶'; }
     let autoplayNoteTimer = null;
     function showAutoplayNote(message='Tap 🔊 for sound'){
@@ -611,19 +668,31 @@
       const currentId=state.currentChannel?.id;
       const query=state.channelFilter.trim().toLowerCase();
       const filtered=state.channels.filter(ch=>!query || [ch.name,ch.group,ch.id].filter(Boolean).some(v=>v.toLowerCase().includes(query)));
-      els.channels.innerHTML=filtered.map((ch,index)=>{
-        const active=ch.id===currentId?'active':'';
-        const logo=ch.logo?`<img class="channel-logo" src="${escapeHtml(ch.logo)}" alt="${escapeHtml(ch.name)}" loading="lazy" />`:`<div class="channel-fallback">${escapeHtml((ch.name||'?').charAt(0).toUpperCase())}</div>`;
-        return `<button class="channel-item ${active}" data-id="${escapeHtml(ch.id)}">${logo}<div><div class="channel-name">${escapeHtml(ch.name)}</div><div class="channel-meta">${escapeHtml(ch.group||'TV')} • ${String(index+1).padStart(2,'0')}</div></div><div class="channel-tag">LIVE</div></button>`;
+      const { favorites, rest } = sortChannelsWithFavorites(filtered);
+      const sections = [];
+      if(favorites.length) sections.push({ label: 'Favourites', items: favorites });
+      if(rest.length || !favorites.length) sections.push({ label: favorites.length ? 'All Channels' : '', items: rest.length || !favorites.length ? rest : [] });
+      els.channels.innerHTML=sections.map(section=>{
+        if(!section.items.length) return '';
+        const sectionLabel = section.label ? `<div class="channel-section-label">${escapeHtml(section.label)}</div>` : '';
+        const items = section.items.map(ch=>{
+          const active=ch.id===currentId?'active':'';
+          const logo=ch.logo?`<img class="channel-logo" src="${escapeHtml(ch.logo)}" alt="${escapeHtml(ch.name)}" loading="lazy" />`:`<div class="channel-fallback">${escapeHtml((ch.name||'?').charAt(0).toUpperCase())}</div>`;
+          const metaIndex = state.channels.findIndex(item=>item.id===ch.id) + 1;
+          return `<button class="channel-item ${active}" data-id="${escapeHtml(ch.id)}">${logo}<div><div class="channel-name">${escapeHtml(ch.name)}</div><div class="channel-meta">${escapeHtml(ch.group||'TV')} • ${String(metaIndex).padStart(2,'0')}</div></div><div class="channel-tag">LIVE</div></button>`;
+        }).join('');
+        return sectionLabel + items;
       }).join('');
       els.channels.querySelectorAll('.channel-item').forEach(btn=>{
         btn.addEventListener('click',()=>playChannel(btn.dataset.id));
       });
+      updateFavoriteButton();
     }
 
     function formatClock(date){ if(!date) return '--:--'; return new Intl.DateTimeFormat('en-AU',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:state.timezone}).format(date); }
     function getProgrammesForChannel(channel){ const keys=[channel.epgChannel,channel.id,channel.name].filter(Boolean); let programmes=[]; for(const key of keys){ if(state.epg.has(key)){ programmes=state.epg.get(key); break; } } const now=new Date(); return programmes.filter(p=>p.stop>new Date(now.getTime()-30*60*1000)).slice(0,8).map(p=>({...p, now:p.start<=now && p.stop>=now})); }
     function updateNowbar(channel){
+      updateFavoriteButton();
       const programmes=getProgrammesForChannel(channel);
       const nowItem=programmes.find(p=>p.now)||programmes[0];
       els.nowbarLogo.innerHTML=channel.logo?`<img class="nowbar-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`:`<div class="nowbar-fallback">${escapeHtml((channel.name||'?').charAt(0).toUpperCase())}</div>`;
@@ -903,6 +972,7 @@
 
     els.railToggleTop.addEventListener('click',()=>toggleRail());
     els.epgBtn.addEventListener('click',toggleEpg);
+    els.favoriteBtn.addEventListener('click',toggleCurrentFavorite);
     els.brandSettingsBtn.addEventListener('click',openInfoModal);
     els.closeGuideBtn.addEventListener('click',()=>{ state.guideVisible=false; els.epgBtn.classList.remove('active'); els.guideDrawer.classList.remove('visible'); });
     els.infoCloseBtn.addEventListener('click',closeInfoModal);
