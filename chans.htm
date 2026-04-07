@@ -60,16 +60,17 @@
     }
     .app.rail-open .sidebar { width: 300px; }
     .sidebar-inner { width: 300px; height: 100%; }
-    .app:not(.rail-open) .sidebar-inner { width: 82px; }
-    .sidebar-toggle-head { display: flex; justify-content: center; align-items: center; padding: 6px 8px 2px; min-height: 42px; }
+    .app:not(.rail-open) .sidebar-inner { width: 82px; display:flex; flex-direction:column; align-items:center; }
+    .sidebar-toggle-head { display: flex; justify-content: center; align-items: center; padding: 6px 0 2px; min-height: 40px; width: 100%; flex: 0 0 auto; }
     .brand, .sidebar-head { padding-left: 12px; padding-right: 12px; }
     .brand {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding-top: 2px;
+      padding-top: 4px;
       padding-bottom: 2px;
       min-height: auto;
+      width: 100%;
     }
     .brand-badge {
       width: 46px;
@@ -153,6 +154,74 @@
     .channel-name { font-weight: 700; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .channel-meta { color: var(--muted); font-size: 11px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .channel-tag { color: #d7e4ff; font-size: 10px; font-weight: 700; padding: 5px 8px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.08); }
+
+    .app:not(.rail-open) .brand-copy,
+    .app:not(.rail-open) .search-box,
+    .app:not(.rail-open) .time-card,
+    .app:not(.rail-open) .sidebar-head {
+      display: none !important;
+    }
+    .app:not(.rail-open) .brand {
+      justify-content: center;
+      padding: 4px 0 2px;
+      margin: 0;
+      width: 100%;
+      flex: 0 0 auto;
+    }
+    .app:not(.rail-open) .brand-badge {
+      margin: 0 auto;
+    }
+    .app:not(.rail-open) .channels {
+      width: 100%;
+      flex: 1 1 auto;
+      height: auto;
+      margin-top: 2px;
+      padding: 0 4px 12px;
+    }
+    .app:not(.rail-open) .channel-item {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      gap: 0;
+      padding: 6px 0;
+      margin: 2px 0;
+    }
+    .app:not(.rail-open) .channel-item > div,
+    .app:not(.rail-open) .channel-tag {
+      display: none;
+    }
+    .app:not(.rail-open) .channel-logo,
+    .app:not(.rail-open) .channel-fallback {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      padding: 6px;
+      margin: 0 auto;
+      display: block;
+    }
+    .autoplay-note {
+      position: absolute;
+      left: 50%;
+      bottom: 132px;
+      transform: translateX(-50%);
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(7,10,20,.88);
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      z-index: 14;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+      white-space: nowrap;
+    }
+    .autoplay-note.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
 
     .main {
       position: relative;
@@ -258,24 +327,16 @@
       .bottom-bar { left: 12px; right: 12px; bottom: 54px; }
       .guide-drawer { margin: 0 -16px -14px; padding-left: 16px; padding-right: 16px; }
       .info-modal { width: min(680px, calc(100vw - 20px)); }
-      .app:not(.rail-open) .brand-copy, .app:not(.rail-open) .search-box, .app:not(.rail-open) .time-card { display: none; }
-      .app:not(.rail-open) .sidebar-toggle-head { padding-top: 6px; padding-bottom: 2px; min-height: 42px; }
-      .app:not(.rail-open) .brand { justify-content: center; padding: 10px 0 8px; min-height: auto; }
-      .app:not(.rail-open) .channels { padding: 6px 6px 24px; }
-      .app:not(.rail-open) .channel-item {
-        grid-template-columns: 1fr;
-        justify-items: center;
-        gap: 0;
-        padding: 8px 0;
-        margin: 3px 0;
-      }
-      .app:not(.rail-open) .channel-item > div, .app:not(.rail-open) .channel-tag { display: none; }
+      .app:not(.rail-open) .sidebar-toggle-head { padding-top: 6px; padding-bottom: 2px; min-height: 40px; }
+      .app:not(.rail-open) .brand { justify-content: center; padding: 4px 0 2px; min-height: auto; }
+      .app:not(.rail-open) .channels { padding: 0 4px 12px; }
+      .app:not(.rail-open) .channel-item { padding: 6px 0; margin: 2px 0; }
       .app:not(.rail-open) .channel-logo,
       .app:not(.rail-open) .channel-fallback {
-        width: 52px;
-        height: 52px;
+        width: 50px;
+        height: 50px;
         border-radius: 14px;
-        padding: 7px;
+        padding: 6px;
         margin: 0 auto;
         display: block;
       }
@@ -329,6 +390,7 @@
     <main class="main" id="main">
       <video id="video" autoplay playsinline webkit-playsinline preload="auto" controls></video>
       <div class="video-overlay"></div>
+      <div class="autoplay-note" id="autoplayNote">Tap 🔊 for sound</div>
 
       <div class="loading-state" id="loadingState"><div class="empty-card"><h2>Loading playlist…</h2><p>Trying the remote playlist first. Some phone and tablet browsers block remote playlist fetches even when desktop browsers allow them.</p></div></div>
       <div class="empty-state" id="emptyState" style="display:none;"><div class="empty-card"><h2>No channel selected</h2><p>Pick a channel from the left rail. If the playlist URL fails on mobile, it is usually the browser blocking the remote fetch, not the layout.</p></div></div>
@@ -436,6 +498,7 @@
       nowbarLogo: document.getElementById('nowbarLogo'),
       nowbarTitle: document.getElementById('nowbarTitle'),
       nowbarSub: document.getElementById('nowbarSub'),
+      autoplayNote: document.getElementById('autoplayNote'),
       guideDrawer: document.getElementById('guideDrawer'),
       guideDrawerTimeline: document.getElementById('guideDrawerTimeline'),
       closeGuideBtn: document.getElementById('closeGuideBtn'),
@@ -456,6 +519,14 @@
     function applyLayout(){ els.main.style.marginLeft='0px'; }
     function toggleRail(force){ const open=typeof force==='boolean'?force:!els.app.classList.contains('rail-open'); els.app.classList.toggle('rail-open', open); if(open) els.app.classList.remove('sidebar-hidden'); }
     function updateFullscreenButton(){ els.fullscreenBtn.textContent = state.videoFullscreenMode ? '🗗' : '⛶'; }
+    let autoplayNoteTimer = null;
+    function showAutoplayNote(message='Tap 🔊 for sound'){
+      if(!els.autoplayNote) return;
+      els.autoplayNote.textContent = message;
+      els.autoplayNote.classList.add('visible');
+      clearTimeout(autoplayNoteTimer);
+      autoplayNoteTimer = setTimeout(()=>els.autoplayNote.classList.remove('visible'), 2600);
+    }
     function toggleVideoFullscreenMode(){ state.videoFullscreenMode=!state.videoFullscreenMode; els.main.classList.toggle('fullscreen-video', state.videoFullscreenMode); els.app.classList.toggle('sidebar-hidden', state.videoFullscreenMode); if(state.videoFullscreenMode) els.app.classList.remove('rail-open'); updateFullscreenButton(); showBottomBarTemporarily(); }
 
     function parseM3U(text){
@@ -761,10 +832,16 @@
       updateMuteButton(); updatePlayPauseButton();
       const safePlay = () => {
         if(!autoplay) return;
-        els.video.play().then(()=>showBottomBarTemporarily()).catch(()=>{
+        els.video.play().then(()=>{
+          updateMuteButton();
+          showBottomBarTemporarily();
+        }).catch(()=>{
           els.video.muted = true;
           updateMuteButton();
-          els.video.play().then(()=>showBottomBarTemporarily()).catch(()=>{});
+          els.video.play().then(()=>{
+            showBottomBarTemporarily();
+            showAutoplayNote('Autoplay started muted — tap 🔊 for sound');
+          }).catch(()=>{});
         });
       };
       if(els.video.canPlayType('application/vnd.apple.mpegurl')){
@@ -785,7 +862,7 @@
     function openInfoModal(){ els.infoBackdrop.classList.add('visible'); els.infoModal.classList.add('visible'); }
     function closeInfoModal(){ els.infoBackdrop.classList.remove('visible'); els.infoModal.classList.remove('visible'); }
 
-    const markUserInteracted = () => { state.userInteracted = true; if(els.video.muted && els.video.paused) updateMuteButton(); };
+    const markUserInteracted = () => { state.userInteracted = true; if(els.video.muted && els.video.paused) updateMuteButton(); if(els.autoplayNote) els.autoplayNote.classList.remove('visible'); };
     document.addEventListener('pointerdown', markUserInteracted, {passive:true, once:true});
     document.addEventListener('keydown', markUserInteracted, {once:true});
 
@@ -799,8 +876,8 @@
     els.applyEpgUrlBtn.addEventListener('click',()=>{ state.epgUrl=els.epgUrlField.value.trim()||state.epgUrl; loadEpg(state.epgUrl,false).catch(()=>{}); });
     els.reloadAllBtn.addEventListener('click',()=>{ state.playlistUrl=els.playlistUrlField.value.trim()||state.playlistUrl; state.epgUrl=els.epgUrlField.value.trim()||state.epgUrl; loadPlaylist({preferFile:false,bypassCache:true,backgroundRefresh:false}); closeInfoModal(); });
     els.fullscreenBtn.addEventListener('click',toggleVideoFullscreenMode);
-    els.playPauseBtn.addEventListener('click',async()=>{ state.userInteracted=true; if(els.video.paused){ try{ if(els.video.muted && els.video.volume>0) els.video.muted=false; await els.video.play(); }catch{} } else els.video.pause(); updatePlayPauseButton(); updateMuteButton(); showBottomBarTemporarily(); });
-    els.muteBtn.addEventListener('click',async()=>{ state.userInteracted=true; els.video.muted=!els.video.muted; if(!els.video.paused){ try{ await els.video.play(); }catch{} } updateMuteButton(); showBottomBarTemporarily(); });
+    els.playPauseBtn.addEventListener('click',async()=>{ state.userInteracted=true; if(els.autoplayNote) els.autoplayNote.classList.remove('visible'); if(els.video.paused){ try{ if(els.video.muted && els.video.volume>0) els.video.muted=false; await els.video.play(); }catch{} } else els.video.pause(); updatePlayPauseButton(); updateMuteButton(); showBottomBarTemporarily(); });
+    els.muteBtn.addEventListener('click',async()=>{ state.userInteracted=true; if(els.autoplayNote) els.autoplayNote.classList.remove('visible'); els.video.muted=!els.video.muted; if(!els.video.paused){ try{ await els.video.play(); }catch{} } updateMuteButton(); showBottomBarTemporarily(); });
     els.volumeSlider.addEventListener('input',()=>{ els.video.volume=parseFloat(els.volumeSlider.value||'1'); if(els.video.volume>0&&els.video.muted) els.video.muted=false; updateMuteButton(); showBottomBarTemporarily(); });
     els.video.addEventListener('play',()=>{ updatePlayPauseButton(); showBottomBarTemporarily(); });
     els.video.addEventListener('pause',()=>{ updatePlayPauseButton(); els.bottomBar.classList.remove('auto-hidden'); });
