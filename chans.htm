@@ -14,9 +14,12 @@
       --success: #31d17c;
       --shadow: 0 16px 40px rgba(0,0,0,.45);
       --border: rgba(255,255,255,.08);
-      --rail-collapsed: 96px;
+      --rail-collapsed: 92px;
       --rail-expanded: 320px;
+      --mobile-rail-collapsed: 72px;
+      --mobile-rail-expanded: min(82vw, 320px);
     }
+
     * { box-sizing: border-box; }
     html, body {
       margin: 0;
@@ -34,6 +37,7 @@
     }
 
     .app {
+      position: relative;
       display: grid;
       grid-template-columns: var(--rail-collapsed) 1fr;
       height: 100vh;
@@ -57,7 +61,8 @@
       box-shadow: none;
     }
     .sidebar-inner { width: var(--rail-expanded); height: 100%; }
-    .brand, .sidebar-head, .sidebar-footer { padding-left: 12px; padding-right: 12px; }
+
+    .brand, .sidebar-head { padding-left: 12px; padding-right: 12px; }
     .brand {
       display: flex;
       align-items: center;
@@ -101,6 +106,7 @@
     }
     .brand-copy h1 { margin: 0; font-size: 16px; line-height: 1.1; }
     .brand-copy p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+
     .sidebar-head {
       display: flex;
       flex-direction: column;
@@ -183,20 +189,13 @@
     .channel-name { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .channel-meta { color: var(--muted); font-size: 12px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .channel-tag { color: #d7e4ff; font-size: 11px; font-weight: 700; padding: 6px 9px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.08); }
-    .sidebar-footer {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      padding-top: 12px; padding-bottom: 12px;
-      background: linear-gradient(180deg, transparent, rgba(8,10,18,.96) 35%);
-    }
 
     .main {
-	
       position: relative;
       min-width: 0;
       overflow: hidden;
       background: #000;
-	  transition: margin-left 0.25s ease;
+      transition: margin-left .25s ease;
     }
     .main.hide-bottom-bar .bottom-bar,
     .bottom-bar.auto-hidden {
@@ -208,15 +207,35 @@
     video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
     .video-overlay {
       pointer-events: none;
-      position: absolute; inset: 0;
+      position: absolute;
+      inset: 0;
       background:
         radial-gradient(circle at right top, rgba(255,255,255,.10), transparent 22%),
         linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,0) 26%, rgba(0,0,0,0) 60%, rgba(0,0,0,.30));
     }
 
+    .mobile-rail-toggle {
+      display: none;
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 15;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(8,11,24,.78);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-weight: 800;
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+    }
+
     .top-panel {
       position: absolute;
-      top: 28px; left: 28px; right: 28px;
+      top: 28px;
+      left: 28px;
+      right: 28px;
       max-width: min(1100px, calc(100vw - 160px));
       background: linear-gradient(180deg, rgba(15, 18, 62, .90), rgba(20, 24, 92, .78));
       border: 1px solid rgba(255,255,255,.10);
@@ -227,7 +246,7 @@
       display: grid;
       grid-template-columns: 150px 1fr;
       gap: 22px;
-      z-index: 8;
+      z-index: 2;
     }
     .hero-logo img, .hero-logo .big-fallback {
       width: 130px; height: 130px; border-radius: 26px;
@@ -257,7 +276,7 @@
       border: 1px solid rgba(255,255,255,.10);
       backdrop-filter: blur(18px);
       box-shadow: var(--shadow);
-      z-index: 3;
+      z-index: 11;
       overflow: hidden;
       opacity: 0;
       pointer-events: none;
@@ -289,7 +308,11 @@
     }
     .guide-flyout-channel { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
     .guide-flyout-meta { color: var(--muted); font-size: 13px; }
-    .guide-flyout-close, .control-btn, .ghost-btn, .menu-toggle-btn {
+
+    .guide-flyout-close,
+    .control-btn,
+    .ghost-btn,
+    .menu-toggle-btn {
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.05);
       color: var(--text);
@@ -340,7 +363,7 @@
       border: 1px solid rgba(255,255,255,.10);
       backdrop-filter: blur(18px);
       box-shadow: var(--shadow);
-      z-index: 3;
+      z-index: 13;
       overflow: hidden;
       display: none;
       touch-action: none;
@@ -378,7 +401,7 @@
       justify-content: space-between;
       gap: 16px;
       padding: 14px 16px;
-      z-index: 2;
+      z-index: 12;
       transition: transform .25s ease, opacity .25s ease;
     }
     .controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -418,31 +441,27 @@
     .empty-card p { color: var(--muted); margin: 0; line-height: 1.5; }
 
     @media (max-width: 760px) {
-      .bottom-bar { z-index: 12; }
-      .panel-menu { z-index: 13; }
-      .guide-flyout { z-index: 11; }
-      .app, .app.rail-open { grid-template-columns: 1fr; }
+      .app,
+      .app.rail-open,
+      .app.hide-sidebar {
+        grid-template-columns: 1fr !important;
+      }
       .sidebar {
         position: absolute;
         left: 0;
         top: 0;
         bottom: 0;
-        width: min(82vw, 320px);
-        max-width: 320px;
+        width: var(--mobile-rail-collapsed);
         transform: translateX(0);
-        transition: transform .25s ease, width .22s ease;
+        transition: width .22s ease, transform .22s ease;
         z-index: 6;
         overflow: visible;
       }
-      .sidebar-inner { width: min(82vw, 320px); }
-      .app.rail-open .sidebar { width: min(82vw, 320px); }
-      .app:not(.rail-open) .sidebar {
-        width: var(--rail-collapsed);
-        max-width: var(--rail-collapsed);
-      }
-      .app:not(.rail-open) .sidebar-inner { width: var(--rail-collapsed); }
+      .sidebar-inner { width: var(--mobile-rail-expanded); }
+      .app.rail-open .sidebar { width: var(--mobile-rail-expanded); }
       .app.hide-sidebar .sidebar {
         transform: translateX(-100%);
+        width: var(--mobile-rail-collapsed);
         opacity: 1;
         pointer-events: none;
         border-right: 1px solid var(--border);
@@ -456,8 +475,10 @@
       .app:not(.rail-open):not(.hide-sidebar) .channel-item > div,
       .app:not(.rail-open):not(.hide-sidebar) .channel-tag { display: none; }
       .app:not(.rail-open):not(.hide-sidebar) .channels { padding-left: 6px; padding-right: 6px; }
+      .main { margin-left: 0; }
+      .mobile-rail-toggle { display: inline-flex; align-items: center; justify-content: center; }
       .top-panel {
-        left: 14px; right: 14px; top: 14px; max-width: none;
+        left: 14px; right: 14px; top: 56px; max-width: none;
         grid-template-columns: 94px 1fr; padding: 16px; gap: 16px;
       }
       .hero-logo img, .hero-logo .big-fallback {
@@ -471,9 +492,7 @@
         max-height: calc(100vh - 28px);
       }
       .guide-flyout-head { grid-template-columns: 52px 1fr auto; }
-      .guide-flyout-logo, .guide-flyout-fallback {
-        width: 52px; height: 52px; border-radius: 14px;
-      }
+      .guide-flyout-logo, .guide-flyout-fallback { width: 52px; height: 52px; border-radius: 14px; }
       .bottom-bar {
         left: 12px; right: 12px; bottom: 12px;
         flex-direction: column; align-items: stretch;
@@ -510,6 +529,7 @@
     </aside>
 
     <main class="main" id="main">
+      <button class="mobile-rail-toggle" id="mobileRailToggle">☰</button>
       <video id="video" autoplay playsinline controls></video>
       <div class="video-overlay"></div>
 
@@ -593,7 +613,7 @@
       heroLogo: document.getElementById('heroLogo'), heroChannel: document.getElementById('heroChannel'), heroProgram: document.getElementById('heroProgram'), heroDesc: document.getElementById('heroDesc'), metaRow: document.getElementById('metaRow'),
       guideFlyout: document.getElementById('guideFlyout'), guideHead: document.getElementById('guideHead'), guideFlyoutLogo: document.getElementById('guideFlyoutLogo'), guideFlyoutChannel: document.getElementById('guideFlyoutChannel'), guideFlyoutMeta: document.getElementById('guideFlyoutMeta'), guideFlyoutTimeline: document.getElementById('guideFlyoutTimeline'), closeGuideBtn: document.getElementById('closeGuideBtn'),
       topPanel: document.getElementById('topPanel'), loadingState: document.getElementById('loadingState'), emptyState: document.getElementById('emptyState'), channelCount: document.getElementById('channelCount'), streamInfo: document.getElementById('streamInfo'), channelSearch: document.getElementById('channelSearch'), clock: document.getElementById('clock'), timezoneLabel: document.getElementById('timezoneLabel'),
-      m3uFile: document.getElementById('m3uFile'), playlistUrlInput: document.getElementById('playlistUrlInput'), loadSourceBtn: document.getElementById('loadSourceBtn'), menuBtn: document.getElementById('menuBtn'), playPauseBtn: document.getElementById('playPauseBtn'), muteBtn: document.getElementById('muteBtn'), volumeSlider: document.getElementById('volumeSlider'), bottomBar: document.getElementById('bottomBar'),
+      m3uFile: document.getElementById('m3uFile'), playlistUrlInput: document.getElementById('playlistUrlInput'), loadSourceBtn: document.getElementById('loadSourceBtn'), menuBtn: document.getElementById('menuBtn'), playPauseBtn: document.getElementById('playPauseBtn'), muteBtn: document.getElementById('muteBtn'), volumeSlider: document.getElementById('volumeSlider'), bottomBar: document.getElementById('bottomBar'), mobileRailToggle: document.getElementById('mobileRailToggle'),
       panelMenu: document.getElementById('panelMenu'), panelMenuHead: document.getElementById('panelMenuHead'), menuToggleChannels: document.getElementById('menuToggleChannels'), menuToggleRail: document.getElementById('menuToggleRail'), menuToggleGuide: document.getElementById('menuToggleGuide'), menuToggleInfo: document.getElementById('menuToggleInfo'),
     };
 
@@ -609,19 +629,10 @@
       for (const line of lines) {
         if (line.startsWith('#EXTINF')) {
           const name = (line.split(',').slice(1).join(',') || '').trim() || 'Unknown Channel';
-          pending = {
-            name,
-            id: getAttr(line, 'tvg-id') || getAttr(line, 'channel-id') || name,
-            logo: getAttr(line, 'tvg-logo'),
-            group: getAttr(line, 'group-title') || 'TV',
-            epgChannel: getAttr(line, 'tvg-id') || getAttr(line, 'channel-id') || name,
-          };
+          pending = { name, id: getAttr(line, 'tvg-id') || getAttr(line, 'channel-id') || name, logo: getAttr(line, 'tvg-logo'), group: getAttr(line, 'group-title') || 'TV', epgChannel: getAttr(line, 'tvg-id') || getAttr(line, 'channel-id') || name };
           continue;
         }
-        if (!line.startsWith('#') && pending.name) {
-          channels.push({ ...pending, url: line });
-          pending = {};
-        }
+        if (!line.startsWith('#') && pending.name) { channels.push({ ...pending, url: line }); pending = {}; }
       }
       return channels;
     }
@@ -637,10 +648,7 @@
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), attempt.timeout);
         try {
-          const response = await fetch(attempt.url, {
-            signal: controller.signal,
-            cache: 'no-store',
-          });
+          const response = await fetch(attempt.url, { signal: controller.signal, cache: 'no-store' });
           clearTimeout(timer);
           if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
           return await response.text();
@@ -652,34 +660,44 @@
       throw lastError || new Error('Failed to fetch remote resource');
     }
 
-    function getPlaylistCacheKey(source) {
-      return `iptv_playlist_cache_${source}`;
-    }
-
-    function getEpgCacheKey(source) {
-      return `iptv_epg_cache_${source}`;
-    }
+    function getPlaylistCacheKey(source) { return `iptv_playlist_cache_${source}`; }
+    function getEpgCacheKey(source) { return `iptv_epg_cache_${source}`; }
 
     function syncMobileMainOffset() {
-  if (!isMobileLayout()) {
-    els.main.style.marginLeft = '';
-    return;
-  }
+      if (!isMobileLayout()) {
+        els.main.style.marginLeft = '';
+        return;
+      }
+      if (els.app.classList.contains('hide-sidebar')) {
+        els.main.style.marginLeft = '0px';
+        return;
+      }
+      if (els.app.classList.contains('rail-open')) {
+        const expanded = Math.min(window.innerWidth * 0.82, 320);
+        els.main.style.marginLeft = `${expanded}px`;
+      } else {
+        els.main.style.marginLeft = '72px';
+      }
+    }
 
-  if (els.app.classList.contains('hide-sidebar')) {
-    els.main.style.marginLeft = '0px';
-    return;
-  }
+    function positionPanelMenu() {
+      const anchor = isMobileLayout() ? els.mobileRailToggle : els.menuBtn;
+      const btnRect = anchor.getBoundingClientRect();
+      const panelWidth = Math.min(360, window.innerWidth - 40);
+      const left = Math.max(12, Math.min(btnRect.left, window.innerWidth - panelWidth - 12));
+      const top = Math.max(12, btnRect.bottom + 10);
+      els.panelMenu.style.left = `${left}px`;
+      els.panelMenu.style.top = `${top}px`;
+      els.panelMenu.style.bottom = 'auto';
+      els.panelMenu.style.right = 'auto';
+    }
 
-  if (els.app.classList.contains('rail-open')) {
-    // full drawer
-    const width = Math.min(window.innerWidth * 0.82, 320);
-    els.main.style.marginLeft = width + 'px';
-  } else {
-    // collapsed rail
-    els.main.style.marginLeft = '72px'; // 👈 force fixed width (don’t rely on CSS var here)
-  }
-}
+    function togglePanelMenu(force) {
+      state.panelMenuVisible = typeof force === 'boolean' ? force : !state.panelMenuVisible;
+      if (state.panelMenuVisible && !els.panelMenu.dataset.dragged) positionPanelMenu();
+      els.panelMenu.classList.toggle('visible', state.panelMenuVisible);
+      if (state.panelMenuVisible) showBottomBarTemporarily();
+    }
 
     function toggleRail(force) {
       const open = typeof force === 'boolean' ? force : !els.app.classList.contains('rail-open');
@@ -692,54 +710,20 @@
       updateToggleButtons();
     }
 
-    function positionPanelMenu() {
-      const btnRect = els.menuBtn.getBoundingClientRect();
-      const barRect = els.bottomBar.getBoundingClientRect();
-      const panelWidth = Math.min(360, window.innerWidth - 40);
-      const left = Math.max(12, Math.min(btnRect.left, window.innerWidth - panelWidth - 12));
-      els.panelMenu.style.left = `${left}px`;
-      els.panelMenu.style.right = 'auto';
-      els.panelMenu.style.bottom = `${window.innerHeight - barRect.top + 10}px`;
-      els.panelMenu.style.top = 'auto';
-    }
-
-    function togglePanelMenu(force) {
-      state.panelMenuVisible = typeof force === 'boolean' ? force : !state.panelMenuVisible;
-      if (state.panelMenuVisible && !els.panelMenu.dataset.dragged) positionPanelMenu();
-      els.panelMenu.classList.toggle('visible', state.panelMenuVisible);
-      if (state.panelMenuVisible) showBottomBarTemporarily();
-    }
-
     function toggleSidebar(force) {
-  if (isMobileLayout()) {
-    const showBar = typeof force === 'boolean'
-      ? force
-      : !state.sidebarVisible;
-
-    state.sidebarVisible = showBar;
-
-    els.app.classList.toggle('hide-sidebar', !showBar);
-
-    if (!showBar) {
-      // 🔥 CRITICAL FIX
-      els.app.classList.remove('rail-open');
-      els.main.style.marginLeft = '0px';
-    } else {
-      syncMobileMainOffset();
+      if (isMobileLayout()) {
+        const showBar = typeof force === 'boolean' ? force : !state.sidebarVisible;
+        state.sidebarVisible = showBar;
+        els.app.classList.toggle('hide-sidebar', !showBar);
+        if (!showBar) els.app.classList.remove('rail-open');
+        syncMobileMainOffset();
+        updateToggleButtons();
+        return;
+      }
+      state.sidebarVisible = typeof force === 'boolean' ? force : !state.sidebarVisible;
+      els.app.classList.toggle('hide-sidebar', !state.sidebarVisible);
+      updateToggleButtons();
     }
-
-    updateToggleButtons();
-    return;
-  }
-
-  // desktop unchanged
-  state.sidebarVisible = typeof force === 'boolean'
-    ? force
-    : !state.sidebarVisible;
-
-  els.app.classList.toggle('hide-sidebar', !state.sidebarVisible);
-  updateToggleButtons();
-}
 
     function toggleGuide(force) {
       state.guideVisible = typeof force === 'boolean' ? force : !state.guideVisible;
@@ -852,21 +836,17 @@
     async function loadEpg(url, preferCache = true) {
       const cacheKey = getEpgCacheKey(url);
       let xmlText = '';
-
       if (preferCache) {
         try {
           const cached = localStorage.getItem(cacheKey);
           if (cached) xmlText = cached;
         } catch {}
       }
-
       if (!xmlText) {
         xmlText = await fetchText(url);
         try { localStorage.setItem(cacheKey, xmlText); } catch {}
       } else {
-        fetchText(url).then(fresh => {
-          try { localStorage.setItem(cacheKey, fresh); } catch {}
-        }).catch(() => {});
+        fetchText(url).then(fresh => { try { localStorage.setItem(cacheKey, fresh); } catch {} }).catch(() => {});
       }
 
       const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
@@ -902,7 +882,6 @@
       try {
         els.loadingState.style.display = 'grid';
         els.emptyState.style.display = 'none';
-
         let m3uText = '';
         let usedCache = false;
 
@@ -921,9 +900,7 @@
             m3uText = await fetchText(sourceKey);
             try { localStorage.setItem(cacheKey, m3uText); } catch {}
           } else {
-            fetchText(sourceKey).then(fresh => {
-              try { localStorage.setItem(cacheKey, fresh); } catch {}
-            }).catch(() => {});
+            fetchText(sourceKey).then(fresh => { try { localStorage.setItem(cacheKey, fresh); } catch {} }).catch(() => {});
           }
         }
 
@@ -1007,6 +984,7 @@
     }
 
     els.menuBtn.addEventListener('click', () => togglePanelMenu());
+    els.mobileRailToggle.addEventListener('click', () => toggleRail());
     els.playPauseBtn.addEventListener('click', async () => {
       if (els.video.paused) {
         try { await els.video.play(); els.video.muted = false; } catch { els.streamInfo.textContent = 'Playback blocked until you interact'; }
@@ -1137,12 +1115,7 @@
     });
 
     window.addEventListener('resize', () => {
-      if (isMobileLayout()) {
-        state.sidebarVisible = !els.app.classList.contains('hide-sidebar');
-        syncMobileMainOffset();
-      } else {
-        els.main.style.marginLeft = '';
-      }
+      syncMobileMainOffset();
       if (state.panelMenuVisible && !els.panelMenu.dataset.dragged) positionPanelMenu();
       updateToggleButtons();
     });
@@ -1155,8 +1128,8 @@
       if (!isMobileLayout()) return;
       if (!els.app.classList.contains('rail-open')) return;
       const clickedInsideSidebar = e.target.closest('.sidebar');
-      const clickedMenu = e.target.closest('#menuBtn') || e.target.closest('#menuToggleRail') || e.target.closest('#menuToggleChannels');
-      if (!clickedInsideSidebar && !clickedMenu) {
+      const clickedToggle = e.target.closest('#mobileRailToggle') || e.target.closest('#menuToggleRail');
+      if (!clickedInsideSidebar && !clickedToggle) {
         els.app.classList.remove('rail-open');
         syncMobileMainOffset();
         updateToggleButtons();
