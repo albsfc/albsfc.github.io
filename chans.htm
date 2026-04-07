@@ -246,7 +246,7 @@
     .empty-card h2 { margin: 0 0 8px; font-size: 28px; }
     .empty-card p { color: var(--muted); margin: 0; line-height: 1.5; }
 
-    @media (max-width: 760px) {
+    @media (max-width: 0px) {
       .sidebar { width: 78px; }
       .app.rail-open .sidebar { width: min(82vw, 320px); }
       .sidebar-inner { width: min(82vw, 320px); }
@@ -311,11 +311,11 @@
     </aside>
 
     <main class="main" id="main">
-      <video id="video" autoplay playsinline controls></video>
+      <video id="video" autoplay playsinline webkit-playsinline preload="auto" controls></video>
       <div class="video-overlay"></div>
 
-      <div class="loading-state" id="loadingState"><div class="empty-card"><h2>Loading playlist…</h2><p>Trying the remote playlist first. If the browser blocks it, the local file picker will still work.</p></div></div>
-      <div class="empty-state" id="emptyState" style="display:none;"><div class="empty-card"><h2>No channel selected</h2><p>Pick a channel from the left rail. If the playlist URL fails to load, use a local file or another URL.</p></div></div>
+      <div class="loading-state" id="loadingState"><div class="empty-card"><h2>Loading playlist…</h2><p>Trying the remote playlist first. Some phone and tablet browsers block remote playlist fetches even when desktop browsers allow them.</p></div></div>
+      <div class="empty-state" id="emptyState" style="display:none;"><div class="empty-card"><h2>No channel selected</h2><p>Pick a channel from the left rail. If the playlist URL fails on mobile, it is usually the browser blocking the remote fetch, not the layout.</p></div></div>
 
       <div class="info-modal-backdrop" id="infoBackdrop"></div>
       <section class="info-modal" id="infoModal">
@@ -433,7 +433,7 @@
 
     function escapeHtml(str=''){return str.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');}
     function getAttr(line, attr){const m=line.match(new RegExp(`${attr}="([^"]*)"`,'i')); return m?m[1]:'';}
-    function isMobileLayout(){return window.innerWidth<=760;}
+    function isMobileLayout(){ return false; }
     function applyLayout(){ els.main.style.marginLeft='0px'; }
     function toggleRail(force){ const open=typeof force==='boolean'?force:!els.app.classList.contains('rail-open'); els.app.classList.toggle('rail-open', open); if(open) els.app.classList.remove('sidebar-hidden'); }
     function updateFullscreenButton(){ els.fullscreenBtn.textContent = state.videoFullscreenMode ? '🗗' : '⛶'; }
