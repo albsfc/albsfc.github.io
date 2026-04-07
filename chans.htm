@@ -851,18 +851,6 @@
         await els.video.play();
         showBottomBarTemporarily();
         showAutoplayNote('Autoplay started muted — tap 🔊 for sound');
-
-        setTimeout(async () => {
-          try {
-            els.video.muted = false;
-            els.video.volume = parseFloat(els.volumeSlider.value || '1');
-            updateMuteButton();
-            await els.video.play();
-          } catch (e) {
-            els.video.muted = true;
-            updateMuteButton();
-          }
-        }, 300);
       } catch (e) {}
     }
   };
@@ -877,7 +865,6 @@
     state.hls.on(Hls.Events.MANIFEST_PARSED, tryPlay);
   }
 }
-
     function showBottomBarTemporarily(){ clearTimeout(state.bottomBarTimer); els.bottomBar.classList.remove('auto-hidden'); state.bottomBarTimer=setTimeout(()=>{ if(!els.video.paused){ els.bottomBar.classList.add('auto-hidden'); } },2600); }
     function updateMuteButton(){ els.muteBtn.textContent=els.video.muted||els.video.volume===0?'🔇':'🔊'; }
     function updatePlayPauseButton(){ els.playPauseBtn.textContent=els.video.paused?'▶':'⏸'; }
