@@ -665,7 +665,9 @@
       }
       if (els.app.classList.contains('hide-sidebar')) {
         els.main.style.marginLeft = '0px';
-      } else if (els.app.classList.contains('rail-open')) {
+        return;
+      }
+      if (els.app.classList.contains('rail-open')) {
         els.main.style.marginLeft = `${Math.min(window.innerWidth * 0.82, 320)}px`;
       } else {
         els.main.style.marginLeft = getComputedStyle(document.documentElement).getPropertyValue('--rail-collapsed').trim() || '96px';
@@ -706,8 +708,12 @@
         const showBar = typeof force === 'boolean' ? force : !state.sidebarVisible;
         state.sidebarVisible = showBar;
         els.app.classList.toggle('hide-sidebar', !showBar);
-        if (!showBar) els.app.classList.remove('rail-open');
-        syncMobileMainOffset();
+        if (!showBar) {
+          els.app.classList.remove('rail-open');
+          els.main.style.marginLeft = '0px';
+        } else {
+          syncMobileMainOffset();
+        }
         updateToggleButtons();
         return;
       }
@@ -1130,7 +1136,7 @@
       if (!isMobileLayout()) return;
       if (!els.app.classList.contains('rail-open')) return;
       const clickedInsideSidebar = e.target.closest('.sidebar');
-      const clickedMenu = e.target.closest('#menuBtn') || e.target.closest('#menuToggleRail');
+      const clickedMenu = e.target.closest('#menuBtn') || e.target.closest('#menuToggleRail') || e.target.closest('#menuToggleChannels');
       if (!clickedInsideSidebar && !clickedMenu) {
         els.app.classList.remove('rail-open');
         syncMobileMainOffset();
