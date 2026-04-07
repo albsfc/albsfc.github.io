@@ -191,10 +191,12 @@
     }
 
     .main {
+	
       position: relative;
       min-width: 0;
       overflow: hidden;
       background: #000;
+	  transition: margin-left 0.25s ease;
     }
     .main.hide-bottom-bar .bottom-bar,
     .bottom-bar.auto-hidden {
@@ -659,20 +661,25 @@
     }
 
     function syncMobileMainOffset() {
-      if (!isMobileLayout()) {
-        els.main.style.marginLeft = '';
-        return;
-      }
-      if (els.app.classList.contains('hide-sidebar')) {
-        els.main.style.marginLeft = '0px';
-        return;
-      }
-      if (els.app.classList.contains('rail-open')) {
-        els.main.style.marginLeft = `${Math.min(window.innerWidth * 0.82, 320)}px`;
-      } else {
-        els.main.style.marginLeft = getComputedStyle(document.documentElement).getPropertyValue('--rail-collapsed').trim() || '96px';
-      }
-    }
+  if (!isMobileLayout()) {
+    els.main.style.marginLeft = '';
+    return;
+  }
+
+  if (els.app.classList.contains('hide-sidebar')) {
+    els.main.style.marginLeft = '0px';
+    return;
+  }
+
+  if (els.app.classList.contains('rail-open')) {
+    // full drawer
+    const width = Math.min(window.innerWidth * 0.82, 320);
+    els.main.style.marginLeft = width + 'px';
+  } else {
+    // collapsed rail
+    els.main.style.marginLeft = '72px'; // 👈 force fixed width (don’t rely on CSS var here)
+  }
+}
 
     function toggleRail(force) {
       const open = typeof force === 'boolean' ? force : !els.app.classList.contains('rail-open');
@@ -704,23 +711,35 @@
     }
 
     function toggleSidebar(force) {
-      if (isMobileLayout()) {
-        const showBar = typeof force === 'boolean' ? force : !state.sidebarVisible;
-        state.sidebarVisible = showBar;
-        els.app.classList.toggle('hide-sidebar', !showBar);
-        if (!showBar) {
-          els.app.classList.remove('rail-open');
-          els.main.style.marginLeft = '0px';
-        } else {
-          syncMobileMainOffset();
-        }
-        updateToggleButtons();
-        return;
-      }
-      state.sidebarVisible = typeof force === 'boolean' ? force : !state.sidebarVisible;
-      els.app.classList.toggle('hide-sidebar', !state.sidebarVisible);
-      updateToggleButtons();
+  if (isMobileLayout()) {
+    const showBar = typeof force === 'boolean'
+      ? force
+      : !state.sidebarVisible;
+
+    state.sidebarVisible = showBar;
+
+    els.app.classList.toggle('hide-sidebar', !showBar);
+
+    if (!showBar) {
+      // 🔥 CRITICAL FIX
+      els.app.classList.remove('rail-open');
+      els.main.style.marginLeft = '0px';
+    } else {
+      syncMobileMainOffset();
     }
+
+    updateToggleButtons();
+    return;
+  }
+
+  // desktop unchanged
+  state.sidebarVisible = typeof force === 'boolean'
+    ? force
+    : !state.sidebarVisible;
+
+  els.app.classList.toggle('hide-sidebar', !state.sidebarVisible);
+  updateToggleButtons();
+}
 
     function toggleGuide(force) {
       state.guideVisible = typeof force === 'boolean' ? force : !state.guideVisible;
