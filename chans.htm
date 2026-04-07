@@ -370,12 +370,45 @@
     };
 
     const els = {
-      app: document.getElementById('app'), sidebar: document.getElementById('sidebar'), main: document.getElementById('main'), video: document.getElementById('video'), channels: document.getElementById('channels'), railToggleTop: document.getElementById('railToggleTop'),
-      guideFlyout: document.getElementById('guideFlyout'), guideHead: document.getElementById('guideHead'), guideFlyoutLogo: document.getElementById('guideFlyoutLogo'), guideFlyoutChannel: document.getElementById('guideFlyoutChannel'), guideFlyoutMeta: document.getElementById('guideFlyoutMeta'), guideFlyoutTimeline: document.getElementById('guideFlyoutTimeline'), closeGuideBtn: document.getElementById('closeGuideBtn'),
-      loadingState: document.getElementById('loadingState'), emptyState: document.getElementById('emptyState'), channelCount: document.getElementById('channelCount'), channelSearch: document.getElementById('channelSearch'), clock: document.getElementById('clock'), timezoneLabel: document.getElementById('timezoneLabel'),
-      epgBtn: document.getElementById('epgBtn'), infoBtn: document.getElementById('infoBtn'), fullscreenBtn: document.getElementById('fullscreenBtn'), playPauseBtn: document.getElementById('playPauseBtn'), muteBtn: document.getElementById('muteBtn'), volumeSlider: document.getElementById('volumeSlider'), bottomBar: document.getElementById('bottomBar'),
-      nowbarLogo: document.getElementById('nowbarLogo'), nowbarTitle: document.getElementById('nowbarTitle'), nowbarSub: document.getElementById('nowbarSub'), epgInline: document.getElementById('epgInline'), epgInlineList: document.getElementById('epgInlineList'),
-      infoBackdrop: document.getElementById('infoBackdrop'), infoModal: document.getElementById('infoModal'), infoCloseBtn: document.getElementById('infoCloseBtn'), playlistUrlField: document.getElementById('playlistUrlField'), m3uFileField: document.getElementById('m3uFileField'), epgUrlField: document.getElementById('epgUrlField'), applyPlaylistUrlBtn: document.getElementById('applyPlaylistUrlBtn'), applyEpgUrlBtn: document.getElementById('applyEpgUrlBtn'), reloadAllBtn: document.getElementById('reloadAllBtn')
+      app: document.getElementById('app'),
+      sidebar: document.getElementById('sidebar'),
+      main: document.getElementById('main'),
+      video: document.getElementById('video'),
+      channels: document.getElementById('channels'),
+      railToggleTop: document.getElementById('railToggleTop'),
+      guideFlyout: document.getElementById('guideFlyout'),
+      guideHead: document.getElementById('guideHead'),
+      guideFlyoutLogo: document.getElementById('guideFlyoutLogo'),
+      guideFlyoutChannel: document.getElementById('guideFlyoutChannel'),
+      guideFlyoutMeta: document.getElementById('guideFlyoutMeta'),
+      guideFlyoutTimeline: document.getElementById('guideFlyoutTimeline'),
+      closeGuideBtn: document.getElementById('closeGuideBtn'),
+      loadingState: document.getElementById('loadingState'),
+      emptyState: document.getElementById('emptyState'),
+      channelSearch: document.getElementById('channelSearch'),
+      clock: document.getElementById('clock'),
+      timezoneLabel: document.getElementById('timezoneLabel'),
+      epgBtn: document.getElementById('epgBtn'),
+      infoBtn: document.getElementById('infoBtn'),
+      fullscreenBtn: document.getElementById('fullscreenBtn'),
+      playPauseBtn: document.getElementById('playPauseBtn'),
+      muteBtn: document.getElementById('muteBtn'),
+      volumeSlider: document.getElementById('volumeSlider'),
+      bottomBar: document.getElementById('bottomBar'),
+      nowbarLogo: document.getElementById('nowbarLogo'),
+      nowbarTitle: document.getElementById('nowbarTitle'),
+      nowbarSub: document.getElementById('nowbarSub'),
+      epgInline: document.getElementById('epgInline'),
+      epgInlineList: document.getElementById('epgInlineList'),
+      infoBackdrop: document.getElementById('infoBackdrop'),
+      infoModal: document.getElementById('infoModal'),
+      infoCloseBtn: document.getElementById('infoCloseBtn'),
+      playlistUrlField: document.getElementById('playlistUrlField'),
+      m3uFileField: document.getElementById('m3uFileField'),
+      epgUrlField: document.getElementById('epgUrlField'),
+      applyPlaylistUrlBtn: document.getElementById('applyPlaylistUrlBtn'),
+      applyEpgUrlBtn: document.getElementById('applyEpgUrlBtn'),
+      reloadAllBtn: document.getElementById('reloadAllBtn'),
     };
 
     function escapeHtml(str=''){return str.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');}
@@ -386,27 +419,167 @@
     function updateFullscreenButton(){ els.fullscreenBtn.textContent = state.videoFullscreenMode ? '🗗' : '⛶'; }
     function toggleVideoFullscreenMode(){ state.videoFullscreenMode=!state.videoFullscreenMode; els.main.classList.toggle('fullscreen-video', state.videoFullscreenMode); updateFullscreenButton(); }
 
-    function parseM3U(text){ const raw=text.replace(/^\uFEFF/,''); const lines=raw.split(/\r?\n/).map(l=>l.trim()).filter(Boolean); const channels=[]; let pending={}; for(const line of lines){ if(line.startsWith('#EXTINF')){ const name=(line.split(',').slice(1).join(',')||'').trim()||'Unknown Channel'; pending={ name, id:getAttr(line,'tvg-id')||getAttr(line,'channel-id')||name, logo:getAttr(line,'tvg-logo'), group:getAttr(line,'group-title')||'TV', epgChannel:getAttr(line,'tvg-id')||getAttr(line,'channel-id')||name }; continue; } if(!line.startsWith('#')&&pending.name){ channels.push({...pending,url:line}); pending={}; } } return channels; }
-    async function fetchText(url){ const attempts=[{url,timeout:5000},{url:`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,timeout:7000},{url:`https://cors.isomorphic-git.org/${url}`,timeout:7000}]; let lastError=null; for(const attempt of attempts){ const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),attempt.timeout); try{ const response=await fetch(attempt.url,{signal:controller.signal,cache:'no-store'}); clearTimeout(timer); if(!response.ok) throw new Error(`Failed to fetch: ${response.status}`); return await response.text(); }catch(error){ clearTimeout(timer); lastError=error; } } throw lastError||new Error('Failed to fetch remote resource'); }
+    function parseM3U(text){
+      const raw=text.replace(/^\uFEFF/,'');
+      const lines=raw.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+      const channels=[];
+      let pending={};
+      for(const line of lines){
+        if(line.startsWith('#EXTINF')){
+          const name=(line.split(',').slice(1).join(',')||'').trim()||'Unknown Channel';
+          pending={ name, id:getAttr(line,'tvg-id')||getAttr(line,'channel-id')||name, logo:getAttr(line,'tvg-logo'), group:getAttr(line,'group-title')||'TV', epgChannel:getAttr(line,'tvg-id')||getAttr(line,'channel-id')||name };
+          continue;
+        }
+        if(!line.startsWith('#')&&pending.name){ channels.push({...pending,url:line}); pending={}; }
+      }
+      return channels;
+    }
+
+    async function fetchText(url){
+      const attempts=[
+        {url, timeout:5000},
+        {url:`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,timeout:7000},
+        {url:`https://cors.isomorphic-git.org/${url}`,timeout:7000}
+      ];
+      let lastError=null;
+      for(const attempt of attempts){
+        const controller=new AbortController();
+        const timer=setTimeout(()=>controller.abort(),attempt.timeout);
+        try{
+          const response=await fetch(attempt.url,{signal:controller.signal,cache:'no-store'});
+          clearTimeout(timer);
+          if(!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
+          return await response.text();
+        }catch(error){ clearTimeout(timer); lastError=error; }
+      }
+      throw lastError||new Error('Failed to fetch remote resource');
+    }
+
     function getPlaylistCacheKey(source){ return `iptv_playlist_cache_${source}`; }
     function getEpgCacheKey(source){ return `iptv_epg_cache_${source}`; }
     function destroyPlayer(){ if(state.hls){ try{state.hls.destroy();}catch{} state.hls=null; } els.video.pause(); els.video.removeAttribute('src'); els.video.load(); }
 
-    function renderChannels(){ const currentId=state.currentChannel?.id; const query=state.channelFilter.trim().toLowerCase(); const filtered=state.channels.filter(ch=>!query || [ch.name,ch.group,ch.id].filter(Boolean).some(v=>v.toLowerCase().includes(query))); els.channelCount.textContent=`${filtered.length} / ${state.channels.length} channels`; els.channels.innerHTML=filtered.map((ch,index)=>{ const active=ch.id===currentId?'active':''; const logo=ch.logo?`<img class="channel-logo" src="${escapeHtml(ch.logo)}" alt="${escapeHtml(ch.name)}" loading="lazy" />`:`<div class="channel-fallback">${escapeHtml((ch.name||'?').charAt(0).toUpperCase())}</div>`; return `<button class="channel-item ${active}" data-id="${escapeHtml(ch.id)}">${logo}<div><div class="channel-name">${escapeHtml(ch.name)}</div><div class="channel-meta">${escapeHtml(ch.group||'TV')} • ${String(index+1).padStart(2,'0')}</div></div><div class="channel-tag">LIVE</div></button>`; }).join(''); els.channels.querySelectorAll('.channel-item').forEach(btn=>{ btn.addEventListener('click',()=>playChannel(btn.dataset.id)); btn.addEventListener('mouseenter',()=>showGuidePreview(btn.dataset.id)); }); }
+    // FIX: Removed reference to non-existent els.channelCount — was crashing renderChannels() entirely
+    function renderChannels(){
+      const currentId=state.currentChannel?.id;
+      const query=state.channelFilter.trim().toLowerCase();
+      const filtered=state.channels.filter(ch=>!query || [ch.name,ch.group,ch.id].filter(Boolean).some(v=>v.toLowerCase().includes(query)));
+      els.channels.innerHTML=filtered.map((ch,index)=>{
+        const active=ch.id===currentId?'active':'';
+        const logo=ch.logo?`<img class="channel-logo" src="${escapeHtml(ch.logo)}" alt="${escapeHtml(ch.name)}" loading="lazy" />`:`<div class="channel-fallback">${escapeHtml((ch.name||'?').charAt(0).toUpperCase())}</div>`;
+        return `<button class="channel-item ${active}" data-id="${escapeHtml(ch.id)}">${logo}<div><div class="channel-name">${escapeHtml(ch.name)}</div><div class="channel-meta">${escapeHtml(ch.group||'TV')} • ${String(index+1).padStart(2,'0')}</div></div><div class="channel-tag">LIVE</div></button>`;
+      }).join('');
+      els.channels.querySelectorAll('.channel-item').forEach(btn=>{
+        btn.addEventListener('click',()=>playChannel(btn.dataset.id));
+        // FIX: showGuidePreview now also adds 'visible' class so the flyout actually appears
+        btn.addEventListener('mouseenter',()=>{ showGuidePreview(btn.dataset.id); els.guideFlyout.classList.add('visible'); });
+      });
+    }
+
     function formatClock(date){ if(!date) return '--:--'; return new Intl.DateTimeFormat('en-AU',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:state.timezone}).format(date); }
     function getProgrammesForChannel(channel){ const keys=[channel.epgChannel,channel.id,channel.name].filter(Boolean); let programmes=[]; for(const key of keys){ if(state.epg.has(key)){ programmes=state.epg.get(key); break; } } const now=new Date(); return programmes.filter(p=>p.stop>new Date(now.getTime()-30*60*1000)).slice(0,8).map(p=>({...p, now:p.start<=now && p.stop>=now})); }
     function updateNowbar(channel){ const programmes=getProgrammesForChannel(channel); const nowItem=programmes.find(p=>p.now)||programmes[0]; els.nowbarLogo.innerHTML=channel.logo?`<img class="nowbar-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`:`<div class="nowbar-fallback">${escapeHtml((channel.name||'?').charAt(0).toUpperCase())}</div>`; els.nowbarTitle.textContent=channel.name; els.nowbarSub.textContent=nowItem?`${nowItem.title} • ${formatClock(nowItem.start)} - ${formatClock(nowItem.stop)}`:'Live broadcast'; }
     function renderInlineEpg(channel){ const items=getProgrammesForChannel(channel); if(!items.length){ els.epgInlineList.innerHTML='<div class="epg-inline-item"><div class="epg-inline-time">Guide unavailable</div><div class="epg-inline-name">No episode data loaded</div></div>'; return; } els.epgInlineList.innerHTML=items.map(item=>`<div class="epg-inline-item"><div class="epg-inline-time">${formatClock(item.start)} - ${formatClock(item.stop)}${item.now?' • NOW':''}</div><div class="epg-inline-name">${escapeHtml(item.title)}</div></div>`).join(''); }
 
-    function showGuidePreview(channelId){ clearTimeout(state.guideHoverTimer); const channel=state.channels.find(ch=>ch.id===channelId); if(!channel) return; const items=getProgrammesForChannel(channel); els.guideFlyoutLogo.innerHTML=channel.logo?`<img class="guide-flyout-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`:`<div class="guide-flyout-fallback">${escapeHtml((channel.name||'?').charAt(0).toUpperCase())}</div>`; els.guideFlyoutChannel.textContent=channel.name; els.guideFlyoutMeta.textContent=items.length?`${items.length} upcoming items • hover a channel to preview`:'No guide information available'; if(!items.length){ els.guideFlyoutTimeline.innerHTML='<div class="guide-slot now"><div><div class="guide-slot-time">Guide unavailable</div><div class="guide-slot-name">No episode data loaded</div><div class="guide-slot-desc">This channel does not currently have guide information.</div></div><div class="guide-slot-tag">No info</div></div>'; } else { els.guideFlyoutTimeline.innerHTML=items.map(item=>`<div class="guide-slot ${item.now?'now':''}"><div><div class="guide-slot-time">${formatClock(item.start)} - ${formatClock(item.stop)}${item.now?' • NOW':''}</div><div class="guide-slot-name">${escapeHtml(item.title)}</div><div class="guide-slot-desc">${escapeHtml(item.desc||'No description')}</div></div><div class="guide-slot-tag">${item.now?'On now':'Up next'}</div></div>`).join(''); } }
+    function showGuidePreview(channelId){
+      clearTimeout(state.guideHoverTimer);
+      const channel=state.channels.find(ch=>ch.id===channelId);
+      if(!channel) return;
+      const items=getProgrammesForChannel(channel);
+      els.guideFlyoutLogo.innerHTML=channel.logo?`<img class="guide-flyout-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`:`<div class="guide-flyout-fallback">${escapeHtml((channel.name||'?').charAt(0).toUpperCase())}</div>`;
+      els.guideFlyoutChannel.textContent=channel.name;
+      els.guideFlyoutMeta.textContent=items.length?`${items.length} upcoming items • hover a channel to preview`:'No guide information available';
+      if(!items.length){
+        els.guideFlyoutTimeline.innerHTML='<div class="guide-slot now"><div><div class="guide-slot-time">Guide unavailable</div><div class="guide-slot-name">No episode data loaded</div><div class="guide-slot-desc">This channel does not currently have guide information.</div></div><div class="guide-slot-tag">No info</div></div>';
+      } else {
+        els.guideFlyoutTimeline.innerHTML=items.map(item=>`<div class="guide-slot ${item.now?'now':''}"><div><div class="guide-slot-time">${formatClock(item.start)} - ${formatClock(item.stop)}${item.now?' • NOW':''}</div><div class="guide-slot-name">${escapeHtml(item.title)}</div><div class="guide-slot-desc">${escapeHtml(item.desc||'No description')}</div></div><div class="guide-slot-tag">${item.now?'On now':'Up next'}</div></div>`).join('');
+      }
+    }
+
     function toggleEpg(){ state.guideVisible=!state.guideVisible; els.epgBtn.classList.toggle('active', state.guideVisible); els.epgInline.classList.toggle('visible', state.guideVisible); if(state.guideVisible && state.currentChannel){ renderInlineEpg(state.currentChannel); } }
     function hideGuidePreview(){ clearTimeout(state.guideHoverTimer); state.guideHoverTimer=setTimeout(()=>els.guideFlyout.classList.remove('visible'),160); }
 
-    async function loadEpg(url, preferCache=true){ const cacheKey=getEpgCacheKey(url); let xmlText=''; if(preferCache){ try{ const cached=localStorage.getItem(cacheKey); if(cached) xmlText=cached; }catch{} } if(!xmlText){ xmlText=await fetchText(url); try{ localStorage.setItem(cacheKey, xmlText); }catch{} } else { fetchText(url).then(fresh=>{ try{ localStorage.setItem(cacheKey,fresh); }catch{} }).catch(()=>{}); } const xml=new DOMParser().parseFromString(xmlText,'text/xml'); const programmes=[...xml.querySelectorAll('programme')].map(node=>({ channel:node.getAttribute('channel')||'', start:parseXmltvDate(node.getAttribute('start')), stop:parseXmltvDate(node.getAttribute('stop')), title:node.querySelector('title')?.textContent?.trim()||'Untitled', desc:node.querySelector('desc')?.textContent?.trim()||'' })).filter(p=>p.channel&&p.start&&p.stop); state.epg=programmes.reduce((map,item)=>{ if(!map.has(item.channel)) map.set(item.channel,[]); map.get(item.channel).push(item); return map; },new Map()); for(const entries of state.epg.values()) entries.sort((a,b)=>a.start-b.start); if(state.currentChannel && state.guideVisible) renderInlineEpg(state.currentChannel); }
+    async function loadEpg(url, preferCache=true){
+      const cacheKey=getEpgCacheKey(url);
+      let xmlText='';
+      if(preferCache){ try{ const cached=localStorage.getItem(cacheKey); if(cached) xmlText=cached; }catch{} }
+      if(!xmlText){
+        xmlText=await fetchText(url);
+        try{ localStorage.setItem(cacheKey, xmlText); }catch{}
+      } else {
+        fetchText(url).then(fresh=>{ try{ localStorage.setItem(cacheKey,fresh); }catch{} }).catch(()=>{});
+      }
+      const xml=new DOMParser().parseFromString(xmlText,'text/xml');
+      const programmes=[...xml.querySelectorAll('programme')].map(node=>({
+        channel:node.getAttribute('channel')||'',
+        start:parseXmltvDate(node.getAttribute('start')),
+        stop:parseXmltvDate(node.getAttribute('stop')),
+        title:node.querySelector('title')?.textContent?.trim()||'Untitled',
+        desc:node.querySelector('desc')?.textContent?.trim()||''
+      })).filter(p=>p.channel&&p.start&&p.stop);
+      state.epg=programmes.reduce((map,item)=>{ if(!map.has(item.channel)) map.set(item.channel,[]); map.get(item.channel).push(item); return map; },new Map());
+      for(const entries of state.epg.values()) entries.sort((a,b)=>a.start-b.start);
+      if(state.currentChannel && state.guideVisible) renderInlineEpg(state.currentChannel);
+    }
+
     function parseXmltvDate(value){ if(!value) return null; const match=value.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/); if(!match) return null; const [,y,m,d,hh,mm,ss]=match; return new Date(`${y}-${m}-${d}T${hh}:${mm}:${ss}`); }
 
-    async function loadPlaylist(){ const file=els.m3uFileField.files?.[0]; const sourceKey=file?`file_${file.name}_${file.size}`:state.playlistUrl; const cacheKey=getPlaylistCacheKey(sourceKey); try{ els.loadingState.style.display='grid'; els.emptyState.style.display='none'; let m3uText=''; if(file){ m3uText=await file.text(); } else { try{ const cached=localStorage.getItem(cacheKey); if(cached) m3uText=cached; }catch{} if(!m3uText){ m3uText=await fetchText(sourceKey); try{ localStorage.setItem(cacheKey,m3uText); }catch{} } else { fetchText(sourceKey).then(fresh=>{ try{ localStorage.setItem(cacheKey,fresh); }catch{} }).catch(()=>{}); } } state.channels=parseM3U(m3uText); renderChannels(); els.loadingState.style.display='none'; if(state.channels.length){ playChannel(state.channels[0].id); } else { els.emptyState.style.display='grid'; } setTimeout(()=>{ loadEpg(state.epgUrl,true).catch(()=>{}); },300); }catch(error){ console.error(error); els.loadingState.style.display='none'; els.emptyState.style.display='grid'; state.channels=[]; renderChannels(); } }
-    function playChannel(id){ const channel=state.channels.find(ch=>ch.id===id); if(!channel) return; state.currentChannel=channel; renderChannels(); updateNowbar(channel); if(state.guideVisible) renderInlineEpg(channel); destroyPlayer(); const src=channel.url; els.video.muted=false; els.video.volume=parseFloat(els.volumeSlider.value||'1'); updateMuteButton(); updatePlayPauseButton(); if(els.video.canPlayType('application/vnd.apple.mpegurl')){ els.video.src=src; els.video.play().then(()=>showBottomBarTemporarily()).catch(()=>{}); } else if(window.Hls&&Hls.isSupported()){ state.hls=new Hls({enableWorker:true,lowLatencyMode:true}); state.hls.loadSource(src); state.hls.attachMedia(els.video); state.hls.on(Hls.Events.MANIFEST_PARSED,()=>els.video.play().then(()=>showBottomBarTemporarily()).catch(()=>{})); } }
+    async function loadPlaylist(){
+      const file=els.m3uFileField.files?.[0];
+      const sourceKey=file?`file_${file.name}_${file.size}`:state.playlistUrl;
+      const cacheKey=getPlaylistCacheKey(sourceKey);
+      try{
+        els.loadingState.style.display='grid';
+        els.emptyState.style.display='none';
+        let m3uText='';
+        if(file){
+          m3uText=await file.text();
+        } else {
+          try{ const cached=localStorage.getItem(cacheKey); if(cached) m3uText=cached; }catch{}
+          if(!m3uText){
+            m3uText=await fetchText(sourceKey);
+            try{ localStorage.setItem(cacheKey,m3uText); }catch{}
+          } else {
+            fetchText(sourceKey).then(fresh=>{ try{ localStorage.setItem(cacheKey,fresh); }catch{} }).catch(()=>{});
+          }
+        }
+        state.channels=parseM3U(m3uText);
+        renderChannels();
+        els.loadingState.style.display='none';
+        if(state.channels.length){ playChannel(state.channels[0].id); }
+        else { els.emptyState.style.display='grid'; }
+        setTimeout(()=>{ loadEpg(state.epgUrl,true).catch(()=>{}); },300);
+      }catch(error){
+        console.error(error);
+        els.loadingState.style.display='none';
+        els.emptyState.style.display='grid';
+        state.channels=[];
+        renderChannels();
+      }
+    }
+
+    function playChannel(id){
+      const channel=state.channels.find(ch=>ch.id===id);
+      if(!channel) return;
+      state.currentChannel=channel;
+      renderChannels();
+      updateNowbar(channel);
+      if(state.guideVisible) renderInlineEpg(channel);
+      destroyPlayer();
+      const src=channel.url;
+      els.video.muted=false;
+      els.video.volume=parseFloat(els.volumeSlider.value||'1');
+      updateMuteButton(); updatePlayPauseButton();
+      if(els.video.canPlayType('application/vnd.apple.mpegurl')){
+        els.video.src=src;
+        els.video.play().then(()=>showBottomBarTemporarily()).catch(()=>{});
+      } else if(window.Hls&&Hls.isSupported()){
+        state.hls=new Hls({enableWorker:true,lowLatencyMode:true});
+        state.hls.loadSource(src);
+        state.hls.attachMedia(els.video);
+        state.hls.on(Hls.Events.MANIFEST_PARSED,()=>els.video.play().then(()=>showBottomBarTemporarily()).catch(()=>{}));
+      }
+    }
 
     function showBottomBarTemporarily(){ clearTimeout(state.bottomBarTimer); els.bottomBar.classList.remove('auto-hidden'); state.bottomBarTimer=setTimeout(()=>{ if(!els.video.paused){ els.bottomBar.classList.add('auto-hidden'); } },2600); }
     function updateMuteButton(){ els.muteBtn.textContent=els.video.muted||els.video.volume===0?'🔇':'🔊'; }
@@ -435,6 +608,8 @@
     els.channels.addEventListener('mouseleave',hideGuidePreview);
     els.closeGuideBtn.addEventListener('click',()=>els.guideFlyout.classList.remove('visible'));
     els.channelSearch.addEventListener('input',()=>{ state.channelFilter=els.channelSearch.value; renderChannels(); });
+    // FIX: file input change now triggers loadPlaylist so uploading a file actually works
+    els.m3uFileField.addEventListener('change',()=>loadPlaylist());
 
     let guidePointerId=null;
     els.guideHead.addEventListener('pointerdown',e=>{ if(e.target.closest('button')) return; guidePointerId=e.pointerId; const rect=els.guideFlyout.getBoundingClientRect(); state.guideDragOffsetX=e.clientX-rect.left; state.guideDragOffsetY=e.clientY-rect.top; els.guideFlyout.style.left=`${rect.left}px`; els.guideFlyout.style.top=`${rect.top}px`; els.guideFlyout.style.right='auto'; els.guideHead.setPointerCapture(e.pointerId); });
