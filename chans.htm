@@ -42,13 +42,8 @@
       transition: grid-template-columns .22s ease;
     }
 
-    .app.rail-open {
-      grid-template-columns: var(--rail-expanded) 1fr;
-    }
-
-    .app.hide-sidebar {
-      grid-template-columns: 0 1fr !important;
-    }
+    .app.rail-open { grid-template-columns: var(--rail-expanded) 1fr; }
+    .app.hide-sidebar { grid-template-columns: 0 1fr !important; }
 
     .sidebar {
       position: relative;
@@ -66,18 +61,8 @@
       box-shadow: none;
     }
 
-    .sidebar-inner {
-      width: var(--rail-expanded);
-      height: 100%;
-      transition: opacity .18s ease;
-    }
-
-    .brand,
-    .sidebar-head,
-    .sidebar-footer {
-      padding-left: 12px;
-      padding-right: 12px;
-    }
+    .sidebar-inner { width: var(--rail-expanded); height: 100%; }
+    .brand, .sidebar-head, .sidebar-footer { padding-left: 12px; padding-right: 12px; }
 
     .brand {
       display: flex;
@@ -97,20 +82,28 @@
       place-items: center;
       font-weight: 800;
       font-size: 26px;
-      letter-spacing: .02em;
       flex: 0 0 auto;
       box-shadow: 0 10px 26px rgba(78,161,255,.3);
     }
 
-    .brand-copy {
-      min-width: 0;
+    .brand-copy,
+    .search-box,
+    .time-card,
+    .channel-name,
+    .channel-meta,
+    .channel-tag {
       opacity: 0;
       transform: translateX(-8px);
       transition: opacity .18s ease, transform .18s ease;
       pointer-events: none;
     }
 
-    .app.rail-open .brand-copy {
+    .app.rail-open .brand-copy,
+    .app.rail-open .search-box,
+    .app.rail-open .time-card,
+    .app.rail-open .channel-name,
+    .app.rail-open .channel-meta,
+    .app.rail-open .channel-tag {
       opacity: 1;
       transform: translateX(0);
       pointer-events: auto;
@@ -125,23 +118,6 @@
       gap: 10px;
       padding-top: 6px;
       padding-bottom: 14px;
-    }
-
-    .search-box,
-    .time-card,
-    .sidebar-footer .toggle-group {
-      opacity: 0;
-      transform: translateX(-8px);
-      transition: opacity .18s ease, transform .18s ease;
-      pointer-events: none;
-    }
-
-    .app.rail-open .search-box,
-    .app.rail-open .time-card,
-    .app.rail-open .sidebar-footer .toggle-group {
-      opacity: 1;
-      transform: translateX(0);
-      pointer-events: auto;
     }
 
     .search-box {
@@ -166,20 +142,12 @@
       gap: 12px;
     }
 
-    .clock { font-size: 28px; font-weight: 800; letter-spacing: .02em; line-height: 1; }
+    .clock { font-size: 28px; font-weight: 800; line-height: 1; }
     .city { color: var(--muted); font-size: 13px; margin-top: 4px; }
-
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--success);
-      box-shadow: 0 0 16px rgba(49,209,124,.7);
-      flex: 0 0 auto;
-    }
+    .status-dot { width: 10px; height: 10px; border-radius: 999px; background: var(--success); box-shadow: 0 0 16px rgba(49,209,124,.7); }
 
     .channels {
-      padding: 4px 8px 130px;
+      padding: 4px 8px 110px;
       overflow: auto;
       height: calc(100vh - 210px);
       scrollbar-width: thin;
@@ -212,7 +180,6 @@
     .channel-item.active {
       background: linear-gradient(135deg, rgba(70, 92, 255, .22), rgba(0, 136, 255, .18));
       border-color: rgba(133, 171, 255, .28);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 12px 24px rgba(0,0,0,.22);
     }
 
     .channel-logo {
@@ -242,23 +209,6 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      opacity: 0;
-      transform: translateX(-8px);
-      transition: opacity .18s ease, transform .18s ease;
-    }
-
-    .channel-meta,
-    .channel-tag {
-      opacity: 0;
-      transform: translateX(-8px);
-      transition: opacity .18s ease, transform .18s ease;
-    }
-
-    .app.rail-open .channel-name,
-    .app.rail-open .channel-meta,
-    .app.rail-open .channel-tag {
-      opacity: 1;
-      transform: translateX(0);
     }
 
     .channel-meta {
@@ -288,28 +238,6 @@
       padding-top: 12px;
       padding-bottom: 12px;
       background: linear-gradient(180deg, transparent, rgba(8,10,18,.96) 35%);
-    }
-
-    .toggle-btn {
-      width: 100%;
-      border: 1px solid var(--border);
-      color: var(--text);
-      background: rgba(255,255,255,.04);
-      border-radius: 16px;
-      padding: 12px 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .toggle-group {
-      display: grid;
-      gap: 10px;
-    }
-
-    .toggle-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
     }
 
     .main {
@@ -361,8 +289,7 @@
       z-index: 2;
     }
 
-    .hero-logo img,
-    .hero-logo .big-fallback {
+    .hero-logo img, .hero-logo .big-fallback {
       width: 130px;
       height: 130px;
       border-radius: 26px;
@@ -379,10 +306,21 @@
       background: linear-gradient(135deg, rgba(78,161,255,.35), rgba(111,92,255,.35));
     }
 
-    .hero-channel { font-size: 34px; font-weight: 800; line-height: 1.05; margin: 4px 0 12px; letter-spacing: -.02em; }
-    .hero-program { font-size: clamp(24px, 3vw, 42px); font-weight: 800; line-height: 1.05; margin: 0 0 14px; letter-spacing: -.025em; }
+    .hero-channel { font-size: 34px; font-weight: 800; margin: 4px 0 12px; }
+    .hero-program { font-size: clamp(24px, 3vw, 42px); font-weight: 800; margin: 0 0 14px; }
     .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
-    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.10); border-radius: 999px; font-size: 13px; font-weight: 700; color: #edf3ff; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #edf3ff;
+    }
     .program-desc { font-size: 18px; color: #edf0ff; max-width: 900px; }
 
     .guide-flyout {
@@ -403,6 +341,7 @@
       pointer-events: none;
       transform: translateX(-10px);
       transition: opacity .18s ease, transform .18s ease, left .22s ease;
+      touch-action: none;
     }
 
     .app.rail-open .guide-flyout { left: calc(var(--rail-expanded) + 14px); }
@@ -416,6 +355,8 @@
       padding: 16px 18px;
       border-bottom: 1px solid rgba(255,255,255,.08);
       background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0));
+      cursor: move;
+      user-select: none;
     }
 
     .guide-flyout-logo {
@@ -438,16 +379,19 @@
       background: linear-gradient(135deg, rgba(78,161,255,.35), rgba(111,92,255,.35));
     }
 
-    .guide-flyout-channel { font-size: 30px; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+    .guide-flyout-channel { font-size: 30px; font-weight: 800; margin-bottom: 8px; }
     .guide-flyout-meta { color: var(--muted); font-size: 13px; }
 
-    .guide-flyout-close {
+    .guide-flyout-close,
+    .control-btn,
+    .ghost-btn,
+    .menu-toggle-btn {
       border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
+      background: rgba(255,255,255,.05);
       color: var(--text);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 10px 12px;
-      font-weight: 800;
+      font-weight: 700;
       cursor: pointer;
     }
 
@@ -458,7 +402,6 @@
       gap: 8px;
       padding: 14px;
       overflow-x: auto;
-      overflow-y: hidden;
     }
 
     .guide-slot {
@@ -475,32 +418,96 @@
     .guide-slot.now {
       background: linear-gradient(135deg, rgba(78,161,255,.18), rgba(111,92,255,.14));
       border-color: rgba(133,171,255,.30);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
     }
 
     .guide-slot-time { color: #c7d7ff; font-size: 12px; font-weight: 800; margin-bottom: 8px; }
-    .guide-slot-name { font-size: 16px; font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
-    .guide-slot-desc { color: var(--muted); font-size: 13px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-    .guide-slot-tag { align-self: flex-start; margin-top: 10px; padding: 6px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.08); }
+    .guide-slot-name { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+    .guide-slot-desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .guide-slot-tag {
+      align-self: flex-start;
+      margin-top: 10px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      background: rgba(255,255,255,.08);
+    }
 
+    .panel-menu,
     .shortcuts-panel {
       position: absolute;
-      left: 26px;
-      bottom: 96px;
-      width: min(340px, calc(100vw - 140px));
-      border-radius: 24px;
-      background: linear-gradient(180deg, rgba(9, 12, 28, .88), rgba(10, 15, 32, .78));
+      left: 18px;
+      bottom: 92px;
+      width: min(360px, calc(100vw - 40px));
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(9, 12, 28, .94), rgba(10, 15, 32, .88));
       border: 1px solid rgba(255,255,255,.10);
       backdrop-filter: blur(18px);
       box-shadow: var(--shadow);
-      z-index: 2;
+      z-index: 3;
       overflow: hidden;
+      display: none;
     }
 
-    .shortcuts-head { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.08); font-size: 14px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; color: #dfe8ff; }
+    .panel-menu.visible,
+    .shortcuts-panel.visible { display: block; }
+
+    .panel-menu-head,
+    .shortcuts-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #dfe8ff;
+    }
+
+    .panel-menu-body {
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
     .shortcuts-list { padding: 12px; display: grid; gap: 8px; }
-    .shortcut-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.04); }
-    .shortcut-key { font-weight: 900; font-size: 12px; padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.06); }
+
+    .menu-toggle-btn {
+      min-height: 56px;
+      text-align: center;
+    }
+
+    .menu-toggle-btn.active {
+      background: linear-gradient(135deg, rgba(78,161,255,.22), rgba(111,92,255,.22));
+      border-color: rgba(133,171,255,.28);
+    }
+
+    .shortcut-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.04);
+    }
+
+    .shortcut-key {
+      font-weight: 900;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.06);
+    }
+
     .shortcut-label { color: var(--muted); font-size: 13px; }
 
     .bottom-bar {
@@ -523,12 +530,24 @@
     }
 
     .controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .control-btn, .ghost-btn { border: 1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.05); color: var(--text); border-radius: 14px; padding: 10px 12px; font-weight: 700; }
-    .control-btn, .ghost-btn { cursor: pointer; }
-    .stats { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; white-space: nowrap; }
-    .live-badge { color: white; background: linear-gradient(135deg, #ff2b4f, #ff5d7a); border-radius: 999px; padding: 6px 10px; font-weight: 800; font-size: 11px; letter-spacing: .05em; }
 
-    .empty-state, .loading-state {
+    .playlist-input {
+      min-width: 180px;
+      flex: 1;
+      max-width: 320px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-weight: 700;
+    }
+
+    .stats { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; white-space: nowrap; }
+    .live-badge { color: white; background: linear-gradient(135deg, #ff2b4f, #ff5d7a); border-radius: 999px; padding: 6px 10px; font-weight: 800; font-size: 11px; }
+
+    .empty-state,
+    .loading-state {
       position: absolute;
       inset: 0;
       display: grid;
@@ -551,15 +570,6 @@
     .empty-card h2 { margin: 0 0 8px; font-size: 28px; }
     .empty-card p { color: var(--muted); margin: 0; line-height: 1.5; }
 
-    @media (max-width: 980px) {
-      .top-panel { grid-template-columns: 94px 1fr; padding: 16px; gap: 16px; }
-      .hero-logo img, .hero-logo .big-fallback { width: 94px; height: 94px; border-radius: 20px; padding: 12px; }
-      .shortcuts-panel { width: calc(100vw - 140px); max-height: 38vh; }
-      .guide-flyout { width: calc(100vw - 140px); }
-      .guide-flyout-head { grid-template-columns: 80px 1fr auto; }
-      .guide-flyout-logo, .guide-flyout-fallback { width: 80px; height: 80px; }
-    }
-
     @media (max-width: 760px) {
       .app, .app.rail-open { grid-template-columns: 1fr; }
       .sidebar {
@@ -573,12 +583,42 @@
       }
       .sidebar-inner { width: min(88vw, 320px); }
       .app.rail-open .sidebar { transform: translateX(0); }
-      .top-panel { left: 14px; right: 14px; top: 14px; max-width: none; }
-      .shortcuts-panel { left: 14px; right: 14px; width: auto; bottom: 84px; }
-      .guide-flyout { left: 14px !important; right: 14px; width: auto; top: 14px; max-height: calc(100vh - 28px); }
+      .top-panel {
+        left: 14px;
+        right: 14px;
+        top: 14px;
+        max-width: none;
+        grid-template-columns: 94px 1fr;
+        padding: 16px;
+        gap: 16px;
+      }
+      .hero-logo img, .hero-logo .big-fallback {
+        width: 94px;
+        height: 94px;
+        border-radius: 20px;
+        padding: 12px;
+      }
+      .guide-flyout {
+        left: 14px !important;
+        right: 14px;
+        width: auto;
+        top: 14px;
+        max-height: calc(100vh - 28px);
+      }
       .guide-flyout-head { grid-template-columns: 64px 1fr auto; }
-      .guide-flyout-logo, .guide-flyout-fallback { width: 64px; height: 64px; border-radius: 16px; }
-      .bottom-bar { left: 12px; right: 12px; bottom: 12px; flex-direction: column; align-items: stretch; }
+      .guide-flyout-logo, .guide-flyout-fallback {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+      }
+      .bottom-bar {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .playlist-input { max-width: none; }
       .stats { justify-content: space-between; }
     }
   </style>
@@ -607,18 +647,7 @@
         </div>
 
         <div class="channels" id="channels"></div>
-
-        <div class="sidebar-footer">
-          <div class="toggle-group">
-            <button class="toggle-btn" id="toggleRail">Toggle channel rail</button>
-            <div class="toggle-grid">
-              <button class="toggle-btn" id="toggleSidebarBtn">Channels</button>
-              <button class="toggle-btn" id="toggleBottomBarBtn">Controls</button>
-              <button class="toggle-btn" id="toggleGuideBtn">Guide</button>
-              <button class="toggle-btn" id="toggleShortcutsBtn">Keys</button>
-            </div>
-          </div>
-        </div>
+        <div class="sidebar-footer"></div>
       </div>
     </aside>
 
@@ -636,7 +665,7 @@
       <div class="empty-state" id="emptyState" style="display:none;">
         <div class="empty-card">
           <h2>No channel selected</h2>
-          <p>Pick a channel from the left rail. If the playlist URL fails to load, use the file picker in the bottom bar.</p>
+          <p>Pick a channel from the left rail. If the playlist URL fails to load, use a local file or another URL.</p>
         </div>
       </div>
 
@@ -651,7 +680,7 @@
       </section>
 
       <section class="guide-flyout" id="guideFlyout">
-        <div class="guide-flyout-head">
+        <div class="guide-flyout-head" id="guideHead">
           <div id="guideFlyoutLogo"></div>
           <div>
             <div class="guide-flyout-channel" id="guideFlyoutChannel">Channel</div>
@@ -662,27 +691,37 @@
         <div class="guide-timeline" id="guideFlyoutTimeline"></div>
       </section>
 
+      <section class="panel-menu" id="panelMenu">
+        <div class="panel-menu-head">Display options</div>
+        <div class="panel-menu-body">
+          <button class="menu-toggle-btn active" id="menuToggleChannels">Show Channels Bar</button>
+          <button class="menu-toggle-btn" id="menuToggleRail">Expand Buttons Bar</button>
+          <button class="menu-toggle-btn active" id="menuToggleGuide">Episode Guide</button>
+          <button class="menu-toggle-btn active" id="menuToggleInfo">Show Now Playing Card</button>
+        </div>
+      </section>
+
       <section class="shortcuts-panel" id="shortcutsPanel">
-        <div class="shortcuts-head">Keyboard shortcuts</div>
+        <div class="shortcuts-head">Help</div>
         <div class="shortcuts-list">
-          <div class="shortcut-row"><span class="shortcut-key">/</span><span class="shortcut-label">Focus channel search</span></div>
-          <div class="shortcut-row"><span class="shortcut-key">Ctrl+C</span><span class="shortcut-label">Show / hide channels</span></div>
-          <div class="shortcut-row"><span class="shortcut-key">Ctrl+B</span><span class="shortcut-label">Show / hide bottom bar</span></div>
-          <div class="shortcut-row"><span class="shortcut-key">Ctrl+G</span><span class="shortcut-label">Enable / disable hover guide</span></div>
-          <div class="shortcut-row"><span class="shortcut-key">Ctrl+J</span><span class="shortcut-label">Show / hide shortcuts</span></div>
-          <div class="shortcut-row"><span class="shortcut-key">Ctrl+M</span><span class="shortcut-label">Expand / collapse rail</span></div>
+          <div class="shortcut-row"><span class="shortcut-key">Menu</span><span class="shortcut-label">Open display options above the menu button</span></div>
+          <div class="shortcut-row"><span class="shortcut-key">Episode Guide</span><span class="shortcut-label">Toggle the hover guide on or off</span></div>
+          <div class="shortcut-row"><span class="shortcut-key">Drag</span><span class="shortcut-label">Drag the episode guide by its header</span></div>
+          <div class="shortcut-row"><span class="shortcut-key">URL</span><span class="shortcut-label">Paste an M3U or M3U8 URL and press Load</span></div>
+          <div class="shortcut-row"><span class="shortcut-key">File</span><span class="shortcut-label">Choose a local playlist file instead</span></div>
         </div>
       </section>
 
       <section class="bottom-bar" id="bottomBar">
         <div class="controls">
           <button class="control-btn" id="menuBtn">☰</button>
+          <button class="control-btn" id="helpBtn">Help</button>
           <button class="control-btn" id="playPauseBtn">⏯</button>
           <button class="control-btn" id="muteBtn">🔊</button>
-          <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" style="width:140px; height:42px;" />
+          <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" style="width:100px; height:38px;" />
+          <input type="text" id="playlistUrlInput" class="playlist-input" placeholder="Paste playlist URL" />
           <input type="file" id="m3uFile" accept=".m3u,.m3u8,text/plain" class="ghost-btn" />
-          <button class="ghost-btn" id="hideBottomBtn">Hide controls</button>
-          <button class="ghost-btn" id="reloadBtn">Reload sources</button>
+          <button class="ghost-btn" id="loadSourceBtn">Load</button>
         </div>
         <div class="stats">
           <span class="live-badge">LIVE</span>
@@ -701,7 +740,7 @@
       epg: new Map(),
       guideVisible: true,
       guideHoverTimer: null,
-      shortcutsVisible: true,
+      shortcutsVisible: false,
       timezone: 'Australia/Sydney',
       heroTimer: null,
       heroPinned: false,
@@ -711,6 +750,11 @@
       bottomBarTimer: null,
       defaultM3uUrl: 'https://i.mjh.nz/au/Sydney/raw-tv.m3u8',
       defaultEpgUrl: 'https://raw.githubusercontent.com/matthuisman/i.mjh.nz/refs/heads/master/au/Sydney/epg.xml',
+      pendingPlaylistUrl: '',
+      panelMenuVisible: false,
+      infoVisible: true,
+      guideDragOffsetX: 0,
+      guideDragOffsetY: 0,
     };
 
     const els = {
@@ -724,6 +768,7 @@
       heroDesc: document.getElementById('heroDesc'),
       metaRow: document.getElementById('metaRow'),
       guideFlyout: document.getElementById('guideFlyout'),
+      guideHead: document.getElementById('guideHead'),
       guideFlyoutLogo: document.getElementById('guideFlyoutLogo'),
       guideFlyoutChannel: document.getElementById('guideFlyoutChannel'),
       guideFlyoutMeta: document.getElementById('guideFlyoutMeta'),
@@ -739,18 +784,19 @@
       clock: document.getElementById('clock'),
       timezoneLabel: document.getElementById('timezoneLabel'),
       m3uFile: document.getElementById('m3uFile'),
+      playlistUrlInput: document.getElementById('playlistUrlInput'),
+      loadSourceBtn: document.getElementById('loadSourceBtn'),
       menuBtn: document.getElementById('menuBtn'),
-      toggleRail: document.getElementById('toggleRail'),
-      reloadBtn: document.getElementById('reloadBtn'),
+      helpBtn: document.getElementById('helpBtn'),
       playPauseBtn: document.getElementById('playPauseBtn'),
       muteBtn: document.getElementById('muteBtn'),
       volumeSlider: document.getElementById('volumeSlider'),
-      toggleSidebarBtn: document.getElementById('toggleSidebarBtn'),
-      toggleBottomBarBtn: document.getElementById('toggleBottomBarBtn'),
-      toggleGuideBtn: document.getElementById('toggleGuideBtn'),
-      toggleShortcutsBtn: document.getElementById('toggleShortcutsBtn'),
-      hideBottomBtn: document.getElementById('hideBottomBtn'),
       bottomBar: document.getElementById('bottomBar'),
+      panelMenu: document.getElementById('panelMenu'),
+      menuToggleChannels: document.getElementById('menuToggleChannels'),
+      menuToggleRail: document.getElementById('menuToggleRail'),
+      menuToggleGuide: document.getElementById('menuToggleGuide'),
+      menuToggleInfo: document.getElementById('menuToggleInfo'),
     };
 
     function escapeHtml(str = '') {
@@ -766,10 +812,7 @@
       const raw = text.replace(/^\uFEFF/, '');
       const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
       const channels = [];
-      const header = lines.find(l => l.startsWith('#EXTM3U')) || '';
-      const inferredEpg = getAttr(header, 'x-tvg-url') || getAttr(header, 'url-tvg') || '';
       let pending = {};
-
       for (const line of lines) {
         if (line.startsWith('#EXTINF')) {
           const name = (line.split(',').slice(1).join(',') || '').trim() || 'Unknown Channel';
@@ -787,7 +830,7 @@
           pending = {};
         }
       }
-      return { channels, inferredEpg };
+      return channels;
     }
 
     async function fetchText(url) {
@@ -809,75 +852,69 @@
       throw lastError || new Error('Failed to fetch remote resource');
     }
 
-    async function loadPlaylist() {
-      try {
-        els.loadingState.style.display = 'grid';
-        els.emptyState.style.display = 'none';
-        let m3uText = '';
-        const file = els.m3uFile.files?.[0];
-        if (file) {
-          m3uText = await file.text();
-        } else {
-          m3uText = await fetchText(state.defaultM3uUrl);
-        }
+    function toggleRail(force) {
+      const open = typeof force === 'boolean' ? force : !els.app.classList.contains('rail-open');
+      els.app.classList.toggle('rail-open', open);
+    }
 
-        const { channels } = parseM3U(m3uText);
-        state.channels = channels;
-        renderChannels();
-        els.loadingState.style.display = 'none';
+    function positionPanelMenu() {
+      const btnRect = els.menuBtn.getBoundingClientRect();
+      const barRect = els.bottomBar.getBoundingClientRect();
+      const panelWidth = Math.min(360, window.innerWidth - 40);
+      const left = Math.max(12, Math.min(btnRect.left, window.innerWidth - panelWidth - 12));
+      els.panelMenu.style.left = `${left}px`;
+      els.panelMenu.style.right = 'auto';
+      els.panelMenu.style.bottom = `${window.innerHeight - barRect.top + 10}px`;
+    }
 
-        if (channels.length) {
-          playChannel(channels[0].id);
-        } else {
-          els.emptyState.style.display = 'grid';
-          els.streamInfo.textContent = 'No channels found in playlist';
-        }
-
-        if (state.defaultEpgUrl) {
-          loadEpg(state.defaultEpgUrl).catch(() => {});
-        }
-      } catch (error) {
-        console.error(error);
-        els.loadingState.style.display = 'none';
-        els.emptyState.style.display = 'grid';
-        els.streamInfo.textContent = 'Remote playlist blocked by browser. Use the file picker or run from a local web server.';
-        state.channels = [];
-        renderChannels();
+    function togglePanelMenu(force) {
+      state.panelMenuVisible = typeof force === 'boolean' ? force : !state.panelMenuVisible;
+      if (state.panelMenuVisible) positionPanelMenu();
+      els.panelMenu.classList.toggle('visible', state.panelMenuVisible);
+      if (state.panelMenuVisible) {
+        els.shortcutsPanel.classList.remove('visible');
+        state.shortcutsVisible = false;
       }
     }
 
-    function renderChannels() {
-      const currentId = state.currentChannel?.id;
-      const query = state.channelFilter.trim().toLowerCase();
-      const filtered = state.channels.filter(ch => !query || [ch.name, ch.group, ch.id].filter(Boolean).some(v => v.toLowerCase().includes(query)));
-      els.channelCount.textContent = `${filtered.length} / ${state.channels.length} channels`;
+    function toggleSidebar(force) {
+      state.sidebarVisible = typeof force === 'boolean' ? force : !state.sidebarVisible;
+      els.app.classList.toggle('hide-sidebar', !state.sidebarVisible);
+      updateToggleButtons();
+    }
 
-      els.channels.innerHTML = filtered.map((ch, index) => {
-        const active = ch.id === currentId ? 'active' : '';
-        const logo = ch.logo
-          ? `<img class="channel-logo" src="${escapeHtml(ch.logo)}" alt="${escapeHtml(ch.name)}" loading="lazy" />`
-          : `<div class="channel-fallback">${escapeHtml((ch.name || '?').charAt(0).toUpperCase())}</div>`;
-        return `
-          <button class="channel-item ${active}" data-id="${escapeHtml(ch.id)}">
-            ${logo}
-            <div>
-              <div class="channel-name">${escapeHtml(ch.name)}</div>
-              <div class="channel-meta">${escapeHtml(ch.group || 'TV')} • ${String(index + 1).padStart(2, '0')}</div>
-            </div>
-            <div class="channel-tag">LIVE</div>
-          </button>
-        `;
-      }).join('');
+    function toggleGuide(force) {
+      state.guideVisible = typeof force === 'boolean' ? force : !state.guideVisible;
+      if (!state.guideVisible) els.guideFlyout.classList.remove('visible');
+      updateToggleButtons();
+    }
 
-      els.channels.querySelectorAll('.channel-item').forEach(btn => {
-        btn.addEventListener('click', () => playChannel(btn.dataset.id));
-        btn.addEventListener('mouseenter', () => showGuidePreview(btn.dataset.id));
-      });
+    function toggleShortcuts(force) {
+      state.shortcutsVisible = typeof force === 'boolean' ? force : !state.shortcutsVisible;
+      els.shortcutsPanel.classList.toggle('visible', state.shortcutsVisible);
+      if (state.shortcutsVisible) {
+        els.panelMenu.classList.remove('visible');
+        state.panelMenuVisible = false;
+      }
+    }
+
+    function toggleInfo(force) {
+      state.infoVisible = typeof force === 'boolean' ? force : !state.infoVisible;
+      if (!state.infoVisible) els.topPanel.style.display = 'none';
+      else if (state.currentChannel) showHeroTemporarily();
+      updateToggleButtons();
+    }
+
+    function updateToggleButtons() {
+      els.menuToggleChannels.classList.toggle('active', state.sidebarVisible);
+      els.menuToggleRail.classList.toggle('active', els.app.classList.contains('rail-open'));
+      els.menuToggleGuide.classList.toggle('active', state.guideVisible);
+      els.menuToggleInfo.classList.toggle('active', state.infoVisible);
     }
 
     function destroyPlayer() {
       if (state.hls) {
-        state.hls.destroy();
+        try { state.hls.destroy(); } catch {}
         state.hls = null;
       }
       els.video.pause();
@@ -885,37 +922,27 @@
       els.video.load();
     }
 
-    function playChannel(id) {
-      const channel = state.channels.find(ch => ch.id === id);
-      if (!channel) return;
-      state.currentChannel = channel;
-      renderChannels();
-      updateHero(channel);
-      showGuidePreview(channel.id);
-      els.emptyState.style.display = 'none';
-      els.streamInfo.textContent = channel.name;
+    function renderChannels() {
+      const currentId = state.currentChannel?.id;
+      const query = state.channelFilter.trim().toLowerCase();
+      const filtered = state.channels.filter(ch => !query || [ch.name, ch.group, ch.id].filter(Boolean).some(v => v.toLowerCase().includes(query)));
+      els.channelCount.textContent = `${filtered.length} / ${state.channels.length} channels`;
+      els.channels.innerHTML = filtered.map((ch, index) => {
+        const active = ch.id === currentId ? 'active' : '';
+        const logo = ch.logo
+          ? `<img class="channel-logo" src="${escapeHtml(ch.logo)}" alt="${escapeHtml(ch.name)}" loading="lazy" />`
+          : `<div class="channel-fallback">${escapeHtml((ch.name || '?').charAt(0).toUpperCase())}</div>`;
+        return `<button class="channel-item ${active}" data-id="${escapeHtml(ch.id)}">${logo}<div><div class="channel-name">${escapeHtml(ch.name)}</div><div class="channel-meta">${escapeHtml(ch.group || 'TV')} • ${String(index + 1).padStart(2, '0')}</div></div><div class="channel-tag">LIVE</div></button>`;
+      }).join('');
+      els.channels.querySelectorAll('.channel-item').forEach(btn => {
+        btn.addEventListener('click', () => playChannel(btn.dataset.id));
+        btn.addEventListener('mouseenter', () => showGuidePreview(btn.dataset.id));
+      });
+    }
 
-      destroyPlayer();
-      const src = channel.url;
-      els.video.muted = false;
-      els.video.volume = parseFloat(els.volumeSlider.value || '1');
-      updateMuteButton();
-      updatePlayPauseButton();
-
-      if (els.video.canPlayType('application/vnd.apple.mpegurl')) {
-        els.video.src = src;
-        els.video.play().then(attemptUnmutePlayback).catch(() => {});
-      } else if (window.Hls && Hls.isSupported()) {
-        state.hls = new Hls({ enableWorker: true, lowLatencyMode: true });
-        state.hls.loadSource(src);
-        state.hls.attachMedia(els.video);
-        state.hls.on(Hls.Events.MANIFEST_PARSED, () => els.video.play().then(attemptUnmutePlayback).catch(() => {}));
-        state.hls.on(Hls.Events.ERROR, (_event, data) => {
-          if (data?.fatal) els.streamInfo.textContent = 'Stream error / possibly blocked by source';
-        });
-      } else {
-        els.streamInfo.textContent = 'HLS not supported in this browser';
-      }
+    function formatClock(date) {
+      if (!date) return '--:--';
+      return new Intl.DateTimeFormat('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: state.timezone }).format(date);
     }
 
     function updateHero(channel) {
@@ -928,109 +955,24 @@
       els.heroProgram.textContent = nowItem?.title || 'Live broadcast';
       els.heroDesc.textContent = nowItem?.desc || 'No programme description available.';
       els.metaRow.innerHTML = '';
-      [channel.group || 'TV', nowItem ? `${formatClock(nowItem.start)} - ${formatClock(nowItem.stop)}` : 'Live now', state.currentChannel?.url?.includes('.m3u8') ? 'HLS stream' : 'Stream']
-        .forEach(label => {
-          const pill = document.createElement('div');
-          pill.className = 'pill';
-          pill.textContent = label;
-          els.metaRow.appendChild(pill);
-        });
+      [channel.group || 'TV', nowItem ? `${formatClock(nowItem.start)} - ${formatClock(nowItem.stop)}` : 'Live now', channel.url?.includes('.m3u8') ? 'HLS stream' : 'Stream'].forEach(label => {
+        const pill = document.createElement('div');
+        pill.className = 'pill';
+        pill.textContent = label;
+        els.metaRow.appendChild(pill);
+      });
     }
 
     function showHeroTemporarily() {
+      if (!state.infoVisible) {
+        els.topPanel.style.display = 'none';
+        return;
+      }
       els.topPanel.style.display = 'grid';
       clearTimeout(state.heroTimer);
       state.heroTimer = setTimeout(() => {
-        if (!state.heroPinned) els.topPanel.style.display = 'none';
+        if (!state.heroPinned && state.infoVisible) els.topPanel.style.display = 'none';
       }, 4500);
-    }
-
-    function showGuidePreview(channelId) {
-      clearTimeout(state.guideHoverTimer);
-      if (!state.guideVisible) return;
-      const channel = state.channels.find(ch => ch.id === channelId);
-      if (!channel) return;
-      const items = getProgrammesForChannel(channel);
-
-      els.guideFlyoutLogo.innerHTML = channel.logo
-        ? `<img class="guide-flyout-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`
-        : `<div class="guide-flyout-fallback">${escapeHtml((channel.name || '?').charAt(0).toUpperCase())}</div>`;
-      els.guideFlyoutChannel.textContent = channel.name;
-      els.guideFlyoutMeta.textContent = items.length ? `${items.length} upcoming items • hover a channel to preview` : 'No guide information available';
-
-      if (!items.length) {
-        els.guideFlyoutTimeline.innerHTML = '<div class="guide-slot now"><div><div class="guide-slot-time">Guide unavailable</div><div class="guide-slot-name">No episode data loaded</div><div class="guide-slot-desc">This channel does not currently have guide information.</div></div><div class="guide-slot-tag">No info</div></div>';
-      } else {
-        els.guideFlyoutTimeline.innerHTML = items.map(item => `<div class="guide-slot ${item.now ? 'now' : ''}"><div><div class="guide-slot-time">${formatClock(item.start)} - ${formatClock(item.stop)}${item.now ? ' • NOW' : ''}</div><div class="guide-slot-name">${escapeHtml(item.title)}</div><div class="guide-slot-desc">${escapeHtml(item.desc || 'No description')}</div></div><div class="guide-slot-tag">${item.now ? 'On now' : 'Up next'}</div></div>`).join('');
-      }
-
-      els.guideFlyout.classList.add('visible');
-    }
-
-    function hideGuidePreview() {
-      clearTimeout(state.guideHoverTimer);
-      state.guideHoverTimer = setTimeout(() => {
-        els.guideFlyout.classList.remove('visible');
-      }, 160);
-    }
-
-    function showBottomBarTemporarily() {
-      if (!state.bottomBarVisible) return;
-      clearTimeout(state.bottomBarTimer);
-      els.bottomBar.classList.remove('auto-hidden');
-      state.bottomBarTimer = setTimeout(() => {
-        if (state.bottomBarVisible && !els.video.paused) {
-          els.bottomBar.classList.add('auto-hidden');
-        }
-      }, 2600);
-    }
-
-    function attemptUnmutePlayback() {
-      els.video.muted = false;
-      const playPromise = els.video.play();
-      if (playPromise && typeof playPromise.catch === 'function') {
-        playPromise.catch(() => {
-          els.video.muted = true;
-          updateMuteButton();
-          els.streamInfo.textContent = 'Tap play or unmute to enable sound';
-        });
-      }
-      updateMuteButton();
-      updatePlayPauseButton();
-      showHeroTemporarily();
-      showBottomBarTemporarily();
-    }
-
-    function updateMuteButton() { els.muteBtn.textContent = els.video.muted || els.video.volume === 0 ? '🔇' : '🔊'; }
-    function updatePlayPauseButton() { els.playPauseBtn.textContent = els.video.paused ? '▶' : '⏸'; }
-
-    async function loadEpg(url) {
-      const xmlText = await fetchText(url);
-      const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
-      const programmes = [...xml.querySelectorAll('programme')].map(node => ({
-        channel: node.getAttribute('channel') || '',
-        start: parseXmltvDate(node.getAttribute('start')),
-        stop: parseXmltvDate(node.getAttribute('stop')),
-        title: node.querySelector('title')?.textContent?.trim() || 'Untitled',
-        desc: node.querySelector('desc')?.textContent?.trim() || '',
-      })).filter(p => p.channel && p.start && p.stop);
-
-      state.epg = programmes.reduce((map, item) => {
-        if (!map.has(item.channel)) map.set(item.channel, []);
-        map.get(item.channel).push(item);
-        return map;
-      }, new Map());
-
-      for (const entries of state.epg.values()) entries.sort((a, b) => a.start - b.start);
-      if (state.currentChannel) showGuidePreview(state.currentChannel.id);
-    }
-
-    function parseXmltvDate(value) {
-      if (!value) return null;
-      const match = value.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
-      if (!match) return null;
-      const [, y, m, d, hh, mm, ss] = match;
-      return new Date(`${y}-${m}-${d}T${hh}:${mm}:${ss}`);
     }
 
     function getProgrammesForChannel(channel) {
@@ -1046,10 +988,129 @@
       return programmes.filter(p => p.stop > new Date(now.getTime() - 30 * 60 * 1000)).slice(0, 8).map(p => ({ ...p, now: p.start <= now && p.stop >= now }));
     }
 
-    function formatClock(date) {
-      if (!date) return '--:--';
-      return new Intl.DateTimeFormat('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: state.timezone }).format(date);
+    function showGuidePreview(channelId) {
+      clearTimeout(state.guideHoverTimer);
+      if (!state.guideVisible) return;
+      const channel = state.channels.find(ch => ch.id === channelId);
+      if (!channel) return;
+      const items = getProgrammesForChannel(channel);
+      els.guideFlyoutLogo.innerHTML = channel.logo
+        ? `<img class="guide-flyout-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`
+        : `<div class="guide-flyout-fallback">${escapeHtml((channel.name || '?').charAt(0).toUpperCase())}</div>`;
+      els.guideFlyoutChannel.textContent = channel.name;
+      els.guideFlyoutMeta.textContent = items.length ? `${items.length} upcoming items • hover a channel to preview` : 'No guide information available';
+      if (!items.length) {
+        els.guideFlyoutTimeline.innerHTML = '<div class="guide-slot now"><div><div class="guide-slot-time">Guide unavailable</div><div class="guide-slot-name">No episode data loaded</div><div class="guide-slot-desc">This channel does not currently have guide information.</div></div><div class="guide-slot-tag">No info</div></div>';
+      } else {
+        els.guideFlyoutTimeline.innerHTML = items.map(item => `<div class="guide-slot ${item.now ? 'now' : ''}"><div><div class="guide-slot-time">${formatClock(item.start)} - ${formatClock(item.stop)}${item.now ? ' • NOW' : ''}</div><div class="guide-slot-name">${escapeHtml(item.title)}</div><div class="guide-slot-desc">${escapeHtml(item.desc || 'No description')}</div></div><div class="guide-slot-tag">${item.now ? 'On now' : 'Up next'}</div></div>`).join('');
+      }
+      els.guideFlyout.classList.add('visible');
     }
+
+    function hideGuidePreview() {
+      clearTimeout(state.guideHoverTimer);
+      state.guideHoverTimer = setTimeout(() => els.guideFlyout.classList.remove('visible'), 160);
+    }
+
+    async function loadEpg(url) {
+      const xmlText = await fetchText(url);
+      const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
+      const programmes = [...xml.querySelectorAll('programme')].map(node => ({
+        channel: node.getAttribute('channel') || '',
+        start: parseXmltvDate(node.getAttribute('start')),
+        stop: parseXmltvDate(node.getAttribute('stop')),
+        title: node.querySelector('title')?.textContent?.trim() || 'Untitled',
+        desc: node.querySelector('desc')?.textContent?.trim() || '',
+      })).filter(p => p.channel && p.start && p.stop);
+      state.epg = programmes.reduce((map, item) => {
+        if (!map.has(item.channel)) map.set(item.channel, []);
+        map.get(item.channel).push(item);
+        return map;
+      }, new Map());
+      for (const entries of state.epg.values()) entries.sort((a, b) => a.start - b.start);
+      if (state.currentChannel) showGuidePreview(state.currentChannel.id);
+    }
+
+    function parseXmltvDate(value) {
+      if (!value) return null;
+      const match = value.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+      if (!match) return null;
+      const [, y, m, d, hh, mm, ss] = match;
+      return new Date(`${y}-${m}-${d}T${hh}:${mm}:${ss}`);
+    }
+
+    async function loadPlaylist() {
+      try {
+        els.loadingState.style.display = 'grid';
+        els.emptyState.style.display = 'none';
+        let m3uText = '';
+        const file = els.m3uFile.files?.[0];
+        if (file) m3uText = await file.text();
+        else if (state.pendingPlaylistUrl) m3uText = await fetchText(state.pendingPlaylistUrl);
+        else m3uText = await fetchText(state.defaultM3uUrl);
+
+        state.channels = parseM3U(m3uText);
+        renderChannels();
+        els.loadingState.style.display = 'none';
+
+        if (state.channels.length) playChannel(state.channels[0].id);
+        else {
+          els.emptyState.style.display = 'grid';
+          els.streamInfo.textContent = 'No channels found in playlist';
+        }
+        if (state.defaultEpgUrl) loadEpg(state.defaultEpgUrl).catch(() => {});
+      } catch (error) {
+        console.error(error);
+        els.loadingState.style.display = 'none';
+        els.emptyState.style.display = 'grid';
+        els.streamInfo.textContent = 'Could not load that playlist URL. Try another URL or use a local file.';
+        state.channels = [];
+        renderChannels();
+      }
+    }
+
+    function playChannel(id) {
+      const channel = state.channels.find(ch => ch.id === id);
+      if (!channel) return;
+      state.currentChannel = channel;
+      renderChannels();
+      updateHero(channel);
+      showGuidePreview(channel.id);
+      els.emptyState.style.display = 'none';
+      els.streamInfo.textContent = channel.name;
+      destroyPlayer();
+      const src = channel.url;
+      els.video.muted = false;
+      els.video.volume = parseFloat(els.volumeSlider.value || '1');
+      updateMuteButton();
+      updatePlayPauseButton();
+      if (els.video.canPlayType('application/vnd.apple.mpegurl')) {
+        els.video.src = src;
+        els.video.play().then(() => { showHeroTemporarily(); showBottomBarTemporarily(); }).catch(() => {});
+      } else if (window.Hls && Hls.isSupported()) {
+        state.hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+        state.hls.loadSource(src);
+        state.hls.attachMedia(els.video);
+        state.hls.on(Hls.Events.MANIFEST_PARSED, () => els.video.play().then(() => { showHeroTemporarily(); showBottomBarTemporarily(); }).catch(() => {}));
+        state.hls.on(Hls.Events.ERROR, (_event, data) => {
+          if (data?.fatal) els.streamInfo.textContent = 'Stream error / possibly blocked by source';
+        });
+      } else {
+        els.streamInfo.textContent = 'HLS not supported in this browser';
+      }
+    }
+
+    function showBottomBarTemporarily() {
+      if (!state.bottomBarVisible) return;
+      clearTimeout(state.bottomBarTimer);
+      els.bottomBar.classList.remove('auto-hidden');
+      state.bottomBarTimer = setTimeout(() => {
+        if (state.bottomBarVisible && !els.video.paused) els.bottomBar.classList.add('auto-hidden');
+      }, 2600);
+    }
+
+    function updateMuteButton() { els.muteBtn.textContent = els.video.muted || els.video.volume === 0 ? '🔇' : '🔊'; }
+    function updatePlayPauseButton() { els.playPauseBtn.textContent = els.video.paused ? '▶' : '⏸'; }
 
     function updateClock() {
       const now = new Date();
@@ -1057,45 +1118,8 @@
       els.timezoneLabel.textContent = state.timezone;
     }
 
-    function toggleRail(force) {
-      const open = typeof force === 'boolean' ? force : !els.app.classList.contains('rail-open');
-      els.app.classList.toggle('rail-open', open);
-    }
-
-    function toggleSidebar(force) {
-      state.sidebarVisible = typeof force === 'boolean' ? force : !state.sidebarVisible;
-      els.app.classList.toggle('hide-sidebar', !state.sidebarVisible);
-      updateToggleButtons();
-    }
-
-    function toggleBottomBar(force) {
-      state.bottomBarVisible = typeof force === 'boolean' ? force : !state.bottomBarVisible;
-      els.main.classList.toggle('hide-bottom-bar', !state.bottomBarVisible);
-      if (!state.bottomBarVisible) els.bottomBar.classList.remove('auto-hidden');
-      else showBottomBarTemporarily();
-      updateToggleButtons();
-    }
-
-    function toggleGuide(force) {
-      state.guideVisible = typeof force === 'boolean' ? force : !state.guideVisible;
-      if (!state.guideVisible) els.guideFlyout.classList.remove('visible');
-      updateToggleButtons();
-    }
-
-    function toggleShortcuts(force) {
-      state.shortcutsVisible = typeof force === 'boolean' ? force : !state.shortcutsVisible;
-      els.shortcutsPanel.style.display = state.shortcutsVisible ? 'block' : 'none';
-      updateToggleButtons();
-    }
-
-    function updateToggleButtons() {
-      els.toggleSidebarBtn.classList.toggle('active', state.sidebarVisible);
-      els.toggleBottomBarBtn.classList.toggle('active', state.bottomBarVisible);
-      els.toggleGuideBtn.classList.toggle('active', state.guideVisible);
-      els.toggleShortcutsBtn.classList.toggle('active', state.shortcutsVisible);
-    }
-
-    els.menuBtn.addEventListener('click', () => toggleRail());
+    els.menuBtn.addEventListener('click', () => togglePanelMenu());
+    els.helpBtn.addEventListener('click', () => toggleShortcuts());
     els.playPauseBtn.addEventListener('click', async () => {
       if (els.video.paused) {
         try { await els.video.play(); els.video.muted = false; } catch { els.streamInfo.textContent = 'Playback blocked until you interact'; }
@@ -1130,46 +1154,92 @@
       els.bottomBar.classList.remove('auto-hidden');
     });
     els.video.addEventListener('volumechange', updateMuteButton);
-    els.topPanel.addEventListener('mouseenter', () => { state.heroPinned = true; clearTimeout(state.heroTimer); els.topPanel.style.display = 'grid'; });
-    els.topPanel.addEventListener('mouseleave', () => { state.heroPinned = false; showHeroTemporarily(); });
+
+    els.topPanel.addEventListener('mouseenter', () => {
+      state.heroPinned = true;
+      clearTimeout(state.heroTimer);
+      els.topPanel.style.display = 'grid';
+    });
+    els.topPanel.addEventListener('mouseleave', () => {
+      state.heroPinned = false;
+      showHeroTemporarily();
+    });
+
     els.guideFlyout.addEventListener('mouseenter', () => clearTimeout(state.guideHoverTimer));
     els.guideFlyout.addEventListener('mouseleave', hideGuidePreview);
     els.channels.addEventListener('mouseleave', hideGuidePreview);
     els.closeGuideBtn.addEventListener('click', () => els.guideFlyout.classList.remove('visible'));
-    els.toggleRail.addEventListener('click', () => toggleRail());
-    els.reloadBtn.addEventListener('click', loadPlaylist);
-    els.toggleSidebarBtn.addEventListener('click', () => toggleSidebar());
-    els.toggleBottomBarBtn.addEventListener('click', () => toggleBottomBar());
-    els.toggleGuideBtn.addEventListener('click', () => toggleGuide());
-    els.toggleShortcutsBtn.addEventListener('click', () => toggleShortcuts());
-    els.hideBottomBtn.addEventListener('click', () => toggleBottomBar(false));
-    els.channelSearch.addEventListener('input', () => { state.channelFilter = els.channelSearch.value; renderChannels(); });
+
+    els.loadSourceBtn.addEventListener('click', () => {
+      state.pendingPlaylistUrl = els.playlistUrlInput.value.trim();
+      loadPlaylist();
+    });
+
+    els.channelSearch.addEventListener('input', () => {
+      state.channelFilter = els.channelSearch.value;
+      renderChannels();
+    });
+
+    els.menuToggleChannels.addEventListener('click', () => {
+      toggleSidebar();
+      updateToggleButtons();
+    });
+    els.menuToggleRail.addEventListener('click', () => {
+      toggleRail();
+      updateToggleButtons();
+      if (state.panelMenuVisible) positionPanelMenu();
+    });
+    els.menuToggleGuide.addEventListener('click', () => toggleGuide());
+    els.menuToggleInfo.addEventListener('click', () => toggleInfo());
+
+    let dragPointerId = null;
+    els.guideHead.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('button')) return;
+      dragPointerId = e.pointerId;
+      const rect = els.guideFlyout.getBoundingClientRect();
+      state.guideDragOffsetX = e.clientX - rect.left;
+      state.guideDragOffsetY = e.clientY - rect.top;
+      els.guideFlyout.style.left = `${rect.left}px`;
+      els.guideFlyout.style.top = `${rect.top}px`;
+      els.guideFlyout.style.right = 'auto';
+      els.guideHead.setPointerCapture(e.pointerId);
+    });
+
+    els.guideHead.addEventListener('pointermove', (e) => {
+      if (dragPointerId !== e.pointerId) return;
+      const maxLeft = window.innerWidth - els.guideFlyout.offsetWidth - 12;
+      const maxTop = window.innerHeight - els.guideFlyout.offsetHeight - 12;
+      const left = Math.max(12, Math.min(e.clientX - state.guideDragOffsetX, maxLeft));
+      const top = Math.max(12, Math.min(e.clientY - state.guideDragOffsetY, maxTop));
+      els.guideFlyout.style.left = `${left}px`;
+      els.guideFlyout.style.top = `${top}px`;
+    });
+
+    const endGuideDrag = (e) => {
+      if (dragPointerId !== e.pointerId) return;
+      dragPointerId = null;
+      try { els.guideHead.releasePointerCapture(e.pointerId); } catch {}
+    };
+    els.guideHead.addEventListener('pointerup', endGuideDrag);
+    els.guideHead.addEventListener('pointercancel', endGuideDrag);
 
     ['mousemove', 'click', 'keydown', 'touchstart'].forEach(evt => {
       els.main.addEventListener(evt, showBottomBarTemporarily, { passive: true });
     });
 
+    window.addEventListener('resize', () => {
+      if (state.panelMenuVisible) positionPanelMenu();
+    });
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === '/') {
-        e.preventDefault();
-        if (!els.app.classList.contains('rail-open')) toggleRail(true);
-        els.channelSearch.focus();
-        els.channelSearch.select();
-        return;
+      if (e.key === 'Escape') {
+        togglePanelMenu(false);
+        toggleShortcuts(false);
       }
-      if (!e.ctrlKey) return;
-      if (e.key.toLowerCase() === 'm') toggleRail();
-      if (e.key.toLowerCase() === 'c') toggleSidebar();
-      if (e.key.toLowerCase() === 'b') toggleBottomBar();
-      if (e.key.toLowerCase() === 'g') toggleGuide();
-      if (e.key.toLowerCase() === 'j') toggleShortcuts();
     });
 
     updateClock();
     setInterval(updateClock, 1000);
-    toggleRail(false);
-    updateMuteButton();
-    updatePlayPauseButton();
     updateToggleButtons();
     showBottomBarTemporarily();
     loadPlaylist();
