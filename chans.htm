@@ -17,7 +17,7 @@
       --border: rgba(255,255,255,.08);
       --rail-collapsed: 82px;
       --rail-expanded: 320px;
-      --mobile-rail-collapsed: 72px;
+      --mobile-rail-collapsed: 72px;'
       --mobile-rail-expanded: min(82vw, 320px);
     }
     * { box-sizing: border-box; }
@@ -817,43 +817,62 @@
     }
 
     function playChannel(id, options={}){
-      const channel=state.channels.find(ch=>ch.id===id);
-      if(!channel) return;
-      const autoplay = options.autoplay !== false;
-      const forceMuted = options.forceMuted === true;
-      state.currentChannel=channel;
-      renderChannels();
-      updateNowbar(channel);
-      if(state.guideVisible) renderGuideDrawer(channel);
-      destroyPlayer();
-      const src=channel.url;
-      els.video.volume=parseFloat(els.volumeSlider.value||'1');
-      els.video.muted = forceMuted ? true : false;
-      updateMuteButton(); updatePlayPauseButton();
-      const safePlay = () => {
-        if(!autoplay) return;
-        els.video.play().then(()=>{
-          updateMuteButton();
-          showBottomBarTemporarily();
-        }).catch(()=>{
-          els.video.muted = true;
-          updateMuteButton();
-          els.video.play().then(()=>{
-            showBottomBarTemporarily();
-            showAutoplayNote('Autoplay started muted — tap 🔊 for sound');
-          }).catch(()=>{});
-        });
-      };
-      if(els.video.canPlayType('application/vnd.apple.mpegurl')){
-        els.video.src=src;
-        safePlay();
-      } else if(window.Hls&&Hls.isSupported()){
-        state.hls=new Hls({enableWorker:true,lowLatencyMode:true});
-        state.hls.loadSource(src);
-        state.hls.attachMedia(els.video);
-        state.hls.on(Hls.Events.MANIFEST_PARSED, safePlay);
+  const channel = state.channels.find(ch => ch.id === id);
+  if(!channel) return;
+
+  const autoplay = options.autoplay !== false;
+  const forceMuted = options.forceMuted === true;
+
+  state.currentChannel = channel;
+  renderChannels();
+  updateNowbar(channel);
+  if(state.guideVisible) renderGuideDrawer(channel);
+
+  destroyPlayer();
+
+  const src = channel.url;
+  els.video.volume = parseFloat(els.volumeSlider.value || '1');
+  els.video.muted = false;
+  updateMuteButton();
+  updatePlayPauseButton();
+
+  const safePlay = () => {
+    if(!autoplay) return;
+
+    els.video.play().then(() => {
+      updateMuteButton();
+      showBottomBarTemporarily();
+
+      if (!forceMuted) {
+        setTimeout(() => {
+          try {
+            els.video.muted = false;
+            els.video.volume = parseFloat(els.volumeSlider.value || '1');
+            updateMuteButton();
+          } catch(e) {}
+        }, 250);
       }
-    }
+    }).catch(() => {
+      els.video.muted = true;
+      updateMuteButton();
+
+      els.video.play().then(() => {
+        showBottomBarTemporarily();
+        showAutoplayNote('Autoplay started muted — tap 🔊 for sound');
+      }).catch(() => {});
+    });
+  };
+
+  if (els.video.canPlayType('application/vnd.apple.mpegurl')) {
+    els.video.src = src;
+    safePlay();
+  } else if (window.Hls && Hls.isSupported()) {
+    state.hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+    state.hls.loadSource(src);
+    state.hls.attachMedia(els.video);
+    state.hls.on(Hls.Events.MANIFEST_PARSED, safePlay);
+  }
+}
 
     function showBottomBarTemporarily(){ clearTimeout(state.bottomBarTimer); els.bottomBar.classList.remove('auto-hidden'); state.bottomBarTimer=setTimeout(()=>{ if(!els.video.paused){ els.bottomBar.classList.add('auto-hidden'); } },2600); }
     function updateMuteButton(){ els.muteBtn.textContent=els.video.muted||els.video.volume===0?'🔇':'🔊'; }
