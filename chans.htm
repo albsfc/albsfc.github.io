@@ -32,6 +32,7 @@
         radial-gradient(circle at top right, rgba(0, 173, 239, .16), transparent 28%),
         linear-gradient(180deg, #020307, #05070e 28%, #020307 100%);
     }
+
     .app {
       display: grid;
       grid-template-columns: var(--rail-collapsed) 1fr;
@@ -40,6 +41,7 @@
     }
     .app.rail-open { grid-template-columns: var(--rail-expanded) 1fr; }
     .app.hide-sidebar { grid-template-columns: 0 1fr !important; }
+
     .sidebar {
       position: relative;
       background: linear-gradient(180deg, rgba(7, 10, 20, .98), rgba(8, 11, 24, .96));
@@ -129,6 +131,7 @@
     .clock { font-size: 28px; font-weight: 800; line-height: 1; }
     .city { color: var(--muted); font-size: 13px; margin-top: 4px; }
     .status-dot { width: 10px; height: 10px; border-radius: 999px; background: var(--success); box-shadow: 0 0 16px rgba(49,209,124,.7); }
+
     .channels {
       padding: 4px 8px 110px;
       overflow-y: auto;
@@ -182,13 +185,11 @@
     .channel-tag { color: #d7e4ff; font-size: 11px; font-weight: 700; padding: 6px 9px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.08); }
     .sidebar-footer {
       position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      padding-top: 12px;
-      padding-bottom: 12px;
+      left: 0; right: 0; bottom: 0;
+      padding-top: 12px; padding-bottom: 12px;
       background: linear-gradient(180deg, transparent, rgba(8,10,18,.96) 35%);
     }
+
     .main {
       position: relative;
       min-width: 0;
@@ -201,20 +202,19 @@
       opacity: 0;
       pointer-events: none;
     }
+
     video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
     .video-overlay {
       pointer-events: none;
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background:
         radial-gradient(circle at right top, rgba(255,255,255,.10), transparent 22%),
         linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,0) 26%, rgba(0,0,0,0) 60%, rgba(0,0,0,.30));
     }
+
     .top-panel {
       position: absolute;
-      top: 28px;
-      left: 28px;
-      right: 28px;
+      top: 28px; left: 28px; right: 28px;
       max-width: min(1100px, calc(100vw - 160px));
       background: linear-gradient(180deg, rgba(15, 18, 62, .90), rgba(20, 24, 92, .78));
       border: 1px solid rgba(255,255,255,.10);
@@ -228,18 +228,13 @@
       z-index: 2;
     }
     .hero-logo img, .hero-logo .big-fallback {
-      width: 130px;
-      height: 130px;
-      border-radius: 26px;
+      width: 130px; height: 130px; border-radius: 26px;
       background: rgba(255,255,255,.05);
-      object-fit: contain;
-      padding: 18px;
+      object-fit: contain; padding: 18px;
     }
     .hero-logo .big-fallback {
-      display: grid;
-      place-items: center;
-      font-size: 48px;
-      font-weight: 900;
+      display: grid; place-items: center;
+      font-size: 48px; font-weight: 900;
       background: linear-gradient(135deg, rgba(78,161,255,.35), rgba(111,92,255,.35));
     }
     .hero-channel { font-size: 34px; font-weight: 800; margin: 4px 0 12px; }
@@ -247,6 +242,7 @@
     .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
     .pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.10); border-radius: 999px; font-size: 13px; font-weight: 700; color: #edf3ff; }
     .program-desc { font-size: 18px; color: #edf0ff; max-width: 900px; }
+
     .guide-flyout {
       position: absolute;
       top: 18px;
@@ -281,21 +277,12 @@
       user-select: none;
     }
     .guide-flyout-logo {
-      width: 72px;
-      height: 72px;
-      border-radius: 18px;
-      object-fit: contain;
-      background: rgba(255,255,255,.06);
-      padding: 10px;
+      width: 72px; height: 72px; border-radius: 18px;
+      object-fit: contain; background: rgba(255,255,255,.06); padding: 10px;
     }
     .guide-flyout-fallback {
-      width: 72px;
-      height: 72px;
-      display: grid;
-      place-items: center;
-      border-radius: 18px;
-      font-size: 24px;
-      font-weight: 900;
+      width: 72px; height: 72px; display: grid; place-items: center;
+      border-radius: 18px; font-size: 24px; font-weight: 900;
       background: linear-gradient(135deg, rgba(78,161,255,.35), rgba(111,92,255,.35));
     }
     .guide-flyout-channel { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
@@ -340,6 +327,7 @@
       overflow: hidden;
     }
     .guide-slot-tag { align-self: flex-start; margin-top: 10px; padding: 6px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; background: rgba(255,255,255,.08); }
+
     .panel-menu {
       position: absolute;
       left: 18px;
@@ -374,11 +362,10 @@
     }
     .menu-toggle-btn { min-height: 56px; text-align: center; }
     .menu-toggle-btn.active { background: linear-gradient(135deg, rgba(78,161,255,.22), rgba(111,92,255,.22)); border-color: rgba(133,171,255,.28); }
+
     .bottom-bar {
       position: absolute;
-      left: 20px;
-      right: 20px;
-      bottom: 18px;
+      left: 20px; right: 20px; bottom: 18px;
       border-radius: 22px;
       background: linear-gradient(180deg, rgba(10, 12, 32, .84), rgba(9, 12, 28, .82));
       border: 1px solid rgba(255,255,255,.10);
@@ -406,6 +393,7 @@
     }
     .stats { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; white-space: nowrap; }
     .live-badge { color: white; background: linear-gradient(135deg, #ff2b4f, #ff5d7a); border-radius: 999px; padding: 6px 10px; font-weight: 800; font-size: 11px; }
+
     .empty-state, .loading-state {
       position: absolute;
       inset: 0;
@@ -426,6 +414,7 @@
     }
     .empty-card h2 { margin: 0 0 8px; font-size: 28px; }
     .empty-card p { color: var(--muted); margin: 0; line-height: 1.5; }
+
     @media (max-width: 760px) {
       .app, .app.rail-open { grid-template-columns: 1fr; }
       .sidebar {
@@ -447,32 +436,27 @@
         max-width: var(--rail-collapsed);
       }
       .app:not(.rail-open) .sidebar-inner { width: var(--rail-collapsed); }
-      .app.hide-sidebar .sidebar { transform: translateX(-100%); opacity: 1; pointer-events: none; border-right: 1px solid var(--border); box-shadow: var(--shadow); }
+      .app.hide-sidebar .sidebar {
+        transform: translateX(-100%);
+        opacity: 1;
+        pointer-events: none;
+        border-right: 1px solid var(--border);
+        box-shadow: var(--shadow);
+      }
       .app:not(.rail-open):not(.hide-sidebar) .brand-copy,
       .app:not(.rail-open):not(.hide-sidebar) .search-box,
       .app:not(.rail-open):not(.hide-sidebar) .time-card { display: none; }
       .app:not(.rail-open):not(.hide-sidebar) .brand { justify-content: center; padding-left: 0; padding-right: 0; }
-      .app:not(.rail-open):not(.hide-sidebar) .channel-item {
-        grid-template-columns: 56px;
-        justify-content: center;
-      }
+      .app:not(.rail-open):not(.hide-sidebar) .channel-item { grid-template-columns: 56px; justify-content: center; }
       .app:not(.rail-open):not(.hide-sidebar) .channel-item > div,
       .app:not(.rail-open):not(.hide-sidebar) .channel-tag { display: none; }
       .app:not(.rail-open):not(.hide-sidebar) .channels { padding-left: 6px; padding-right: 6px; }
       .top-panel {
-        left: 14px;
-        right: 14px;
-        top: 14px;
-        max-width: none;
-        grid-template-columns: 94px 1fr;
-        padding: 16px;
-        gap: 16px;
+        left: 14px; right: 14px; top: 14px; max-width: none;
+        grid-template-columns: 94px 1fr; padding: 16px; gap: 16px;
       }
       .hero-logo img, .hero-logo .big-fallback {
-        width: 94px;
-        height: 94px;
-        border-radius: 20px;
-        padding: 12px;
+        width: 94px; height: 94px; border-radius: 20px; padding: 12px;
       }
       .guide-flyout {
         left: 14px !important;
@@ -483,16 +467,11 @@
       }
       .guide-flyout-head { grid-template-columns: 52px 1fr auto; }
       .guide-flyout-logo, .guide-flyout-fallback {
-        width: 52px;
-        height: 52px;
-        border-radius: 14px;
+        width: 52px; height: 52px; border-radius: 14px;
       }
       .bottom-bar {
-        left: 12px;
-        right: 12px;
-        bottom: 12px;
-        flex-direction: column;
-        align-items: stretch;
+        left: 12px; right: 12px; bottom: 12px;
+        flex-direction: column; align-items: stretch;
       }
       .playlist-input { max-width: none; }
       .stats { justify-content: space-between; }
@@ -524,11 +503,25 @@
         <div class="sidebar-footer"></div>
       </div>
     </aside>
+
     <main class="main" id="main">
       <video id="video" autoplay playsinline controls></video>
       <div class="video-overlay"></div>
-      <div class="loading-state" id="loadingState"><div class="empty-card"><h2>Loading playlist…</h2><p>Trying the remote playlist first. If the browser blocks it, the local file picker will still work.</p></div></div>
-      <div class="empty-state" id="emptyState" style="display:none;"><div class="empty-card"><h2>No channel selected</h2><p>Pick a channel from the left rail. If the playlist URL fails to load, use a local file or another URL.</p></div></div>
+
+      <div class="loading-state" id="loadingState">
+        <div class="empty-card">
+          <h2>Loading playlist…</h2>
+          <p>Trying the remote playlist first. If the browser blocks it, the local file picker will still work.</p>
+        </div>
+      </div>
+
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="empty-card">
+          <h2>No channel selected</h2>
+          <p>Pick a channel from the left rail. If the playlist URL fails to load, use a local file or another URL.</p>
+        </div>
+      </div>
+
       <section class="top-panel" id="topPanel" style="display:none;">
         <div class="hero-logo" id="heroLogo"></div>
         <div>
@@ -538,6 +531,7 @@
           <div class="program-desc" id="heroDesc">Description</div>
         </div>
       </section>
+
       <section class="guide-flyout" id="guideFlyout">
         <div class="guide-flyout-head" id="guideHead">
           <div id="guideFlyoutLogo"></div>
@@ -549,6 +543,7 @@
         </div>
         <div class="guide-timeline" id="guideFlyoutTimeline"></div>
       </section>
+
       <section class="panel-menu" id="panelMenu">
         <div class="panel-menu-head" id="panelMenuHead">Display options</div>
         <div class="panel-menu-body">
@@ -558,6 +553,7 @@
           <button class="menu-toggle-btn active" id="menuToggleInfo">Show Now Playing Card</button>
         </div>
       </section>
+
       <section class="bottom-bar" id="bottomBar">
         <div class="controls">
           <button class="control-btn" id="menuBtn">☰</button>
@@ -568,10 +564,15 @@
           <input type="file" id="m3uFile" accept=".m3u,.m3u8,text/plain" class="ghost-btn" />
           <button class="ghost-btn" id="loadSourceBtn">Load</button>
         </div>
-        <div class="stats"><span class="live-badge">LIVE</span><span id="channelCount">0 channels</span><span id="streamInfo">No stream</span></div>
+        <div class="stats">
+          <span class="live-badge">LIVE</span>
+          <span id="channelCount">0 channels</span>
+          <span id="streamInfo">No stream</span>
+        </div>
       </section>
     </main>
   </div>
+
   <script>
     const state = {
       channels: [], currentChannel: null, hls: null, epg: new Map(), guideVisible: true, guideHoverTimer: null,
@@ -581,39 +582,51 @@
       pendingPlaylistUrl: '', panelMenuVisible: false, infoVisible: true, guideDragOffsetX: 0, guideDragOffsetY: 0,
       panelDragOffsetX: 0, panelDragOffsetY: 0,
     };
+
     const els = {
       app: document.getElementById('app'), main: document.getElementById('main'), video: document.getElementById('video'), channels: document.getElementById('channels'),
-      heroLogo: document.getElementById('heroLogo'), heroChannel: document.getElementById('heroChannel'), heroProgram: document.getElementById('heroProgram'),
-      heroDesc: document.getElementById('heroDesc'), metaRow: document.getElementById('metaRow'), guideFlyout: document.getElementById('guideFlyout'),
-      guideHead: document.getElementById('guideHead'), guideFlyoutLogo: document.getElementById('guideFlyoutLogo'), guideFlyoutChannel: document.getElementById('guideFlyoutChannel'),
-      guideFlyoutMeta: document.getElementById('guideFlyoutMeta'), guideFlyoutTimeline: document.getElementById('guideFlyoutTimeline'), closeGuideBtn: document.getElementById('closeGuideBtn'),
-      topPanel: document.getElementById('topPanel'), loadingState: document.getElementById('loadingState'), emptyState: document.getElementById('emptyState'),
-      channelCount: document.getElementById('channelCount'), streamInfo: document.getElementById('streamInfo'), channelSearch: document.getElementById('channelSearch'),
-      clock: document.getElementById('clock'), timezoneLabel: document.getElementById('timezoneLabel'), m3uFile: document.getElementById('m3uFile'),
-      playlistUrlInput: document.getElementById('playlistUrlInput'), loadSourceBtn: document.getElementById('loadSourceBtn'), menuBtn: document.getElementById('menuBtn'),
-      playPauseBtn: document.getElementById('playPauseBtn'), muteBtn: document.getElementById('muteBtn'), volumeSlider: document.getElementById('volumeSlider'),
-      bottomBar: document.getElementById('bottomBar'), panelMenu: document.getElementById('panelMenu'), panelMenuHead: document.getElementById('panelMenuHead'),
-      menuToggleChannels: document.getElementById('menuToggleChannels'), menuToggleRail: document.getElementById('menuToggleRail'), menuToggleGuide: document.getElementById('menuToggleGuide'), menuToggleInfo: document.getElementById('menuToggleInfo'),
+      heroLogo: document.getElementById('heroLogo'), heroChannel: document.getElementById('heroChannel'), heroProgram: document.getElementById('heroProgram'), heroDesc: document.getElementById('heroDesc'), metaRow: document.getElementById('metaRow'),
+      guideFlyout: document.getElementById('guideFlyout'), guideHead: document.getElementById('guideHead'), guideFlyoutLogo: document.getElementById('guideFlyoutLogo'), guideFlyoutChannel: document.getElementById('guideFlyoutChannel'), guideFlyoutMeta: document.getElementById('guideFlyoutMeta'), guideFlyoutTimeline: document.getElementById('guideFlyoutTimeline'), closeGuideBtn: document.getElementById('closeGuideBtn'),
+      topPanel: document.getElementById('topPanel'), loadingState: document.getElementById('loadingState'), emptyState: document.getElementById('emptyState'), channelCount: document.getElementById('channelCount'), streamInfo: document.getElementById('streamInfo'), channelSearch: document.getElementById('channelSearch'), clock: document.getElementById('clock'), timezoneLabel: document.getElementById('timezoneLabel'),
+      m3uFile: document.getElementById('m3uFile'), playlistUrlInput: document.getElementById('playlistUrlInput'), loadSourceBtn: document.getElementById('loadSourceBtn'), menuBtn: document.getElementById('menuBtn'), playPauseBtn: document.getElementById('playPauseBtn'), muteBtn: document.getElementById('muteBtn'), volumeSlider: document.getElementById('volumeSlider'), bottomBar: document.getElementById('bottomBar'),
+      panelMenu: document.getElementById('panelMenu'), panelMenuHead: document.getElementById('panelMenuHead'), menuToggleChannels: document.getElementById('menuToggleChannels'), menuToggleRail: document.getElementById('menuToggleRail'), menuToggleGuide: document.getElementById('menuToggleGuide'), menuToggleInfo: document.getElementById('menuToggleInfo'),
     };
+
     function escapeHtml(str = '') { return str.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;'); }
     function getAttr(line, attr) { const match = line.match(new RegExp(`${attr}="([^"]*)"`, 'i')); return match ? match[1] : ''; }
     function isMobileLayout() { return window.innerWidth <= 760; }
+
     function parseM3U(text) {
       const raw = text.replace(/^\uFEFF/, '');
       const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-      const channels = []; let pending = {};
+      const channels = [];
+      let pending = {};
       for (const line of lines) {
         if (line.startsWith('#EXTINF')) {
           const name = (line.split(',').slice(1).join(',') || '').trim() || 'Unknown Channel';
-          pending = { name, id: getAttr(line, 'tvg-id') || getAttr(line, 'channel-id') || name, logo: getAttr(line, 'tvg-logo'), group: getAttr(line, 'group-title') || 'TV', epgChannel: getAttr(line, 'tvg-id') || getAttr(line, 'channel-id') || name };
+          pending = {
+            name,
+            id: getAttr(line, 'tvg-id') || getAttr(line, 'channel-id') || name,
+            logo: getAttr(line, 'tvg-logo'),
+            group: getAttr(line, 'group-title') || 'TV',
+            epgChannel: getAttr(line, 'tvg-id') || getAttr(line, 'channel-id') || name,
+          };
           continue;
         }
-        if (!line.startsWith('#') && pending.name) { channels.push({ ...pending, url: line }); pending = {}; }
+        if (!line.startsWith('#') && pending.name) {
+          channels.push({ ...pending, url: line });
+          pending = {};
+        }
       }
       return channels;
     }
+
     async function fetchText(url) {
-      const attempts = [url, `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`, `https://cors.isomorphic-git.org/${url}`];
+      const attempts = [
+        url,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        `https://cors.isomorphic-git.org/${url}`,
+      ];
       let lastError = null;
       for (const attempt of attempts) {
         try {
@@ -624,15 +637,32 @@
       }
       throw lastError || new Error('Failed to fetch remote resource');
     }
+
+    function syncMobileMainOffset() {
+      if (!isMobileLayout()) {
+        els.main.style.marginLeft = '';
+        return;
+      }
+      if (els.app.classList.contains('hide-sidebar')) {
+        els.main.style.marginLeft = '0px';
+      } else if (els.app.classList.contains('rail-open')) {
+        els.main.style.marginLeft = `${Math.min(window.innerWidth * 0.82, 320)}px`;
+      } else {
+        els.main.style.marginLeft = getComputedStyle(document.documentElement).getPropertyValue('--rail-collapsed').trim() || '96px';
+      }
+    }
+
     function toggleRail(force) {
       const open = typeof force === 'boolean' ? force : !els.app.classList.contains('rail-open');
       els.app.classList.toggle('rail-open', open);
       if (isMobileLayout()) {
         els.app.classList.remove('hide-sidebar');
         state.sidebarVisible = true;
+        syncMobileMainOffset();
       }
       updateToggleButtons();
     }
+
     function positionPanelMenu() {
       const btnRect = els.menuBtn.getBoundingClientRect();
       const barRect = els.bottomBar.getBoundingClientRect();
@@ -643,16 +673,21 @@
       els.panelMenu.style.bottom = `${window.innerHeight - barRect.top + 10}px`;
       els.panelMenu.style.top = 'auto';
     }
+
     function togglePanelMenu(force) {
       state.panelMenuVisible = typeof force === 'boolean' ? force : !state.panelMenuVisible;
       if (state.panelMenuVisible && !els.panelMenu.dataset.dragged) positionPanelMenu();
       els.panelMenu.classList.toggle('visible', state.panelMenuVisible);
+      if (state.panelMenuVisible) showBottomBarTemporarily();
     }
+
     function toggleSidebar(force) {
       if (isMobileLayout()) {
         const showBar = typeof force === 'boolean' ? force : !state.sidebarVisible;
         state.sidebarVisible = showBar;
         els.app.classList.toggle('hide-sidebar', !showBar);
+        if (!showBar) els.app.classList.remove('rail-open');
+        syncMobileMainOffset();
         updateToggleButtons();
         return;
       }
@@ -660,17 +695,37 @@
       els.app.classList.toggle('hide-sidebar', !state.sidebarVisible);
       updateToggleButtons();
     }
-    function toggleGuide(force) { state.guideVisible = typeof force === 'boolean' ? force : !state.guideVisible; if (!state.guideVisible) els.guideFlyout.classList.remove('visible'); updateToggleButtons(); }
-    function toggleInfo(force) { state.infoVisible = typeof force === 'boolean' ? force : !state.infoVisible; if (!state.infoVisible) els.topPanel.style.display = 'none'; else if (state.currentChannel) showHeroTemporarily(); updateToggleButtons(); }
+
+    function toggleGuide(force) {
+      state.guideVisible = typeof force === 'boolean' ? force : !state.guideVisible;
+      if (!state.guideVisible) els.guideFlyout.classList.remove('visible');
+      updateToggleButtons();
+    }
+
+    function toggleInfo(force) {
+      state.infoVisible = typeof force === 'boolean' ? force : !state.infoVisible;
+      if (!state.infoVisible) els.topPanel.style.display = 'none';
+      else if (state.currentChannel) showHeroTemporarily();
+      updateToggleButtons();
+    }
+
     function updateToggleButtons() {
       els.menuToggleChannels.classList.toggle('active', state.sidebarVisible);
       els.menuToggleRail.classList.toggle('active', els.app.classList.contains('rail-open'));
       els.menuToggleGuide.classList.toggle('active', state.guideVisible);
       els.menuToggleInfo.classList.toggle('active', state.infoVisible);
     }
-    function destroyPlayer() { if (state.hls) { try { state.hls.destroy(); } catch {} state.hls = null; } els.video.pause(); els.video.removeAttribute('src'); els.video.load(); }
+
+    function destroyPlayer() {
+      if (state.hls) { try { state.hls.destroy(); } catch {} state.hls = null; }
+      els.video.pause();
+      els.video.removeAttribute('src');
+      els.video.load();
+    }
+
     function renderChannels() {
-      const currentId = state.currentChannel?.id; const query = state.channelFilter.trim().toLowerCase();
+      const currentId = state.currentChannel?.id;
+      const query = state.channelFilter.trim().toLowerCase();
       const filtered = state.channels.filter(ch => !query || [ch.name, ch.group, ch.id].filter(Boolean).some(v => v.toLowerCase().includes(query)));
       els.channelCount.textContent = `${filtered.length} / ${state.channels.length} channels`;
       els.channels.innerHTML = filtered.map((ch, index) => {
@@ -683,27 +738,59 @@
         btn.addEventListener('mouseenter', () => showGuidePreview(btn.dataset.id));
       });
     }
-    function formatClock(date) { if (!date) return '--:--'; return new Intl.DateTimeFormat('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: state.timezone }).format(date); }
+
+    function formatClock(date) {
+      if (!date) return '--:--';
+      return new Intl.DateTimeFormat('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: state.timezone }).format(date);
+    }
+
     function updateHero(channel) {
-      const programmes = getProgrammesForChannel(channel); const nowItem = programmes.find(p => p.now) || programmes[0];
+      const programmes = getProgrammesForChannel(channel);
+      const nowItem = programmes.find(p => p.now) || programmes[0];
       els.heroLogo.innerHTML = channel.logo ? `<img src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />` : `<div class="big-fallback">${escapeHtml((channel.name || '?').charAt(0).toUpperCase())}</div>`;
-      els.heroChannel.textContent = channel.name; els.heroProgram.textContent = nowItem?.title || 'Live broadcast'; els.heroDesc.textContent = nowItem?.desc || 'No programme description available.'; els.metaRow.innerHTML = '';
-      [channel.group || 'TV', nowItem ? `${formatClock(nowItem.start)} - ${formatClock(nowItem.stop)}` : 'Live now', channel.url?.includes('.m3u8') ? 'HLS stream' : 'Stream'].forEach(label => { const pill = document.createElement('div'); pill.className = 'pill'; pill.textContent = label; els.metaRow.appendChild(pill); });
+      els.heroChannel.textContent = channel.name;
+      els.heroProgram.textContent = nowItem?.title || 'Live broadcast';
+      els.heroDesc.textContent = nowItem?.desc || 'No programme description available.';
+      els.metaRow.innerHTML = '';
+      [channel.group || 'TV', nowItem ? `${formatClock(nowItem.start)} - ${formatClock(nowItem.stop)}` : 'Live now', channel.url?.includes('.m3u8') ? 'HLS stream' : 'Stream'].forEach(label => {
+        const pill = document.createElement('div');
+        pill.className = 'pill';
+        pill.textContent = label;
+        els.metaRow.appendChild(pill);
+      });
     }
+
     function showHeroTemporarily() {
-      if (!state.infoVisible) { els.topPanel.style.display = 'none'; return; }
-      els.topPanel.style.display = 'grid'; clearTimeout(state.heroTimer); state.heroTimer = setTimeout(() => { if (!state.heroPinned && state.infoVisible) els.topPanel.style.display = 'none'; }, 4500);
+      if (!state.infoVisible) {
+        els.topPanel.style.display = 'none';
+        return;
+      }
+      els.topPanel.style.display = 'grid';
+      clearTimeout(state.heroTimer);
+      state.heroTimer = setTimeout(() => {
+        if (!state.heroPinned && state.infoVisible) els.topPanel.style.display = 'none';
+      }, 4500);
     }
+
     function getProgrammesForChannel(channel) {
-      const keys = [channel.epgChannel, channel.id, channel.name].filter(Boolean); let programmes = [];
-      for (const key of keys) { if (state.epg.has(key)) { programmes = state.epg.get(key); break; } }
-      const now = new Date(); return programmes.filter(p => p.stop > new Date(now.getTime() - 30 * 60 * 1000)).slice(0, 8).map(p => ({ ...p, now: p.start <= now && p.stop >= now }));
+      const keys = [channel.epgChannel, channel.id, channel.name].filter(Boolean);
+      let programmes = [];
+      for (const key of keys) {
+        if (state.epg.has(key)) { programmes = state.epg.get(key); break; }
+      }
+      const now = new Date();
+      return programmes.filter(p => p.stop > new Date(now.getTime() - 30 * 60 * 1000)).slice(0, 8).map(p => ({ ...p, now: p.start <= now && p.stop >= now }));
     }
+
     function showGuidePreview(channelId) {
-      clearTimeout(state.guideHoverTimer); if (!state.guideVisible) return;
-      const channel = state.channels.find(ch => ch.id === channelId); if (!channel) return; const items = getProgrammesForChannel(channel);
+      clearTimeout(state.guideHoverTimer);
+      if (!state.guideVisible) return;
+      const channel = state.channels.find(ch => ch.id === channelId);
+      if (!channel) return;
+      const items = getProgrammesForChannel(channel);
       els.guideFlyoutLogo.innerHTML = channel.logo ? `<img class="guide-flyout-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />` : `<div class="guide-flyout-fallback">${escapeHtml((channel.name || '?').charAt(0).toUpperCase())}</div>`;
-      els.guideFlyoutChannel.textContent = channel.name; els.guideFlyoutMeta.textContent = items.length ? `${items.length} upcoming items • hover a channel to preview` : 'No guide information available';
+      els.guideFlyoutChannel.textContent = channel.name;
+      els.guideFlyoutMeta.textContent = items.length ? `${items.length} upcoming items • hover a channel to preview` : 'No guide information available';
       if (!items.length) {
         els.guideFlyoutTimeline.innerHTML = '<div class="guide-slot now"><div><div class="guide-slot-time">Guide unavailable</div><div class="guide-slot-name">No episode data loaded</div><div class="guide-slot-desc">This channel does not currently have guide information.</div></div><div class="guide-slot-tag">No info</div></div>';
       } else {
@@ -711,59 +798,187 @@
       }
       els.guideFlyout.classList.add('visible');
     }
-    function hideGuidePreview() { clearTimeout(state.guideHoverTimer); state.guideHoverTimer = setTimeout(() => els.guideFlyout.classList.remove('visible'), 160); }
+
+    function hideGuidePreview() {
+      clearTimeout(state.guideHoverTimer);
+      state.guideHoverTimer = setTimeout(() => els.guideFlyout.classList.remove('visible'), 160);
+    }
+
     async function loadEpg(url) {
-      const xmlText = await fetchText(url); const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
-      const programmes = [...xml.querySelectorAll('programme')].map(node => ({ channel: node.getAttribute('channel') || '', start: parseXmltvDate(node.getAttribute('start')), stop: parseXmltvDate(node.getAttribute('stop')), title: node.querySelector('title')?.textContent?.trim() || 'Untitled', desc: node.querySelector('desc')?.textContent?.trim() || '' })).filter(p => p.channel && p.start && p.stop);
-      state.epg = programmes.reduce((map, item) => { if (!map.has(item.channel)) map.set(item.channel, []); map.get(item.channel).push(item); return map; }, new Map());
+      const xmlText = await fetchText(url);
+      const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
+      const programmes = [...xml.querySelectorAll('programme')].map(node => ({
+        channel: node.getAttribute('channel') || '',
+        start: parseXmltvDate(node.getAttribute('start')),
+        stop: parseXmltvDate(node.getAttribute('stop')),
+        title: node.querySelector('title')?.textContent?.trim() || 'Untitled',
+        desc: node.querySelector('desc')?.textContent?.trim() || '',
+      })).filter(p => p.channel && p.start && p.stop);
+      state.epg = programmes.reduce((map, item) => {
+        if (!map.has(item.channel)) map.set(item.channel, []);
+        map.get(item.channel).push(item);
+        return map;
+      }, new Map());
       for (const entries of state.epg.values()) entries.sort((a, b) => a.start - b.start);
       if (state.currentChannel) showGuidePreview(state.currentChannel.id);
     }
-    function parseXmltvDate(value) { if (!value) return null; const match = value.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/); if (!match) return null; const [, y, m, d, hh, mm, ss] = match; return new Date(`${y}-${m}-${d}T${hh}:${mm}:${ss}`); }
+
+    function parseXmltvDate(value) {
+      if (!value) return null;
+      const match = value.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+      if (!match) return null;
+      const [, y, m, d, hh, mm, ss] = match;
+      return new Date(`${y}-${m}-${d}T${hh}:${mm}:${ss}`);
+    }
+
     async function loadPlaylist() {
       try {
-        els.loadingState.style.display = 'grid'; els.emptyState.style.display = 'none';
-        let m3uText = ''; const file = els.m3uFile.files?.[0];
-        if (file) m3uText = await file.text(); else if (state.pendingPlaylistUrl) m3uText = await fetchText(state.pendingPlaylistUrl); else m3uText = await fetchText(state.defaultM3uUrl);
-        state.channels = parseM3U(m3uText); renderChannels(); els.loadingState.style.display = 'none';
-        if (state.channels.length) playChannel(state.channels[0].id); else { els.emptyState.style.display = 'grid'; els.streamInfo.textContent = 'No channels found in playlist'; }
+        els.loadingState.style.display = 'grid';
+        els.emptyState.style.display = 'none';
+        let m3uText = '';
+        const file = els.m3uFile.files?.[0];
+        if (file) m3uText = await file.text();
+        else if (state.pendingPlaylistUrl) m3uText = await fetchText(state.pendingPlaylistUrl);
+        else m3uText = await fetchText(state.defaultM3uUrl);
+
+        state.channels = parseM3U(m3uText);
+        renderChannels();
+        els.loadingState.style.display = 'none';
+        if (state.channels.length) playChannel(state.channels[0].id);
+        else {
+          els.emptyState.style.display = 'grid';
+          els.streamInfo.textContent = 'No channels found in playlist';
+        }
         if (state.defaultEpgUrl) loadEpg(state.defaultEpgUrl).catch(() => {});
       } catch (error) {
-        console.error(error); els.loadingState.style.display = 'none'; els.emptyState.style.display = 'grid'; els.streamInfo.textContent = 'Could not load that playlist URL. Try another URL or use a local file.'; state.channels = []; renderChannels();
+        console.error(error);
+        els.loadingState.style.display = 'none';
+        els.emptyState.style.display = 'grid';
+        els.streamInfo.textContent = 'Could not load that playlist URL. Try another URL or use a local file.';
+        state.channels = [];
+        renderChannels();
       }
     }
+
     function playChannel(id) {
-      const channel = state.channels.find(ch => ch.id === id); if (!channel) return; state.currentChannel = channel; renderChannels(); updateHero(channel); showGuidePreview(channel.id); els.emptyState.style.display = 'none'; els.streamInfo.textContent = channel.name; destroyPlayer(); const src = channel.url; els.video.muted = false; els.video.volume = parseFloat(els.volumeSlider.value || '1'); updateMuteButton(); updatePlayPauseButton();
-      if (els.video.canPlayType('application/vnd.apple.mpegurl')) { els.video.src = src; els.video.play().then(() => { showHeroTemporarily(); showBottomBarTemporarily(); }).catch(() => {}); }
-      else if (window.Hls && Hls.isSupported()) {
-        state.hls = new Hls({ enableWorker: true, lowLatencyMode: true }); state.hls.loadSource(src); state.hls.attachMedia(els.video);
+      const channel = state.channels.find(ch => ch.id === id);
+      if (!channel) return;
+      state.currentChannel = channel;
+      renderChannels();
+      updateHero(channel);
+      showGuidePreview(channel.id);
+      els.emptyState.style.display = 'none';
+      els.streamInfo.textContent = channel.name;
+      destroyPlayer();
+      const src = channel.url;
+      els.video.muted = false;
+      els.video.volume = parseFloat(els.volumeSlider.value || '1');
+      updateMuteButton();
+      updatePlayPauseButton();
+      if (els.video.canPlayType('application/vnd.apple.mpegurl')) {
+        els.video.src = src;
+        els.video.play().then(() => { showHeroTemporarily(); showBottomBarTemporarily(); }).catch(() => {});
+      } else if (window.Hls && Hls.isSupported()) {
+        state.hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+        state.hls.loadSource(src);
+        state.hls.attachMedia(els.video);
         state.hls.on(Hls.Events.MANIFEST_PARSED, () => els.video.play().then(() => { showHeroTemporarily(); showBottomBarTemporarily(); }).catch(() => {}));
-        state.hls.on(Hls.Events.ERROR, (_event, data) => { if (data?.fatal) els.streamInfo.textContent = 'Stream error / possibly blocked by source'; });
-      } else els.streamInfo.textContent = 'HLS not supported in this browser';
+        state.hls.on(Hls.Events.ERROR, (_event, data) => {
+          if (data?.fatal) els.streamInfo.textContent = 'Stream error / possibly blocked by source';
+        });
+      } else {
+        els.streamInfo.textContent = 'HLS not supported in this browser';
+      }
     }
-    function showBottomBarTemporarily() { if (!state.bottomBarVisible) return; clearTimeout(state.bottomBarTimer); els.bottomBar.classList.remove('auto-hidden'); state.bottomBarTimer = setTimeout(() => { if (state.bottomBarVisible && !els.video.paused) els.bottomBar.classList.add('auto-hidden'); }, 2600); }
+
+    function showBottomBarTemporarily() {
+      if (!state.bottomBarVisible) return;
+      clearTimeout(state.bottomBarTimer);
+      els.bottomBar.classList.remove('auto-hidden');
+      state.bottomBarTimer = setTimeout(() => {
+        if (state.bottomBarVisible && !els.video.paused) {
+          els.bottomBar.classList.add('auto-hidden');
+          els.panelMenu.classList.remove('visible');
+          state.panelMenuVisible = false;
+        }
+      }, 2600);
+    }
+
     function updateMuteButton() { els.muteBtn.textContent = els.video.muted || els.video.volume === 0 ? '🔇' : '🔊'; }
     function updatePlayPauseButton() { els.playPauseBtn.textContent = els.video.paused ? '▶' : '⏸'; }
-    function updateClock() { const now = new Date(); els.clock.textContent = new Intl.DateTimeFormat('en-AU', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: state.timezone }).format(now); els.timezoneLabel.textContent = state.timezone; }
+    function updateClock() {
+      const now = new Date();
+      els.clock.textContent = new Intl.DateTimeFormat('en-AU', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: state.timezone }).format(now);
+      els.timezoneLabel.textContent = state.timezone;
+    }
+
     els.menuBtn.addEventListener('click', () => togglePanelMenu());
-    els.playPauseBtn.addEventListener('click', async () => { if (els.video.paused) { try { await els.video.play(); els.video.muted = false; } catch { els.streamInfo.textContent = 'Playback blocked until you interact'; } } else els.video.pause(); updatePlayPauseButton(); updateMuteButton(); showBottomBarTemporarily(); });
-    els.muteBtn.addEventListener('click', async () => { els.video.muted = !els.video.muted; if (!els.video.paused) { try { await els.video.play(); } catch {} } updateMuteButton(); showBottomBarTemporarily(); });
-    els.volumeSlider.addEventListener('input', () => { els.video.volume = parseFloat(els.volumeSlider.value || '1'); if (els.video.volume > 0 && els.video.muted) els.video.muted = false; updateMuteButton(); showBottomBarTemporarily(); });
+    els.playPauseBtn.addEventListener('click', async () => {
+      if (els.video.paused) {
+        try { await els.video.play(); els.video.muted = false; } catch { els.streamInfo.textContent = 'Playback blocked until you interact'; }
+      } else {
+        els.video.pause();
+      }
+      updatePlayPauseButton();
+      updateMuteButton();
+      showBottomBarTemporarily();
+    });
+    els.muteBtn.addEventListener('click', async () => {
+      els.video.muted = !els.video.muted;
+      if (!els.video.paused) { try { await els.video.play(); } catch {} }
+      updateMuteButton();
+      showBottomBarTemporarily();
+    });
+    els.volumeSlider.addEventListener('input', () => {
+      els.video.volume = parseFloat(els.volumeSlider.value || '1');
+      if (els.video.volume > 0 && els.video.muted) els.video.muted = false;
+      updateMuteButton();
+      showBottomBarTemporarily();
+    });
     els.video.addEventListener('play', () => { updatePlayPauseButton(); showBottomBarTemporarily(); });
-    els.video.addEventListener('pause', () => { updatePlayPauseButton(); els.bottomBar.classList.remove('auto-hidden'); });
+    els.video.addEventListener('pause', () => {
+      updatePlayPauseButton();
+      els.bottomBar.classList.remove('auto-hidden');
+      els.panelMenu.classList.remove('visible');
+      state.panelMenuVisible = false;
+    });
     els.video.addEventListener('volumechange', updateMuteButton);
-    els.topPanel.addEventListener('mouseenter', () => { state.heroPinned = true; clearTimeout(state.heroTimer); els.topPanel.style.display = 'grid'; });
-    els.topPanel.addEventListener('mouseleave', () => { state.heroPinned = false; showHeroTemporarily(); });
+
+    els.topPanel.addEventListener('mouseenter', () => {
+      state.heroPinned = true;
+      clearTimeout(state.heroTimer);
+      els.topPanel.style.display = 'grid';
+    });
+    els.topPanel.addEventListener('mouseleave', () => {
+      state.heroPinned = false;
+      showHeroTemporarily();
+    });
+
     els.guideFlyout.addEventListener('mouseenter', () => clearTimeout(state.guideHoverTimer));
     els.guideFlyout.addEventListener('mouseleave', hideGuidePreview);
     els.channels.addEventListener('mouseleave', hideGuidePreview);
     els.closeGuideBtn.addEventListener('click', () => els.guideFlyout.classList.remove('visible'));
-    els.loadSourceBtn.addEventListener('click', () => { state.pendingPlaylistUrl = els.playlistUrlInput.value.trim(); loadPlaylist(); });
-    els.channelSearch.addEventListener('input', () => { state.channelFilter = els.channelSearch.value; renderChannels(); });
-    els.menuToggleChannels.addEventListener('click', () => { toggleSidebar(); if (state.panelMenuVisible && !els.panelMenu.dataset.dragged) positionPanelMenu(); });
-    els.menuToggleRail.addEventListener('click', () => { toggleRail(); if (state.panelMenuVisible && !els.panelMenu.dataset.dragged) positionPanelMenu(); });
+
+    els.loadSourceBtn.addEventListener('click', () => {
+      state.pendingPlaylistUrl = els.playlistUrlInput.value.trim();
+      loadPlaylist();
+    });
+    els.channelSearch.addEventListener('input', () => {
+      state.channelFilter = els.channelSearch.value;
+      renderChannels();
+    });
+
+    els.menuToggleChannels.addEventListener('click', () => {
+      toggleSidebar();
+      if (state.panelMenuVisible && !els.panelMenu.dataset.dragged) positionPanelMenu();
+    });
+    els.menuToggleRail.addEventListener('click', () => {
+      toggleRail();
+      if (state.panelMenuVisible && !els.panelMenu.dataset.dragged) positionPanelMenu();
+    });
     els.menuToggleGuide.addEventListener('click', () => toggleGuide());
     els.menuToggleInfo.addEventListener('click', () => toggleInfo());
+
     let guidePointerId = null;
     els.guideHead.addEventListener('pointerdown', (e) => {
       if (e.target.closest('button')) return;
@@ -792,6 +1007,7 @@
     };
     els.guideHead.addEventListener('pointerup', endGuideDrag);
     els.guideHead.addEventListener('pointercancel', endGuideDrag);
+
     let panelPointerId = null;
     els.panelMenuHead.addEventListener('pointerdown', (e) => {
       panelPointerId = e.pointerId;
@@ -821,15 +1037,26 @@
     };
     els.panelMenuHead.addEventListener('pointerup', endPanelDrag);
     els.panelMenuHead.addEventListener('pointercancel', endPanelDrag);
-    ['mousemove', 'click', 'keydown', 'touchstart'].forEach(evt => { els.main.addEventListener(evt, showBottomBarTemporarily, { passive: true }); });
+
+    ['mousemove', 'click', 'keydown', 'touchstart'].forEach(evt => {
+      els.main.addEventListener(evt, showBottomBarTemporarily, { passive: true });
+    });
+
     window.addEventListener('resize', () => {
       if (isMobileLayout()) {
         state.sidebarVisible = !els.app.classList.contains('hide-sidebar');
+        syncMobileMainOffset();
+      } else {
+        els.main.style.marginLeft = '';
       }
       if (state.panelMenuVisible && !els.panelMenu.dataset.dragged) positionPanelMenu();
       updateToggleButtons();
     });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') togglePanelMenu(false); });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') togglePanelMenu(false);
+    });
+
     document.addEventListener('click', (e) => {
       if (!isMobileLayout()) return;
       if (!els.app.classList.contains('rail-open')) return;
@@ -837,9 +1064,17 @@
       const clickedMenu = e.target.closest('#menuBtn') || e.target.closest('#menuToggleRail');
       if (!clickedInsideSidebar && !clickedMenu) {
         els.app.classList.remove('rail-open');
+        syncMobileMainOffset();
+        updateToggleButtons();
       }
     });
-    updateClock(); setInterval(updateClock, 1000); updateToggleButtons(); showBottomBarTemporarily(); loadPlaylist();
+
+    updateClock();
+    setInterval(updateClock, 1000);
+    updateToggleButtons();
+    syncMobileMainOffset();
+    showBottomBarTemporarily();
+    loadPlaylist();
   </script>
 </body>
 </html>
