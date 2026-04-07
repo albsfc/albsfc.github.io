@@ -60,6 +60,8 @@
     }
     .app.rail-open .sidebar { width: 320px; }
     .sidebar-inner { width: 320px; height: 100%; }
+    .app:not(.rail-open) .sidebar-inner { width: 92px; }
+    .sidebar-toggle-head { display: flex; justify-content: center; align-items: center; padding: 14px 12px 6px; min-height: 64px; }
     .brand, .sidebar-head { padding-left: 12px; padding-right: 12px; }
     .brand {
       display: flex;
@@ -100,6 +102,7 @@
     .brand-copy h1 { margin: 0; font-size: 16px; line-height: 1.1; }
     .brand-copy p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
     .sidebar-head { display: flex; flex-direction: column; gap: 10px; padding-top: 6px; padding-bottom: 14px; }
+    .rail-toggle-top { border: 1px solid rgba(255,255,255,.10); background: rgba(8,11,24,.78); color: var(--text); border-radius: 14px; width: 48px; height: 48px; font-weight: 800; font-size: 22px; backdrop-filter: blur(14px); box-shadow: var(--shadow); cursor: pointer; display: grid; place-items: center; }
     .search-box {
       width: 100%; border: 1px solid var(--border); background: rgba(255,255,255,.04); color: var(--text);
       border-radius: 16px; padding: 12px 14px; outline: none; font-size: 14px;
@@ -167,10 +170,6 @@
       pointer-events: none; position: absolute; inset: 0;
       background: radial-gradient(circle at right top, rgba(255,255,255,.10), transparent 22%), linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,0) 26%, rgba(0,0,0,0) 60%, rgba(0,0,0,.30));
     }
-    .rail-toggle-top {
-      position: absolute; top: 18px; left: 18px; z-index: 14; border: 1px solid rgba(255,255,255,.10); background: rgba(8,11,24,.78); color: var(--text);
-      border-radius: 14px; padding: 10px 12px; font-weight: 800; backdrop-filter: blur(14px); box-shadow: var(--shadow); cursor: pointer;
-    }
     .info-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.52); backdrop-filter: blur(8px); z-index: 20; display: none; }
     .info-modal-backdrop.visible { display: block; }
     .info-modal { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(680px, calc(100vw - 28px)); max-height: calc(100vh - 40px); overflow: auto; border-radius: 24px; background: linear-gradient(180deg, rgba(9,12,28,.96), rgba(10,15,32,.92)); border: 1px solid rgba(255,255,255,.10); box-shadow: var(--shadow); z-index: 21; display: none; }
@@ -221,18 +220,15 @@
       padding-top: 12px;
     }
     .guide-drawer-head {
-      display: grid;
-      grid-template-columns: 78px 1fr auto;
-      gap: 14px;
+      display: flex;
       align-items: center;
+      justify-content: space-between;
+      gap: 14px;
       padding: 0 0 14px;
       border-bottom: 1px solid rgba(255,255,255,.08);
       background: transparent;
     }
-    .guide-drawer-logo { width: 72px; height: 72px; border-radius: 18px; object-fit: contain; background: rgba(255,255,255,.06); padding: 10px; }
-    .guide-drawer-fallback { width: 72px; height: 72px; display: grid; place-items: center; border-radius: 18px; font-size: 24px; font-weight: 900; background: linear-gradient(135deg, rgba(78,161,255,.35), rgba(111,92,255,.35)); }
-    .guide-drawer-channel { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
-    .guide-drawer-meta { color: var(--muted); font-size: 13px; line-height: 1.4; }
+    .guide-drawer-title { font-size: 14px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #d7e4ff; }
     .guide-drawer-close, .control-btn, .ghost-btn, .info-close {
       border: 1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.05); color: var(--text); border-radius: 14px; padding: 10px 12px; font-weight: 700; cursor: pointer;
     }
@@ -251,35 +247,37 @@
     .empty-card p { color: var(--muted); margin: 0; line-height: 1.5; }
 
     @media (max-width: 760px) {
-      .sidebar { width: 72px; }
+      .sidebar { width: 78px; }
       .app.rail-open .sidebar { width: min(82vw, 320px); }
       .sidebar-inner { width: min(82vw, 320px); }
-      .app { grid-template-columns: 72px 1fr; }
+      .app:not(.rail-open) .sidebar-inner { width: 78px; }
+      .app { grid-template-columns: 78px 1fr; }
       .app.rail-open { grid-template-columns: min(82vw, 320px) 1fr; }
       .app.sidebar-hidden { grid-template-columns: 0 1fr; }
       .top-panel { display: none !important; }
       .bottom-bar { left: 12px; right: 12px; bottom: 54px; }
       .guide-drawer { margin: 0 -16px -14px; padding-left: 16px; padding-right: 16px; }
-      .guide-drawer-head { grid-template-columns: 52px 1fr auto; }
-      .guide-drawer-logo, .guide-drawer-fallback { width: 52px; height: 52px; border-radius: 14px; }
       .info-modal { width: min(680px, calc(100vw - 20px)); }
       .app:not(.rail-open) .brand-copy, .app:not(.rail-open) .search-box, .app:not(.rail-open) .time-card { display: none; }
-      .app:not(.rail-open) .brand { justify-content: center; padding-left: 0; padding-right: 0; }
-      .app:not(.rail-open) .channels { padding-left: 4px; padding-right: 4px; }
+      .app:not(.rail-open) .sidebar-toggle-head { padding-top: 14px; padding-bottom: 8px; }
+      .app:not(.rail-open) .brand { justify-content: center; padding: 10px 0 8px; min-height: auto; }
+      .app:not(.rail-open) .channels { padding: 6px 6px 24px; }
       .app:not(.rail-open) .channel-item {
         grid-template-columns: 1fr;
         justify-items: center;
         gap: 0;
-        padding: 6px 0;
+        padding: 8px 0;
         margin: 6px 0;
       }
       .app:not(.rail-open) .channel-item > div, .app:not(.rail-open) .channel-tag { display: none; }
       .app:not(.rail-open) .channel-logo,
       .app:not(.rail-open) .channel-fallback {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        padding: 6px;
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        padding: 7px;
+        margin: 0 auto;
+        display: block;
       }
     }
   </style>
@@ -288,6 +286,9 @@
   <div class="app" id="app">
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-inner">
+        <div class="sidebar-toggle-head">
+          <button class="rail-toggle-top" id="railToggleTop" aria-label="Toggle channels">☰</button>
+        </div>
         <div class="brand">
           <div class="brand-badge">TV</div>
           <div class="brand-copy">
@@ -310,7 +311,6 @@
     </aside>
 
     <main class="main" id="main">
-      <button class="rail-toggle-top" id="railToggleTop">☰</button>
       <video id="video" autoplay playsinline controls></video>
       <div class="video-overlay"></div>
 
@@ -371,11 +371,7 @@
         </div>
         <section class="guide-drawer" id="guideDrawer">
           <div class="guide-drawer-head">
-            <div id="guideDrawerLogo"></div>
-            <div>
-              <div class="guide-drawer-channel" id="guideDrawerChannel">Channel guide</div>
-              <div class="guide-drawer-meta" id="guideDrawerMeta">Choose a channel to see what's on now and next.</div>
-            </div>
+            <div class="guide-drawer-title">Guide</div>
             <button class="guide-drawer-close" id="closeGuideBtn">Close</button>
           </div>
           <div class="guide-timeline" id="guideDrawerTimeline"></div>
@@ -422,9 +418,6 @@
       nowbarTitle: document.getElementById('nowbarTitle'),
       nowbarSub: document.getElementById('nowbarSub'),
       guideDrawer: document.getElementById('guideDrawer'),
-      guideDrawerLogo: document.getElementById('guideDrawerLogo'),
-      guideDrawerChannel: document.getElementById('guideDrawerChannel'),
-      guideDrawerMeta: document.getElementById('guideDrawerMeta'),
       guideDrawerTimeline: document.getElementById('guideDrawerTimeline'),
       closeGuideBtn: document.getElementById('closeGuideBtn'),
       infoBackdrop: document.getElementById('infoBackdrop'),
@@ -463,27 +456,53 @@
     }
 
     async function fetchText(url){
+      const normalized = (url || '').trim();
+      if(!normalized) throw new Error('No remote URL provided');
       const attempts=[
-        {url, timeout:5000},
-        {url:`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,timeout:7000},
-        {url:`https://cors.isomorphic-git.org/${url}`,timeout:7000}
+        {url: normalized, timeout: 9000},
+        {url: `https://cors.isomorphic-git.org/${normalized}`, timeout: 10000},
+        {url: `https://corsproxy.io/?${encodeURIComponent(normalized)}`, timeout: 10000},
+        {url: `https://api.allorigins.win/raw?url=${encodeURIComponent(normalized)}`, timeout: 10000}
       ];
       let lastError=null;
       for(const attempt of attempts){
         const controller=new AbortController();
         const timer=setTimeout(()=>controller.abort(),attempt.timeout);
         try{
-          const response=await fetch(attempt.url,{signal:controller.signal,cache:'no-store'});
+          const response=await fetch(attempt.url,{
+            signal:controller.signal,
+            cache:'no-store',
+            headers:{'Accept':'text/plain,text/*,*/*'}
+          });
           clearTimeout(timer);
           if(!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
-          return await response.text();
-        }catch(error){ clearTimeout(timer); lastError=error; }
+          const body = await response.text();
+          if(!body || !body.trim()) throw new Error('Empty response');
+          return body;
+        }catch(error){
+          clearTimeout(timer);
+          lastError=error;
+        }
       }
       throw lastError||new Error('Failed to fetch remote resource');
     }
 
     function getPlaylistCacheKey(source){ return `iptv_playlist_cache_${source}`; }
     function getEpgCacheKey(source){ return `iptv_epg_cache_${source}`; }
+    function getBootPlaylistCacheKey(){ return 'iptv_boot_playlist_last_good'; }
+    function rememberLastGoodPlaylist(text, sourceKey){
+      try{
+        localStorage.setItem(getBootPlaylistCacheKey(), JSON.stringify({ text, sourceKey, savedAt: Date.now() }));
+      }catch{}
+    }
+    function readLastGoodPlaylist(){
+      try{
+        const raw = localStorage.getItem(getBootPlaylistCacheKey());
+        if(!raw) return null;
+        const parsed = JSON.parse(raw);
+        return parsed && parsed.text ? parsed : null;
+      }catch{ return null; }
+    }
     function destroyPlayer(){ if(state.hls){ try{state.hls.destroy();}catch{} state.hls=null; } els.video.pause(); els.video.removeAttribute('src'); els.video.load(); }
 
     // FIX: Removed reference to non-existent els.channelCount — was crashing renderChannels() entirely
@@ -517,10 +536,6 @@
     }
     function renderGuideDrawer(channel){
       const items=getProgrammesForChannel(channel);
-      els.guideDrawerLogo.innerHTML=channel.logo?`<img class="guide-drawer-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`:`<div class="guide-drawer-fallback">${escapeHtml((channel.name||'?').charAt(0).toUpperCase())}</div>`;
-      els.guideDrawerChannel.textContent=channel.name;
-      const nowItem=items.find(item=>item.now)||items[0];
-      els.guideDrawerMeta.textContent=nowItem ? `${nowItem.title} • ${formatClock(nowItem.start)} - ${formatClock(nowItem.stop)}${nowItem.desc?` — ${nowItem.desc}`:''}` : 'Guide unavailable for this channel';
       if(!items.length){
         els.guideDrawerTimeline.innerHTML='<div class="guide-slot"><div><div class="guide-slot-time">Guide unavailable</div><div class="guide-slot-name">No episode data loaded</div></div><div class="guide-slot-desc">Try reloading the EPG source from Info.</div></div>';
         return;
@@ -560,60 +575,171 @@
 
     function parseXmltvDate(value){ if(!value) return null; const match=value.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/); if(!match) return null; const [,y,m,d,hh,mm,ss]=match; return new Date(`${y}-${m}-${d}T${hh}:${mm}:${ss}`); }
 
-    async function loadPlaylist(){
-      const file=els.m3uFileField.files?.[0];
-      const sourceKey=file?`file_${file.name}_${file.size}`:state.playlistUrl;
+    function getPlaylistRequest(options={}){
+      const preferFile = options.preferFile !== false;
+      const file = preferFile ? els.m3uFileField.files?.[0] : null;
+      const urlFromField = els.playlistUrlField?.value?.trim();
+      const url = urlFromField || state.playlistUrl;
+      if(file){
+        return { type:'file', file, sourceKey:`file_${file.name}_${file.size}` };
+      }
+      return { type:'url', url, sourceKey:url };
+    }
+
+    async function loadPlaylist(options={}){
+      const request=getPlaylistRequest(options);
+      const sourceKey=request.sourceKey;
       const cacheKey=getPlaylistCacheKey(sourceKey);
+      const bypassCache=options.bypassCache===true;
+      const backgroundRefresh=options.backgroundRefresh!==false;
       try{
+        if(request.type==='url' && request.url){
+          state.playlistUrl=request.url;
+          els.playlistUrlField.value=request.url;
+        }
         els.loadingState.style.display='grid';
         els.emptyState.style.display='none';
         let m3uText='';
-        if(file){
-          m3uText=await file.text();
+        let cachedText='';
+        if(request.type==='file'){
+          m3uText=await request.file.text();
         } else {
-          try{ const cached=localStorage.getItem(cacheKey); if(cached) m3uText=cached; }catch{}
+          if(!sourceKey) throw new Error('No playlist URL set');
+          if(!bypassCache){
+            try{ const cached=localStorage.getItem(cacheKey); if(cached){ cachedText=cached; m3uText=cached; } }catch{}
+          }
           if(!m3uText){
             m3uText=await fetchText(sourceKey);
             try{ localStorage.setItem(cacheKey,m3uText); }catch{}
-          } else {
-            fetchText(sourceKey).then(fresh=>{ try{ localStorage.setItem(cacheKey,fresh); }catch{} }).catch(()=>{});
+            rememberLastGoodPlaylist(m3uText, sourceKey);
+          } else if(backgroundRefresh) {
+            fetchText(sourceKey).then(fresh=>{
+              if(fresh && fresh !== cachedText){
+                try{ localStorage.setItem(cacheKey,fresh); }catch{}
+                const refreshed=parseM3U(fresh);
+                if(refreshed.length){
+                  state.channels=refreshed;
+                  const currentId=state.currentChannel?.id;
+                  renderChannels();
+                  if(currentId && refreshed.some(ch=>ch.id===currentId)){
+                    state.currentChannel=refreshed.find(ch=>ch.id===currentId);
+                    updateNowbar(state.currentChannel);
+                    if(state.guideVisible) renderGuideDrawer(state.currentChannel);
+                  }
+                }
+              }
+            }).catch(()=>{});
           }
         }
         state.channels=parseM3U(m3uText);
+        if(state.channels.length && request.type==='url') rememberLastGoodPlaylist(m3uText, sourceKey);
         renderChannels();
         els.loadingState.style.display='none';
-        if(state.channels.length){ playChannel(state.channels[0].id); }
-        else { els.emptyState.style.display='grid'; }
+        if(state.channels.length){
+          const keepId = state.currentChannel?.id && state.channels.some(ch=>ch.id===state.currentChannel.id) ? state.currentChannel.id : state.channels[0].id;
+          playChannel(keepId,{forceMuted:true});
+        } else { els.emptyState.style.display='grid'; }
         setTimeout(()=>{ loadEpg(state.epgUrl,true).catch(()=>{}); },300);
       }catch(error){
         console.error(error);
+        if(request.type==='url' && !bypassCache){
+          try{
+            const fallback=localStorage.getItem(cacheKey);
+            if(fallback){
+              state.channels=parseM3U(fallback);
+              renderChannels();
+              els.loadingState.style.display='none';
+              els.emptyState.style.display=state.channels.length ? 'none' : 'grid';
+              if(state.channels.length){
+                const keepId = state.currentChannel?.id && state.channels.some(ch=>ch.id===state.currentChannel.id) ? state.currentChannel.id : state.channels[0].id;
+                playChannel(keepId,{forceMuted:true});
+                rememberLastGoodPlaylist(fallback, sourceKey);
+              }
+              return;
+            }
+          }catch{}
+        }
         els.loadingState.style.display='none';
         els.emptyState.style.display='grid';
         state.channels=[];
         renderChannels();
+        throw error;
       }
     }
 
-    function playChannel(id){
+    async function bootAutoLoad(){
+      if(state.booting) return;
+      state.booting = true;
+      const startupUrl = els.playlistUrlField.value.trim() || state.playlistUrl;
+      if(!startupUrl){ state.booting = false; return; }
+      state.playlistUrl = startupUrl;
+
+      const attempts = [
+        { preferFile:false, bypassCache:false, backgroundRefresh:true },
+        { preferFile:false, bypassCache:true, backgroundRefresh:false },
+        { preferFile:false, bypassCache:true, backgroundRefresh:false },
+        { preferFile:false, bypassCache:true, backgroundRefresh:false }
+      ];
+
+      for(let i=0;i<attempts.length;i++){
+        try{
+          await loadPlaylist(attempts[i]);
+          if(state.channels.length){
+            state.bootRetries = i + 1;
+            state.booting = false;
+            return;
+          }
+        }catch{}
+        await new Promise(resolve=>setTimeout(resolve, 900 + (i * 350)));
+      }
+
+      const fallback = readLastGoodPlaylist();
+      if(fallback?.text){
+        try{
+          state.channels = parseM3U(fallback.text);
+          renderChannels();
+          els.loadingState.style.display='none';
+          els.emptyState.style.display=state.channels.length ? 'none' : 'grid';
+          if(state.channels.length){
+            const keepId = state.currentChannel?.id && state.channels.some(ch=>ch.id===state.currentChannel.id) ? state.currentChannel.id : state.channels[0].id;
+            playChannel(keepId,{forceMuted:true});
+            setTimeout(()=>{ loadEpg(state.epgUrl,true).catch(()=>{}); },300);
+          }
+        }catch{}
+      }
+      state.booting = false;
+    }
+
+    function playChannel(id, options={}){
       const channel=state.channels.find(ch=>ch.id===id);
       if(!channel) return;
+      const autoplay = options.autoplay !== false;
+      const forceMuted = options.forceMuted === true;
       state.currentChannel=channel;
       renderChannels();
       updateNowbar(channel);
       if(state.guideVisible) renderGuideDrawer(channel);
       destroyPlayer();
       const src=channel.url;
-      els.video.muted=false;
       els.video.volume=parseFloat(els.volumeSlider.value||'1');
+      els.video.muted = forceMuted ? true : !state.userInteracted;
       updateMuteButton(); updatePlayPauseButton();
+      const safePlay = () => {
+        if(!autoplay) return;
+        els.video.play().then(()=>showBottomBarTemporarily()).catch(()=>{
+          els.video.muted = true;
+          updateMuteButton();
+          els.video.play().then(()=>showBottomBarTemporarily()).catch(()=>{});
+        });
+      };
       if(els.video.canPlayType('application/vnd.apple.mpegurl')){
         els.video.src=src;
-        els.video.play().then(()=>showBottomBarTemporarily()).catch(()=>{});
+        safePlay();
       } else if(window.Hls&&Hls.isSupported()){
         state.hls=new Hls({enableWorker:true,lowLatencyMode:true});
         state.hls.loadSource(src);
         state.hls.attachMedia(els.video);
-        state.hls.on(Hls.Events.MANIFEST_PARSED,()=>els.video.play().then(()=>showBottomBarTemporarily()).catch(()=>{}));
+        state.hls.on(Hls.Events.MANIFEST_PARSED, safePlay);
       }
     }
 
@@ -624,31 +750,35 @@
     function openInfoModal(){ els.infoBackdrop.classList.add('visible'); els.infoModal.classList.add('visible'); }
     function closeInfoModal(){ els.infoBackdrop.classList.remove('visible'); els.infoModal.classList.remove('visible'); }
 
+    const markUserInteracted = () => { state.userInteracted = true; if(els.video.muted && els.video.paused) updateMuteButton(); };
+    document.addEventListener('pointerdown', markUserInteracted, {passive:true, once:true});
+    document.addEventListener('keydown', markUserInteracted, {once:true});
+
     els.railToggleTop.addEventListener('click',()=>toggleRail());
     els.epgBtn.addEventListener('click',toggleEpg);
     els.infoBtn.addEventListener('click',openInfoModal);
     els.closeGuideBtn.addEventListener('click',()=>{ state.guideVisible=false; els.epgBtn.classList.remove('active'); els.guideDrawer.classList.remove('visible'); });
     els.infoCloseBtn.addEventListener('click',closeInfoModal);
     els.infoBackdrop.addEventListener('click',closeInfoModal);
-    els.applyPlaylistUrlBtn.addEventListener('click',()=>{ state.playlistUrl=els.playlistUrlField.value.trim()||state.playlistUrl; loadPlaylist(); });
+    els.applyPlaylistUrlBtn.addEventListener('click',()=>{ state.playlistUrl=els.playlistUrlField.value.trim()||state.playlistUrl; loadPlaylist({preferFile:false,bypassCache:true,backgroundRefresh:false}); });
     els.applyEpgUrlBtn.addEventListener('click',()=>{ state.epgUrl=els.epgUrlField.value.trim()||state.epgUrl; loadEpg(state.epgUrl,false).catch(()=>{}); });
-    els.reloadAllBtn.addEventListener('click',()=>{ state.playlistUrl=els.playlistUrlField.value.trim()||state.playlistUrl; state.epgUrl=els.epgUrlField.value.trim()||state.epgUrl; loadPlaylist(); closeInfoModal(); });
+    els.reloadAllBtn.addEventListener('click',()=>{ state.playlistUrl=els.playlistUrlField.value.trim()||state.playlistUrl; state.epgUrl=els.epgUrlField.value.trim()||state.epgUrl; loadPlaylist({preferFile:false,bypassCache:true,backgroundRefresh:false}); closeInfoModal(); });
     els.fullscreenBtn.addEventListener('click',toggleVideoFullscreenMode);
-    els.playPauseBtn.addEventListener('click',async()=>{ if(els.video.paused){ try{ await els.video.play(); els.video.muted=false; }catch{} } else els.video.pause(); updatePlayPauseButton(); updateMuteButton(); showBottomBarTemporarily(); });
-    els.muteBtn.addEventListener('click',async()=>{ els.video.muted=!els.video.muted; if(!els.video.paused){ try{ await els.video.play(); }catch{} } updateMuteButton(); showBottomBarTemporarily(); });
+    els.playPauseBtn.addEventListener('click',async()=>{ state.userInteracted=true; if(els.video.paused){ try{ if(els.video.muted && els.video.volume>0) els.video.muted=false; await els.video.play(); }catch{} } else els.video.pause(); updatePlayPauseButton(); updateMuteButton(); showBottomBarTemporarily(); });
+    els.muteBtn.addEventListener('click',async()=>{ state.userInteracted=true; els.video.muted=!els.video.muted; if(!els.video.paused){ try{ await els.video.play(); }catch{} } updateMuteButton(); showBottomBarTemporarily(); });
     els.volumeSlider.addEventListener('input',()=>{ els.video.volume=parseFloat(els.volumeSlider.value||'1'); if(els.video.volume>0&&els.video.muted) els.video.muted=false; updateMuteButton(); showBottomBarTemporarily(); });
     els.video.addEventListener('play',()=>{ updatePlayPauseButton(); showBottomBarTemporarily(); });
     els.video.addEventListener('pause',()=>{ updatePlayPauseButton(); els.bottomBar.classList.remove('auto-hidden'); });
     els.video.addEventListener('volumechange',updateMuteButton);
     els.channelSearch.addEventListener('input',()=>{ state.channelFilter=els.channelSearch.value; renderChannels(); });
-    els.m3uFileField.addEventListener('change',()=>loadPlaylist());
+    els.m3uFileField.addEventListener('change',()=>loadPlaylist({preferFile:true}));
     ['mousemove','click','keydown','touchstart'].forEach(evt=>{ els.main.addEventListener(evt,showBottomBarTemporarily,{passive:true}); });
     window.addEventListener('resize',()=>applyLayout());
     document.addEventListener('click',e=>{ if(!isMobileLayout()) return; if(!els.app.classList.contains('rail-open')) return; const clickedInsideSidebar=e.target.closest('.sidebar'); const clickedToggle=e.target.closest('#railToggleTop'); if(!clickedInsideSidebar && !clickedToggle){ els.app.classList.remove('rail-open'); } });
 
     els.playlistUrlField.value=state.playlistUrl;
     els.epgUrlField.value=state.epgUrl;
-    updateClock(); setInterval(updateClock,1000); updateFullscreenButton(); applyLayout(); showBottomBarTemporarily(); loadPlaylist();
+    updateClock(); setInterval(updateClock,1000); updateFullscreenButton(); applyLayout(); showBottomBarTemporarily(); setTimeout(bootAutoLoad,50);
   </script>
 </body>
 </html>
