@@ -626,19 +626,36 @@
 
     async function fetchText(url) {
       const attempts = [
-        url,
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-        `https://cors.isomorphic-git.org/${url}`,
+        { url, timeout: 5000 },
+        { url: `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`, timeout: 7000 },
+        { url: `https://cors.isomorphic-git.org/${url}`, timeout: 7000 },
       ];
       let lastError = null;
       for (const attempt of attempts) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), attempt.timeout);
         try {
-          const response = await fetch(attempt);
+          const response = await fetch(attempt.url, {
+            signal: controller.signal,
+            cache: 'no-store',
+          });
+          clearTimeout(timer);
           if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
           return await response.text();
-        } catch (error) { lastError = error; }
+        } catch (error) {
+          clearTimeout(timer);
+          lastError = error;
+        }
       }
       throw lastError || new Error('Failed to fetch remote resource');
+    }
+
+    function getPlaylistCacheKey(source) {
+      return `iptv_playlist_cache_${source}`;
+    }
+
+    function getEpgCacheKey(source) {
+      return `iptv_epg_cache_${source}`;
     }
 
     function syncMobileMainOffset() {
@@ -807,8 +824,26 @@
       state.guideHoverTimer = setTimeout(() => els.guideFlyout.classList.remove('visible'), 160);
     }
 
-    async function loadEpg(url) {
-      const xmlText = await fetchText(url);
+    async function loadEpg(url, preferCache = true) {
+      const cacheKey = getEpgCacheKey(url);
+      let xmlText = '';
+
+      if (preferCache) {
+        try {
+          const cached = localStorage.getItem(cacheKey);
+          if (cached) xmlText = cached;
+        } catch {}
+      }
+
+      if (!xmlText) {
+        xmlText = await fetchText(url);
+        try { localStorage.setItem(cacheKey, xmlText); } catch {}
+      } else {
+        fetchText(url).then(fresh => {
+          try { localStorage.setItem(cacheKey, fresh); } catch {}
+        }).catch(() => {});
+      }
+
       const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
       const programmes = [...xml.querySelectorAll('programme')].map(node => ({
         channel: node.getAttribute('channel') || '',
@@ -835,24 +870,55 @@
     }
 
     async function loadPlaylist() {
+      const file = els.m3uFile.files?.[0];
+      const sourceKey = file ? `file_${file.name}_${file.size}` : (state.pendingPlaylistUrl || state.defaultM3uUrl);
+      const cacheKey = getPlaylistCacheKey(sourceKey);
+
       try {
         els.loadingState.style.display = 'grid';
         els.emptyState.style.display = 'none';
+
         let m3uText = '';
-        const file = els.m3uFile.files?.[0];
-        if (file) m3uText = await file.text();
-        else if (state.pendingPlaylistUrl) m3uText = await fetchText(state.pendingPlaylistUrl);
-        else m3uText = await fetchText(state.defaultM3uUrl);
+        let usedCache = false;
+
+        if (file) {
+          m3uText = await file.text();
+        } else {
+          try {
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+              m3uText = cached;
+              usedCache = true;
+            }
+          } catch {}
+
+          if (!m3uText) {
+            m3uText = await fetchText(sourceKey);
+            try { localStorage.setItem(cacheKey, m3uText); } catch {}
+          } else {
+            fetchText(sourceKey).then(fresh => {
+              try { localStorage.setItem(cacheKey, fresh); } catch {}
+            }).catch(() => {});
+          }
+        }
 
         state.channels = parseM3U(m3uText);
         renderChannels();
         els.loadingState.style.display = 'none';
-        if (state.channels.length) playChannel(state.channels[0].id);
-        else {
+
+        if (state.channels.length) {
+          playChannel(state.channels[0].id);
+          els.streamInfo.textContent = usedCache ? 'Loaded from cache' : 'Loaded';
+        } else {
           els.emptyState.style.display = 'grid';
           els.streamInfo.textContent = 'No channels found in playlist';
         }
-        if (state.defaultEpgUrl) loadEpg(state.defaultEpgUrl).catch(() => {});
+
+        if (state.defaultEpgUrl) {
+          setTimeout(() => {
+            loadEpg(state.defaultEpgUrl, true).catch(() => {});
+          }, 300);
+        }
       } catch (error) {
         console.error(error);
         els.loadingState.style.display = 'none';
