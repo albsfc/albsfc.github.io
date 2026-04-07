@@ -15,7 +15,7 @@
       --success: #31d17c;
       --shadow: 0 16px 40px rgba(0,0,0,.45);
       --border: rgba(255,255,255,.08);
-      --rail-collapsed: 92px;
+      --rail-collapsed: 82px;
       --rail-expanded: 320px;
       --mobile-rail-collapsed: 72px;
       --mobile-rail-expanded: min(82vw, 320px);
@@ -38,7 +38,7 @@
     .app {
       position: relative;
       display: grid;
-      grid-template-columns: 92px 1fr;
+      grid-template-columns: 82px 1fr;
       height: 100vh;
       transition: grid-template-columns .22s ease;
     }
@@ -50,7 +50,7 @@
     }
     .sidebar {
       position: relative;
-      width: 92px;
+      width: 82px;
       background: linear-gradient(180deg, rgba(7,10,20,.98), rgba(8,11,24,.96));
       border-right: 1px solid var(--border);
       overflow: hidden;
@@ -58,31 +58,31 @@
       box-shadow: var(--shadow);
       transition: width .22s ease;
     }
-    .app.rail-open .sidebar { width: 320px; }
-    .sidebar-inner { width: 320px; height: 100%; }
-    .app:not(.rail-open) .sidebar-inner { width: 92px; }
-    .sidebar-toggle-head { display: flex; justify-content: center; align-items: center; padding: 10px 8px 4px; min-height: 64px; }
+    .app.rail-open .sidebar { width: 300px; }
+    .sidebar-inner { width: 300px; height: 100%; }
+    .app:not(.rail-open) .sidebar-inner { width: 82px; }
+    .sidebar-toggle-head { display: flex; justify-content: center; align-items: center; padding: 6px 8px 2px; min-height: 42px; }
     .brand, .sidebar-head { padding-left: 12px; padding-right: 12px; }
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding-top: 6px;
-      padding-bottom: 4px;
+      gap: 8px;
+      padding-top: 2px;
+      padding-bottom: 2px;
       min-height: auto;
     }
     .brand-badge {
-  width: 46px;
-  height: 46px;
-  border-radius: 14px;
-  font-size: 22px;
-}
-
-/* Remove extra hidden spacing when collapsed */
-.app:not(.rail-open) .brand {
-  padding: 6px 0 4px;
-  justify-content: center;
-}
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 22px;
+      flex: 0 0 auto;
+      box-shadow: 0 10px 26px rgba(78,161,255,.3);
+    }
     .brand-copy, .search-box, .time-card, .channel-name, .channel-meta, .channel-tag {
       opacity: 0;
       transform: translateX(-8px);
@@ -101,24 +101,24 @@
     }
     .brand-copy h1 { margin: 0; font-size: 16px; line-height: 1.1; }
     .brand-copy p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
-    .sidebar-head { display: flex; flex-direction: column; gap: 10px; padding-top: 6px; padding-bottom: 14px; }
-    .rail-toggle-top { border: 1px solid rgba(255,255,255,.10); background: rgba(8,11,24,.78); color: var(--text); border-radius: 14px; width: 48px; height: 48px; font-weight: 800; font-size: 22px; backdrop-filter: blur(14px); box-shadow: var(--shadow); cursor: pointer; display: grid; place-items: center; }
+    .sidebar-head { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; padding-bottom: 10px; }
+    .rail-toggle-top { border: 1px solid rgba(255,255,255,.10); background: rgba(8,11,24,.78); color: var(--text); border-radius: 14px; width: 42px; height: 42px; font-weight: 800; font-size: 20px; backdrop-filter: blur(14px); box-shadow: var(--shadow); cursor: pointer; display: grid; place-items: center; }
     .search-box {
       width: 100%; border: 1px solid var(--border); background: rgba(255,255,255,.04); color: var(--text);
-      border-radius: 16px; padding: 12px 14px; outline: none; font-size: 14px;
+      border-radius: 14px; padding: 10px 12px; outline: none; font-size: 14px;
     }
     .time-card {
-      border: 1px solid var(--border); background: rgba(255,255,255,.03); border-radius: 18px; padding: 12px 14px;
+      border: 1px solid var(--border); background: rgba(255,255,255,.03); border-radius: 16px; padding: 10px 12px;
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
-    .clock { font-size: 28px; font-weight: 800; line-height: 1; }
+    .clock { font-size: 24px; font-weight: 800; line-height: 1; }
     .city { color: var(--muted); font-size: 13px; margin-top: 4px; }
     .status-dot { width: 10px; height: 10px; border-radius: 999px; background: var(--success); box-shadow: 0 0 16px rgba(49,209,124,.7); }
     .channels {
-      padding: 2px 6px 20px;
+      padding: 0 6px 14px;
       overflow-y: auto;
       overflow-x: hidden;
-      height: calc(100vh - 186px);
+      height: calc(100vh - 116px);
       scrollbar-width: thin;
       scrollbar-color: rgba(255,255,255,.15) transparent;
       touch-action: pan-y;
@@ -126,12 +126,12 @@
     }
     .channel-item {
       display: grid;
-      grid-template-columns: 56px 1fr auto;
+      grid-template-columns: 48px 1fr auto;
       align-items: center;
       gap: 8px;
       padding: 6px;
       margin: 3px 0;
-      border-radius: 18px;
+      border-radius: 16px;
       border: 1px solid transparent;
       background: transparent;
       color: inherit;
@@ -144,15 +144,15 @@
     .channel-item:hover { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.08); transform: translateX(2px); }
     .channel-item.active { background: linear-gradient(135deg, rgba(70,92,255,.22), rgba(0,136,255,.18)); border-color: rgba(133,171,255,.28); }
     .channel-logo {
-      width: 56px; height: 56px; border-radius: 16px; object-fit: contain; background: rgba(255,255,255,.05); padding: 8px;
+      width: 46px; height: 46px; border-radius: 14px; object-fit: contain; background: rgba(255,255,255,.05); padding: 6px;
     }
     .channel-fallback {
-      width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; font-size: 18px; font-weight: 800;
+      width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 16px; font-weight: 800;
       background: linear-gradient(135deg, rgba(78,161,255,.25), rgba(111,92,255,.25)); color: white;
     }
-    .channel-name { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .channel-meta { color: var(--muted); font-size: 12px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .channel-tag { color: #d7e4ff; font-size: 11px; font-weight: 700; padding: 6px 9px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.08); }
+    .channel-name { font-weight: 700; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .channel-meta { color: var(--muted); font-size: 11px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .channel-tag { color: #d7e4ff; font-size: 10px; font-weight: 700; padding: 5px 8px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.08); }
 
     .main {
       position: relative;
@@ -259,7 +259,7 @@
       .guide-drawer { margin: 0 -16px -14px; padding-left: 16px; padding-right: 16px; }
       .info-modal { width: min(680px, calc(100vw - 20px)); }
       .app:not(.rail-open) .brand-copy, .app:not(.rail-open) .search-box, .app:not(.rail-open) .time-card { display: none; }
-      .app:not(.rail-open) .sidebar-toggle-head { padding-top: 14px; padding-bottom: 8px; }
+      .app:not(.rail-open) .sidebar-toggle-head { padding-top: 6px; padding-bottom: 2px; min-height: 42px; }
       .app:not(.rail-open) .brand { justify-content: center; padding: 10px 0 8px; min-height: auto; }
       .app:not(.rail-open) .channels { padding: 6px 6px 24px; }
       .app:not(.rail-open) .channel-item {
@@ -267,7 +267,7 @@
         justify-items: center;
         gap: 0;
         padding: 8px 0;
-        margin: 6px 0;
+        margin: 3px 0;
       }
       .app:not(.rail-open) .channel-item > div, .app:not(.rail-open) .channel-tag { display: none; }
       .app:not(.rail-open) .channel-logo,
@@ -279,6 +279,22 @@
         margin: 0 auto;
         display: block;
       }
+    }
+
+    @media (max-height: 560px) {
+      .sidebar-toggle-head { padding-top: 8px; padding-bottom: 2px; min-height: 46px; }
+      .brand { padding-top: 4px; padding-bottom: 4px; min-height: 50px; }
+      .brand-badge { width: 40px; height: 40px; font-size: 19px; border-radius: 14px; }
+      .sidebar-head { gap: 6px; padding-top: 2px; padding-bottom: 8px; }
+      .search-box { padding: 8px 10px; font-size: 13px; }
+      .time-card { padding: 8px 10px; border-radius: 14px; }
+      .clock { font-size: 20px; }
+      .channels { height: calc(100vh - 112px); padding-top: 0; }
+      .channel-item { grid-template-columns: 42px 1fr auto; gap: 6px; padding: 4px; margin: 2px 0; border-radius: 14px; }
+      .channel-logo, .channel-fallback { width: 40px; height: 40px; border-radius: 12px; padding: 5px; }
+      .channel-name { font-size: 13px; }
+      .channel-meta { font-size: 10px; }
+      .channel-tag { display: none; }
     }
   </style>
 </head>
@@ -656,7 +672,7 @@
         els.loadingState.style.display='none';
         if(state.channels.length){
           const keepId = state.currentChannel?.id && state.channels.some(ch=>ch.id===state.currentChannel.id) ? state.currentChannel.id : state.channels[0].id;
-          playChannel(keepId,{forceMuted:true});
+          playChannel(keepId,{forceMuted:false});
         } else { els.emptyState.style.display='grid'; }
         setTimeout(()=>{ loadEpg(state.epgUrl,true).catch(()=>{}); },300);
       }catch(error){
@@ -671,7 +687,7 @@
               els.emptyState.style.display=state.channels.length ? 'none' : 'grid';
               if(state.channels.length){
                 const keepId = state.currentChannel?.id && state.channels.some(ch=>ch.id===state.currentChannel.id) ? state.currentChannel.id : state.channels[0].id;
-                playChannel(keepId,{forceMuted:true});
+                playChannel(keepId,{forceMuted:false});
                 rememberLastGoodPlaylist(fallback, sourceKey);
               }
               return;
@@ -721,7 +737,7 @@
           els.emptyState.style.display=state.channels.length ? 'none' : 'grid';
           if(state.channels.length){
             const keepId = state.currentChannel?.id && state.channels.some(ch=>ch.id===state.currentChannel.id) ? state.currentChannel.id : state.channels[0].id;
-            playChannel(keepId,{forceMuted:true});
+            playChannel(keepId,{forceMuted:false});
             setTimeout(()=>{ loadEpg(state.epgUrl,true).catch(()=>{}); },300);
           }
         }catch{}
@@ -741,7 +757,7 @@
       destroyPlayer();
       const src=channel.url;
       els.video.volume=parseFloat(els.volumeSlider.value||'1');
-      els.video.muted = forceMuted ? true : !state.userInteracted;
+      els.video.muted = forceMuted ? true : false;
       updateMuteButton(); updatePlayPauseButton();
       const safePlay = () => {
         if(!autoplay) return;
