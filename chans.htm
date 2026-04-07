@@ -61,28 +61,28 @@
     .app.rail-open .sidebar { width: 320px; }
     .sidebar-inner { width: 320px; height: 100%; }
     .app:not(.rail-open) .sidebar-inner { width: 92px; }
-    .sidebar-toggle-head { display: flex; justify-content: center; align-items: center; padding: 14px 12px 6px; min-height: 64px; }
+    .sidebar-toggle-head { display: flex; justify-content: center; align-items: center; padding: 10px 8px 4px; min-height: 64px; }
     .brand, .sidebar-head { padding-left: 12px; padding-right: 12px; }
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding-top: 18px;
-      padding-bottom: 8px;
-      min-height: 76px;
+      gap: 10px;
+      padding-top: 6px;
+      padding-bottom: 4px;
+      min-height: auto;
     }
     .brand-badge {
-      width: 52px;
-      height: 52px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: grid;
-      place-items: center;
-      font-weight: 800;
-      font-size: 26px;
-      flex: 0 0 auto;
-      box-shadow: 0 10px 26px rgba(78,161,255,.3);
-    }
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  font-size: 22px;
+}
+
+/* Remove extra hidden spacing when collapsed */
+.app:not(.rail-open) .brand {
+  padding: 6px 0 4px;
+  justify-content: center;
+}
     .brand-copy, .search-box, .time-card, .channel-name, .channel-meta, .channel-tag {
       opacity: 0;
       transform: translateX(-8px);
@@ -115,7 +115,7 @@
     .city { color: var(--muted); font-size: 13px; margin-top: 4px; }
     .status-dot { width: 10px; height: 10px; border-radius: 999px; background: var(--success); box-shadow: 0 0 16px rgba(49,209,124,.7); }
     .channels {
-      padding: 4px 8px 24px;
+      padding: 2px 6px 20px;
       overflow-y: auto;
       overflow-x: hidden;
       height: calc(100vh - 186px);
@@ -128,9 +128,9 @@
       display: grid;
       grid-template-columns: 56px 1fr auto;
       align-items: center;
-      gap: 12px;
-      padding: 10px;
-      margin: 6px 0;
+      gap: 8px;
+      padding: 6px;
+      margin: 3px 0;
       border-radius: 18px;
       border: 1px solid transparent;
       background: transparent;
