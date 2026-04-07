@@ -40,6 +40,13 @@
       display: grid;
       grid-template-columns: 92px 1fr;
       height: 100vh;
+      transition: grid-template-columns .22s ease;
+    }
+    .app.sidebar-hidden { grid-template-columns: 0 1fr; }
+    .app.sidebar-hidden .sidebar {
+      width: 0;
+      border-right: 0;
+      box-shadow: none;
     }
     .sidebar {
       position: relative;
@@ -164,31 +171,6 @@
       position: absolute; top: 18px; left: 18px; z-index: 14; border: 1px solid rgba(255,255,255,.10); background: rgba(8,11,24,.78); color: var(--text);
       border-radius: 14px; padding: 10px 12px; font-weight: 800; backdrop-filter: blur(14px); box-shadow: var(--shadow); cursor: pointer;
     }
-    .guide-flyout {
-      position: absolute; top: 18px; left: 110px; width: min(920px, calc(100vw - 130px)); min-height: 190px; max-height: calc(100vh - 36px);
-      border-radius: 24px; background: linear-gradient(180deg, rgba(17,20,88,.92), rgba(11,16,66,.82)); border: 1px solid rgba(255,255,255,.10);
-      backdrop-filter: blur(18px); box-shadow: var(--shadow); z-index: 11; overflow: hidden; opacity: 0; pointer-events: none; transform: translateX(-10px); transition: opacity .18s ease, transform .18s ease; touch-action: none;
-    }
-    .guide-flyout.visible { opacity: 1; pointer-events: auto; transform: translateX(0); }
-    .guide-flyout-head {
-      display: grid; grid-template-columns: 78px 1fr auto; gap: 14px; align-items: center; padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.08);
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0)); cursor: move; user-select: none;
-    }
-    .guide-flyout-logo { width: 72px; height: 72px; border-radius: 18px; object-fit: contain; background: rgba(255,255,255,.06); padding: 10px; }
-    .guide-flyout-fallback { width: 72px; height: 72px; display: grid; place-items: center; border-radius: 18px; font-size: 24px; font-weight: 900; background: linear-gradient(135deg, rgba(78,161,255,.35), rgba(111,92,255,.35)); }
-    .guide-flyout-channel { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
-    .guide-flyout-meta { color: var(--muted); font-size: 13px; }
-    .guide-flyout-close, .control-btn, .ghost-btn, .info-close {
-      border: 1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.05); color: var(--text); border-radius: 14px; padding: 10px 12px; font-weight: 700; cursor: pointer;
-    }
-    .guide-timeline { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(170px, 1fr); gap: 8px; padding: 14px; overflow-x: auto; }
-    .guide-slot { min-height: 118px; border-radius: 16px; padding: 12px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); display: flex; flex-direction: column; justify-content: space-between; }
-    .guide-slot.now { background: linear-gradient(135deg, rgba(78,161,255,.18), rgba(111,92,255,.14)); border-color: rgba(133,171,255,.30); }
-    .guide-slot-time { color: #c7d7ff; font-size: 12px; font-weight: 800; margin-bottom: 8px; }
-    .guide-slot-name { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
-    .guide-slot-desc { color: var(--muted); font-size: 12px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-    .guide-slot-tag { align-self: flex-start; margin-top: 10px; padding: 6px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; background: rgba(255,255,255,.08); }
-
     .info-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.52); backdrop-filter: blur(8px); z-index: 20; display: none; }
     .info-modal-backdrop.visible { display: block; }
     .info-modal { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(680px, calc(100vw - 28px)); max-height: calc(100vh - 40px); overflow: auto; border-radius: 24px; background: linear-gradient(180deg, rgba(9,12,28,.96), rgba(10,15,32,.92)); border: 1px solid rgba(255,255,255,.10); box-shadow: var(--shadow); z-index: 21; display: none; }
@@ -206,21 +188,62 @@
     .bottom-bar {
       position: absolute; left: 20px; right: 20px; bottom: 34px; border-radius: 22px; background: linear-gradient(180deg, rgba(10,12,32,.84), rgba(9,12,28,.82)); border: 1px solid rgba(255,255,255,.10);
       backdrop-filter: blur(18px); box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding: 14px 16px; z-index: 12; transition: transform .25s ease, opacity .25s ease;
+      overflow: hidden;
+      max-height: calc(100vh - 68px);
     }
     .nowbar { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center; }
     .nowbar-logo, .nowbar-fallback { width: 64px; height: 64px; border-radius: 16px; object-fit: contain; background: rgba(255,255,255,.06); padding: 8px; }
     .nowbar-fallback { display: grid; place-items: center; font-size: 24px; font-weight: 900; background: linear-gradient(135deg, rgba(78,161,255,.35), rgba(111,92,255,.35)); }
     .nowbar-title { font-size: 16px; font-weight: 800; }
-    .nowbar-sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    .nowbar-sub { color: var(--muted); font-size: 13px; margin-top: 4px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .stats { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; white-space: nowrap; }
     .live-badge { color: white; background: linear-gradient(135deg, #ff2b4f, #ff5d7a); border-radius: 999px; padding: 6px 10px; font-weight: 800; font-size: 11px; }
-    .epg-inline { display: none; border-top: 1px solid rgba(255,255,255,.08); padding-top: 12px; }
-    .epg-inline.visible { display: block; }
-    .epg-inline-list { display: grid; gap: 8px; max-height: 220px; overflow: auto; }
-    .epg-inline-item { border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.04); border-radius: 14px; padding: 10px 12px; }
-    .epg-inline-time { color: #c7d7ff; font-size: 12px; font-weight: 800; margin-bottom: 4px; }
-    .epg-inline-name { font-size: 14px; font-weight: 800; }
+    .guide-drawer {
+      border-top: 1px solid rgba(255,255,255,.12);
+      margin: 0 -16px -14px;
+      padding: 12px 16px 14px;
+      background: linear-gradient(180deg, rgba(17,20,88,.40), rgba(11,16,66,.22));
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      max-height: 0;
+      transform: translateY(10px);
+      transition: opacity .22s ease, transform .22s ease, max-height .28s ease, padding-top .22s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .guide-drawer.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+      max-height: min(46vh, 420px);
+      padding-top: 12px;
+    }
+    .guide-drawer-head {
+      display: grid;
+      grid-template-columns: 78px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 0 0 14px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: transparent;
+    }
+    .guide-drawer-logo { width: 72px; height: 72px; border-radius: 18px; object-fit: contain; background: rgba(255,255,255,.06); padding: 10px; }
+    .guide-drawer-fallback { width: 72px; height: 72px; display: grid; place-items: center; border-radius: 18px; font-size: 24px; font-weight: 900; background: linear-gradient(135deg, rgba(78,161,255,.35), rgba(111,92,255,.35)); }
+    .guide-drawer-channel { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .guide-drawer-meta { color: var(--muted); font-size: 13px; line-height: 1.4; }
+    .guide-drawer-close, .control-btn, .ghost-btn, .info-close {
+      border: 1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.05); color: var(--text); border-radius: 14px; padding: 10px 12px; font-weight: 700; cursor: pointer;
+    }
+    .control-btn.active { background: linear-gradient(135deg, rgba(78,161,255,.22), rgba(111,92,255,.18)); border-color: rgba(133,171,255,.28); }
+    .guide-timeline { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(170px, 1fr); gap: 8px; padding: 14px; overflow-x: auto; overflow-y: auto; }
+    .guide-slot { min-height: 118px; border-radius: 16px; padding: 12px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); display: flex; flex-direction: column; justify-content: space-between; }
+    .guide-slot.now { background: linear-gradient(135deg, rgba(78,161,255,.18), rgba(111,92,255,.14)); border-color: rgba(133,171,255,.30); }
+    .guide-slot-time { color: #c7d7ff; font-size: 12px; font-weight: 800; margin-bottom: 8px; }
+    .guide-slot-name { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+    .guide-slot-desc { color: var(--muted); font-size: 12px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .guide-slot-tag { align-self: flex-start; margin-top: 10px; padding: 6px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; background: rgba(255,255,255,.08); }
 
     .empty-state, .loading-state { position: absolute; inset: 0; display: grid; place-items: center; z-index: 1; pointer-events: none; }
     .empty-card { background: rgba(8,11,24,.82); border: 1px solid rgba(255,255,255,.08); border-radius: 24px; padding: 22px; width: min(520px, calc(100vw - 60px)); text-align: center; box-shadow: var(--shadow); backdrop-filter: blur(18px); }
@@ -233,17 +256,31 @@
       .sidebar-inner { width: min(82vw, 320px); }
       .app { grid-template-columns: 72px 1fr; }
       .app.rail-open { grid-template-columns: min(82vw, 320px) 1fr; }
+      .app.sidebar-hidden { grid-template-columns: 0 1fr; }
       .top-panel { display: none !important; }
-      .guide-flyout { left: 14px !important; right: 14px; width: auto; top: 14px; max-height: calc(100vh - 28px); }
-      .guide-flyout-head { grid-template-columns: 52px 1fr auto; }
-      .guide-flyout-logo, .guide-flyout-fallback { width: 52px; height: 52px; border-radius: 14px; }
       .bottom-bar { left: 12px; right: 12px; bottom: 54px; }
+      .guide-drawer { margin: 0 -16px -14px; padding-left: 16px; padding-right: 16px; }
+      .guide-drawer-head { grid-template-columns: 52px 1fr auto; }
+      .guide-drawer-logo, .guide-drawer-fallback { width: 52px; height: 52px; border-radius: 14px; }
       .info-modal { width: min(680px, calc(100vw - 20px)); }
       .app:not(.rail-open) .brand-copy, .app:not(.rail-open) .search-box, .app:not(.rail-open) .time-card { display: none; }
       .app:not(.rail-open) .brand { justify-content: center; padding-left: 0; padding-right: 0; }
-      .app:not(.rail-open) .channel-item { grid-template-columns: 56px; justify-content: center; }
+      .app:not(.rail-open) .channels { padding-left: 4px; padding-right: 4px; }
+      .app:not(.rail-open) .channel-item {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 0;
+        padding: 6px 0;
+        margin: 6px 0;
+      }
       .app:not(.rail-open) .channel-item > div, .app:not(.rail-open) .channel-tag { display: none; }
-      .app:not(.rail-open) .channels { padding-left: 6px; padding-right: 6px; }
+      .app:not(.rail-open) .channel-logo,
+      .app:not(.rail-open) .channel-fallback {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        padding: 6px;
+      }
     }
   </style>
 </head>
@@ -279,18 +316,6 @@
 
       <div class="loading-state" id="loadingState"><div class="empty-card"><h2>Loading playlist…</h2><p>Trying the remote playlist first. If the browser blocks it, the local file picker will still work.</p></div></div>
       <div class="empty-state" id="emptyState" style="display:none;"><div class="empty-card"><h2>No channel selected</h2><p>Pick a channel from the left rail. If the playlist URL fails to load, use a local file or another URL.</p></div></div>
-
-      <section class="guide-flyout" id="guideFlyout">
-        <div class="guide-flyout-head" id="guideHead">
-          <div id="guideFlyoutLogo"></div>
-          <div>
-            <div class="guide-flyout-channel" id="guideFlyoutChannel">Channel</div>
-            <div class="guide-flyout-meta" id="guideFlyoutMeta">Hover a channel to preview its guide</div>
-          </div>
-          <button class="guide-flyout-close" id="closeGuideBtn">Close</button>
-        </div>
-        <div class="guide-timeline" id="guideFlyoutTimeline"></div>
-      </section>
 
       <div class="info-modal-backdrop" id="infoBackdrop"></div>
       <section class="info-modal" id="infoModal">
@@ -344,9 +369,17 @@
           <button class="control-btn" id="muteBtn">🔊</button>
           <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" style="width:100px; height:38px;" />
         </div>
-        <div class="epg-inline" id="epgInline">
-          <div class="epg-inline-list" id="epgInlineList"></div>
-        </div>
+        <section class="guide-drawer" id="guideDrawer">
+          <div class="guide-drawer-head">
+            <div id="guideDrawerLogo"></div>
+            <div>
+              <div class="guide-drawer-channel" id="guideDrawerChannel">Channel guide</div>
+              <div class="guide-drawer-meta" id="guideDrawerMeta">Choose a channel to see what's on now and next.</div>
+            </div>
+            <button class="guide-drawer-close" id="closeGuideBtn">Close</button>
+          </div>
+          <div class="guide-timeline" id="guideDrawerTimeline"></div>
+        </section>
       </section>
     </main>
   </div>
@@ -358,14 +391,11 @@
       hls: null,
       epg: new Map(),
       guideVisible: false,
-      guideHoverTimer: null,
       timezone: 'Australia/Sydney',
       channelFilter: '',
       bottomBarTimer: null,
       playlistUrl: 'https://i.mjh.nz/au/Sydney/raw-tv.m3u8',
       epgUrl: 'https://raw.githubusercontent.com/matthuisman/i.mjh.nz/refs/heads/master/au/all/epg.xml',
-      guideDragOffsetX: 0,
-      guideDragOffsetY: 0,
       videoFullscreenMode: false,
     };
 
@@ -376,13 +406,6 @@
       video: document.getElementById('video'),
       channels: document.getElementById('channels'),
       railToggleTop: document.getElementById('railToggleTop'),
-      guideFlyout: document.getElementById('guideFlyout'),
-      guideHead: document.getElementById('guideHead'),
-      guideFlyoutLogo: document.getElementById('guideFlyoutLogo'),
-      guideFlyoutChannel: document.getElementById('guideFlyoutChannel'),
-      guideFlyoutMeta: document.getElementById('guideFlyoutMeta'),
-      guideFlyoutTimeline: document.getElementById('guideFlyoutTimeline'),
-      closeGuideBtn: document.getElementById('closeGuideBtn'),
       loadingState: document.getElementById('loadingState'),
       emptyState: document.getElementById('emptyState'),
       channelSearch: document.getElementById('channelSearch'),
@@ -398,8 +421,12 @@
       nowbarLogo: document.getElementById('nowbarLogo'),
       nowbarTitle: document.getElementById('nowbarTitle'),
       nowbarSub: document.getElementById('nowbarSub'),
-      epgInline: document.getElementById('epgInline'),
-      epgInlineList: document.getElementById('epgInlineList'),
+      guideDrawer: document.getElementById('guideDrawer'),
+      guideDrawerLogo: document.getElementById('guideDrawerLogo'),
+      guideDrawerChannel: document.getElementById('guideDrawerChannel'),
+      guideDrawerMeta: document.getElementById('guideDrawerMeta'),
+      guideDrawerTimeline: document.getElementById('guideDrawerTimeline'),
+      closeGuideBtn: document.getElementById('closeGuideBtn'),
       infoBackdrop: document.getElementById('infoBackdrop'),
       infoModal: document.getElementById('infoModal'),
       infoCloseBtn: document.getElementById('infoCloseBtn'),
@@ -414,10 +441,10 @@
     function escapeHtml(str=''){return str.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');}
     function getAttr(line, attr){const m=line.match(new RegExp(`${attr}="([^"]*)"`,'i')); return m?m[1]:'';}
     function isMobileLayout(){return window.innerWidth<=760;}
-    function applyLayout(){ if(state.videoFullscreenMode){ els.main.style.marginLeft='0px'; return; } els.main.style.marginLeft='0px'; }
-    function toggleRail(force){ const open=typeof force==='boolean'?force:!els.app.classList.contains('rail-open'); els.app.classList.toggle('rail-open', open); }
+    function applyLayout(){ els.main.style.marginLeft='0px'; }
+    function toggleRail(force){ const open=typeof force==='boolean'?force:!els.app.classList.contains('rail-open'); els.app.classList.toggle('rail-open', open); if(open) els.app.classList.remove('sidebar-hidden'); }
     function updateFullscreenButton(){ els.fullscreenBtn.textContent = state.videoFullscreenMode ? '🗗' : '⛶'; }
-    function toggleVideoFullscreenMode(){ state.videoFullscreenMode=!state.videoFullscreenMode; els.main.classList.toggle('fullscreen-video', state.videoFullscreenMode); updateFullscreenButton(); }
+    function toggleVideoFullscreenMode(){ state.videoFullscreenMode=!state.videoFullscreenMode; els.main.classList.toggle('fullscreen-video', state.videoFullscreenMode); els.app.classList.toggle('sidebar-hidden', state.videoFullscreenMode); if(state.videoFullscreenMode) els.app.classList.remove('rail-open'); updateFullscreenButton(); showBottomBarTemporarily(); }
 
     function parseM3U(text){
       const raw=text.replace(/^\uFEFF/,'');
@@ -471,33 +498,42 @@
       }).join('');
       els.channels.querySelectorAll('.channel-item').forEach(btn=>{
         btn.addEventListener('click',()=>playChannel(btn.dataset.id));
-        // FIX: showGuidePreview now also adds 'visible' class so the flyout actually appears
-        btn.addEventListener('mouseenter',()=>{ showGuidePreview(btn.dataset.id); els.guideFlyout.classList.add('visible'); });
       });
     }
 
     function formatClock(date){ if(!date) return '--:--'; return new Intl.DateTimeFormat('en-AU',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:state.timezone}).format(date); }
     function getProgrammesForChannel(channel){ const keys=[channel.epgChannel,channel.id,channel.name].filter(Boolean); let programmes=[]; for(const key of keys){ if(state.epg.has(key)){ programmes=state.epg.get(key); break; } } const now=new Date(); return programmes.filter(p=>p.stop>new Date(now.getTime()-30*60*1000)).slice(0,8).map(p=>({...p, now:p.start<=now && p.stop>=now})); }
-    function updateNowbar(channel){ const programmes=getProgrammesForChannel(channel); const nowItem=programmes.find(p=>p.now)||programmes[0]; els.nowbarLogo.innerHTML=channel.logo?`<img class="nowbar-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`:`<div class="nowbar-fallback">${escapeHtml((channel.name||'?').charAt(0).toUpperCase())}</div>`; els.nowbarTitle.textContent=channel.name; els.nowbarSub.textContent=nowItem?`${nowItem.title} • ${formatClock(nowItem.start)} - ${formatClock(nowItem.stop)}`:'Live broadcast'; }
-    function renderInlineEpg(channel){ const items=getProgrammesForChannel(channel); if(!items.length){ els.epgInlineList.innerHTML='<div class="epg-inline-item"><div class="epg-inline-time">Guide unavailable</div><div class="epg-inline-name">No episode data loaded</div></div>'; return; } els.epgInlineList.innerHTML=items.map(item=>`<div class="epg-inline-item"><div class="epg-inline-time">${formatClock(item.start)} - ${formatClock(item.stop)}${item.now?' • NOW':''}</div><div class="epg-inline-name">${escapeHtml(item.title)}</div></div>`).join(''); }
-
-    function showGuidePreview(channelId){
-      clearTimeout(state.guideHoverTimer);
-      const channel=state.channels.find(ch=>ch.id===channelId);
-      if(!channel) return;
-      const items=getProgrammesForChannel(channel);
-      els.guideFlyoutLogo.innerHTML=channel.logo?`<img class="guide-flyout-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`:`<div class="guide-flyout-fallback">${escapeHtml((channel.name||'?').charAt(0).toUpperCase())}</div>`;
-      els.guideFlyoutChannel.textContent=channel.name;
-      els.guideFlyoutMeta.textContent=items.length?`${items.length} upcoming items • hover a channel to preview`:'No guide information available';
-      if(!items.length){
-        els.guideFlyoutTimeline.innerHTML='<div class="guide-slot now"><div><div class="guide-slot-time">Guide unavailable</div><div class="guide-slot-name">No episode data loaded</div><div class="guide-slot-desc">This channel does not currently have guide information.</div></div><div class="guide-slot-tag">No info</div></div>';
+    function updateNowbar(channel){
+      const programmes=getProgrammesForChannel(channel);
+      const nowItem=programmes.find(p=>p.now)||programmes[0];
+      els.nowbarLogo.innerHTML=channel.logo?`<img class="nowbar-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`:`<div class="nowbar-fallback">${escapeHtml((channel.name||'?').charAt(0).toUpperCase())}</div>`;
+      els.nowbarTitle.textContent=channel.name;
+      if(nowItem){
+        const description=nowItem.desc ? ` — ${nowItem.desc}` : '';
+        els.nowbarSub.textContent=`${nowItem.title} • ${formatClock(nowItem.start)} - ${formatClock(nowItem.stop)}${description}`;
       } else {
-        els.guideFlyoutTimeline.innerHTML=items.map(item=>`<div class="guide-slot ${item.now?'now':''}"><div><div class="guide-slot-time">${formatClock(item.start)} - ${formatClock(item.stop)}${item.now?' • NOW':''}</div><div class="guide-slot-name">${escapeHtml(item.title)}</div><div class="guide-slot-desc">${escapeHtml(item.desc||'No description')}</div></div><div class="guide-slot-tag">${item.now?'On now':'Up next'}</div></div>`).join('');
+        els.nowbarSub.textContent='Live broadcast';
       }
     }
+    function renderGuideDrawer(channel){
+      const items=getProgrammesForChannel(channel);
+      els.guideDrawerLogo.innerHTML=channel.logo?`<img class="guide-drawer-logo" src="${escapeHtml(channel.logo)}" alt="${escapeHtml(channel.name)}" />`:`<div class="guide-drawer-fallback">${escapeHtml((channel.name||'?').charAt(0).toUpperCase())}</div>`;
+      els.guideDrawerChannel.textContent=channel.name;
+      const nowItem=items.find(item=>item.now)||items[0];
+      els.guideDrawerMeta.textContent=nowItem ? `${nowItem.title} • ${formatClock(nowItem.start)} - ${formatClock(nowItem.stop)}${nowItem.desc?` — ${nowItem.desc}`:''}` : 'Guide unavailable for this channel';
+      if(!items.length){
+        els.guideDrawerTimeline.innerHTML='<div class="guide-slot"><div><div class="guide-slot-time">Guide unavailable</div><div class="guide-slot-name">No episode data loaded</div></div><div class="guide-slot-desc">Try reloading the EPG source from Info.</div></div>';
+        return;
+      }
+      els.guideDrawerTimeline.innerHTML=items.map(item=>`<div class="guide-slot ${item.now?'now':''}"><div><div class="guide-slot-time">${formatClock(item.start)} - ${formatClock(item.stop)}</div><div class="guide-slot-name">${escapeHtml(item.title)}</div>${item.desc?`<div class="guide-slot-desc">${escapeHtml(item.desc)}</div>`:''}</div><div class="guide-slot-tag">${item.now?'NOW':'UP NEXT'}</div></div>`).join('');
+    }
 
-    function toggleEpg(){ state.guideVisible=!state.guideVisible; els.epgBtn.classList.toggle('active', state.guideVisible); els.epgInline.classList.toggle('visible', state.guideVisible); if(state.guideVisible && state.currentChannel){ renderInlineEpg(state.currentChannel); } }
-    function hideGuidePreview(){ clearTimeout(state.guideHoverTimer); state.guideHoverTimer=setTimeout(()=>els.guideFlyout.classList.remove('visible'),160); }
+    function toggleEpg(){
+      state.guideVisible=!state.guideVisible;
+      els.epgBtn.classList.toggle('active', state.guideVisible);
+      els.guideDrawer.classList.toggle('visible', state.guideVisible);
+      if(state.guideVisible && state.currentChannel){ renderGuideDrawer(state.currentChannel); }
+    }
 
     async function loadEpg(url, preferCache=true){
       const cacheKey=getEpgCacheKey(url);
@@ -519,7 +555,7 @@
       })).filter(p=>p.channel&&p.start&&p.stop);
       state.epg=programmes.reduce((map,item)=>{ if(!map.has(item.channel)) map.set(item.channel,[]); map.get(item.channel).push(item); return map; },new Map());
       for(const entries of state.epg.values()) entries.sort((a,b)=>a.start-b.start);
-      if(state.currentChannel && state.guideVisible) renderInlineEpg(state.currentChannel);
+      if(state.currentChannel && state.guideVisible) renderGuideDrawer(state.currentChannel);
     }
 
     function parseXmltvDate(value){ if(!value) return null; const match=value.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/); if(!match) return null; const [,y,m,d,hh,mm,ss]=match; return new Date(`${y}-${m}-${d}T${hh}:${mm}:${ss}`); }
@@ -564,7 +600,7 @@
       state.currentChannel=channel;
       renderChannels();
       updateNowbar(channel);
-      if(state.guideVisible) renderInlineEpg(channel);
+      if(state.guideVisible) renderGuideDrawer(channel);
       destroyPlayer();
       const src=channel.url;
       els.video.muted=false;
@@ -591,6 +627,7 @@
     els.railToggleTop.addEventListener('click',()=>toggleRail());
     els.epgBtn.addEventListener('click',toggleEpg);
     els.infoBtn.addEventListener('click',openInfoModal);
+    els.closeGuideBtn.addEventListener('click',()=>{ state.guideVisible=false; els.epgBtn.classList.remove('active'); els.guideDrawer.classList.remove('visible'); });
     els.infoCloseBtn.addEventListener('click',closeInfoModal);
     els.infoBackdrop.addEventListener('click',closeInfoModal);
     els.applyPlaylistUrlBtn.addEventListener('click',()=>{ state.playlistUrl=els.playlistUrlField.value.trim()||state.playlistUrl; loadPlaylist(); });
@@ -603,20 +640,8 @@
     els.video.addEventListener('play',()=>{ updatePlayPauseButton(); showBottomBarTemporarily(); });
     els.video.addEventListener('pause',()=>{ updatePlayPauseButton(); els.bottomBar.classList.remove('auto-hidden'); });
     els.video.addEventListener('volumechange',updateMuteButton);
-    els.guideFlyout.addEventListener('mouseenter',()=>clearTimeout(state.guideHoverTimer));
-    els.guideFlyout.addEventListener('mouseleave',hideGuidePreview);
-    els.channels.addEventListener('mouseleave',hideGuidePreview);
-    els.closeGuideBtn.addEventListener('click',()=>els.guideFlyout.classList.remove('visible'));
     els.channelSearch.addEventListener('input',()=>{ state.channelFilter=els.channelSearch.value; renderChannels(); });
-    // FIX: file input change now triggers loadPlaylist so uploading a file actually works
     els.m3uFileField.addEventListener('change',()=>loadPlaylist());
-
-    let guidePointerId=null;
-    els.guideHead.addEventListener('pointerdown',e=>{ if(e.target.closest('button')) return; guidePointerId=e.pointerId; const rect=els.guideFlyout.getBoundingClientRect(); state.guideDragOffsetX=e.clientX-rect.left; state.guideDragOffsetY=e.clientY-rect.top; els.guideFlyout.style.left=`${rect.left}px`; els.guideFlyout.style.top=`${rect.top}px`; els.guideFlyout.style.right='auto'; els.guideHead.setPointerCapture(e.pointerId); });
-    els.guideHead.addEventListener('pointermove',e=>{ if(guidePointerId!==e.pointerId) return; const maxLeft=window.innerWidth-els.guideFlyout.offsetWidth-12; const maxTop=window.innerHeight-els.guideFlyout.offsetHeight-12; const left=Math.max(12,Math.min(e.clientX-state.guideDragOffsetX,maxLeft)); const top=Math.max(12,Math.min(e.clientY-state.guideDragOffsetY,maxTop)); els.guideFlyout.style.left=`${left}px`; els.guideFlyout.style.top=`${top}px`; });
-    const endGuideDrag=e=>{ if(guidePointerId!==e.pointerId) return; guidePointerId=null; try{ els.guideHead.releasePointerCapture(e.pointerId);}catch{} };
-    els.guideHead.addEventListener('pointerup',endGuideDrag); els.guideHead.addEventListener('pointercancel',endGuideDrag);
-
     ['mousemove','click','keydown','touchstart'].forEach(evt=>{ els.main.addEventListener(evt,showBottomBarTemporarily,{passive:true}); });
     window.addEventListener('resize',()=>applyLayout());
     document.addEventListener('click',e=>{ if(!isMobileLayout()) return; if(!els.app.classList.contains('rail-open')) return; const clickedInsideSidebar=e.target.closest('.sidebar'); const clickedToggle=e.target.closest('#railToggleTop'); if(!clickedInsideSidebar && !clickedToggle){ els.app.classList.remove('rail-open'); } });
