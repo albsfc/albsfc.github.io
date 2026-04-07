@@ -225,7 +225,7 @@
       display: grid;
       grid-template-columns: 150px 1fr;
       gap: 22px;
-      z-index: 2;
+      z-index: 8;
     }
     .hero-logo img, .hero-logo .big-fallback {
       width: 130px; height: 130px; border-radius: 26px;
@@ -416,6 +416,9 @@
     .empty-card p { color: var(--muted); margin: 0; line-height: 1.5; }
 
     @media (max-width: 760px) {
+      .bottom-bar { z-index: 12; }
+      .panel-menu { z-index: 13; }
+      .guide-flyout { z-index: 11; }
       .app, .app.rail-open { grid-template-columns: 1fr; }
       .sidebar {
         position: absolute;
