@@ -382,6 +382,118 @@
       .channel-meta { font-size: 10px; }
       .channel-tag { display: none; }
     }
+
+    /* Compact 3-column channel grid */
+    .app.rail-open .channels {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-content: start;
+      gap: 10px;
+      padding: 10px 12px 18px;
+      height: calc(100vh - 210px);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .app.rail-open .channel-section-label {
+      display: none !important;
+    }
+
+    .app.rail-open .channel-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 7px;
+      min-height: 96px;
+      padding: 10px 6px 9px;
+      margin: 0;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.075);
+      background: rgba(255,255,255,.035);
+      text-align: center;
+      transform: none;
+    }
+
+    .app.rail-open .channel-item:hover {
+      background: rgba(255,255,255,.075);
+      border-color: rgba(255,255,255,.16);
+      transform: translateY(-1px);
+    }
+
+    .app.rail-open .channel-item.active {
+      background: linear-gradient(135deg, rgba(78,161,255,.22), rgba(111,92,255,.18));
+      border-color: rgba(133,171,255,.34);
+      box-shadow: 0 0 0 1px rgba(78,161,255,.12), 0 12px 28px rgba(0,0,0,.24);
+    }
+
+    .app.rail-open .channel-item.favorite::after {
+      content: "★";
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 12px;
+      line-height: 1;
+      color: #ffe27a;
+      text-shadow: 0 2px 8px rgba(0,0,0,.65);
+    }
+
+    .app.rail-open .channel-logo,
+    .app.rail-open .channel-fallback {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      object-fit: contain;
+      background: rgba(255,255,255,.065);
+      padding: 7px;
+      margin: 0;
+    }
+
+    .app.rail-open .channel-name {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+      width: 100%;
+      font-weight: 800;
+      font-size: 12px;
+      line-height: 1.12;
+      text-align: center;
+      white-space: normal;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      text-overflow: ellipsis;
+    }
+
+    .app.rail-open .channel-meta,
+    .app.rail-open .channel-tag {
+      display: none !important;
+    }
+
+    @media (max-height: 560px) {
+      .app.rail-open .channels {
+        height: calc(100vh - 178px);
+        gap: 8px;
+      }
+
+      .app.rail-open .channel-item {
+        min-height: 84px;
+        padding: 8px 5px;
+      }
+
+      .app.rail-open .channel-logo,
+      .app.rail-open .channel-fallback {
+        width: 44px;
+        height: 44px;
+      }
+
+      .app.rail-open .channel-name {
+        font-size: 11px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -618,6 +730,10 @@
     function applyLayout(){ els.main.style.marginLeft='0px'; }
     function toggleRail(force){ const open=typeof force==='boolean'?force:!els.app.classList.contains('rail-open'); els.app.classList.toggle('rail-open', open); if(open) els.app.classList.remove('sidebar-hidden'); }
     const FAVORITES_KEY = 'iptv_favorite_channel_ids_v1';
+    function getFavoriteKeys(channel){
+      if(!channel) return [];
+      return [channel.id, channel.url, channel.name].filter(Boolean);
+    }
     function loadFavorites(){
       try{
         const raw = localStorage.getItem(FAVORITES_KEY);
@@ -630,7 +746,9 @@
     function saveFavorites(){
       try{ localStorage.setItem(FAVORITES_KEY, JSON.stringify([...state.favoriteIds])); }catch{}
     }
-    function isFavoriteChannel(channel){ return !!channel && state.favoriteIds.has(channel.id); }
+    function isFavoriteChannel(channel){
+      return getFavoriteKeys(channel).some(key => state.favoriteIds.has(key));
+    }
     function sortChannelsWithFavorites(channels){
       const favorites = [];
       const rest = [];
@@ -652,8 +770,13 @@
     function toggleCurrentFavorite(){
       const channel = state.currentChannel;
       if(!channel) return;
-      if(state.favoriteIds.has(channel.id)) state.favoriteIds.delete(channel.id);
-      else state.favoriteIds.add(channel.id);
+      const keys = getFavoriteKeys(channel);
+      const active = isFavoriteChannel(channel);
+      if(active){
+        keys.forEach(key => state.favoriteIds.delete(key));
+      } else {
+        keys.forEach(key => state.favoriteIds.add(key));
+      }
       saveFavorites();
       renderChannels();
       updateFavoriteButton();
@@ -752,9 +875,9 @@
         const sectionLabel = section.label ? `<div class="channel-section-label">${escapeHtml(section.label)}</div>` : '';
         const items = section.items.map(ch=>{
           const active=ch.id===currentId?'active':'';
+          const favorite=isFavoriteChannel(ch)?'favorite':'';
           const logo=ch.logo?`<img class="channel-logo" src="${escapeHtml(ch.logo)}" alt="${escapeHtml(ch.name)}" loading="lazy" />`:`<div class="channel-fallback">${escapeHtml((ch.name||'?').charAt(0).toUpperCase())}</div>`;
-          const metaIndex = state.channels.findIndex(item=>item.id===ch.id) + 1;
-          return `<button class="channel-item ${active}" data-id="${escapeHtml(ch.id)}">${logo}<div><div class="channel-name">${escapeHtml(ch.name)}</div><div class="channel-meta">${escapeHtml(ch.group||'TV')} • ${String(metaIndex).padStart(2,'0')}</div></div><div class="channel-tag">LIVE</div></button>`;
+          return `<button class="channel-item ${active} ${favorite}" data-id="${escapeHtml(ch.id)}" title="${escapeHtml(ch.name)}">${logo}<div class="channel-name">${escapeHtml(ch.name)}</div></button>`;
         }).join('');
         return sectionLabel + items;
       }).join('');
@@ -1179,6 +1302,7 @@
 
     els.playlistUrlField.value=state.playlistUrl;
     els.epgUrlField.value=state.epgUrl;
+    loadFavorites();
     updateClock(); setInterval(updateClock,1000); updateFullscreenButton(); applyLayout(); showBottomBarTemporarily(); setTimeout(bootAutoLoad,50);
   </script>
 </body>
