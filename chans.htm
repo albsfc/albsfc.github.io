@@ -499,20 +499,52 @@
       favoriteIds: new Set(),
     };
 
+    // Desktop Chrome cannot play most HLS streams natively, so hls.js must fetch the
+    // .m3u8 and .ts/.m4s files. That requires a CORS proxy you control.
+    //
+    // Put your proxy prefix here when you have one, e.g.
+    // const CUSTOM_CORS_PROXY_PREFIX = 'https://your-worker.workers.dev/?url=';
+    // or set it without editing the file by opening:
+    // chans.htm?proxy=https%3A%2F%2Fyour-worker.workers.dev%2F%3Furl%3D
+    const CUSTOM_CORS_PROXY_PREFIX = '';
+
+    function getSavedProxyPrefix(){
+      try{
+        const fromUrl = new URLSearchParams(location.search).get('proxy');
+        if(fromUrl && /^https?:\/\//i.test(fromUrl)){
+          localStorage.setItem('iptv_cors_proxy_prefix', fromUrl);
+          return fromUrl;
+        }
+        return localStorage.getItem('iptv_cors_proxy_prefix') || '';
+      }catch{
+        return '';
+      }
+    }
+
     const CORS_PROXY_PREFIXES = [
-      'https://corsproxy.io/?',
-      'https://api.allorigins.win/raw?url='
-    ];
+      CUSTOM_CORS_PROXY_PREFIX,
+      getSavedProxyPrefix()
+    ].map(v => (v || '').trim()).filter(Boolean);
+
+    function hasCorsProxy(){
+      return CORS_PROXY_PREFIXES.length > 0;
+    }
 
     function isProbablyHttpUrl(value){
       return /^https?:\/\//i.test(value || '');
     }
 
+    function isDesktopChrome(){
+      const ua = navigator.userAgent || '';
+      return /Chrome\//i.test(ua) && !/Edg\//i.test(ua) && !/OPR\//i.test(ua) && !/Android|iPhone|iPad|iPod/i.test(ua);
+    }
+
     function proxifyUrl(url, proxyIndex = 0){
       const normalized = (url || '').trim();
       if(!isProbablyHttpUrl(normalized)) return normalized;
-      if(normalized.includes('corsproxy.io/?') || normalized.includes('api.allorigins.win/raw?url=')) return normalized;
+      if(!hasCorsProxy()) return normalized;
       const prefix = CORS_PROXY_PREFIXES[proxyIndex] || CORS_PROXY_PREFIXES[0];
+      if(normalized.startsWith(prefix)) return normalized;
       return prefix + encodeURIComponent(normalized);
     }
 
@@ -520,8 +552,13 @@
       const BaseLoader = Hls.DefaultConfig.loader;
       class CorsProxyLoader extends BaseLoader {
         load(context, config, callbacks){
-          if(context && context.url && isProbablyHttpUrl(context.url)){
-            context.url = proxifyUrl(context.url, proxyIndex);
+          if(context && context.url && isProbablyHttpUrl(context.url) && hasCorsProxy()){
+            // Clone context so hls.js still treats the original stream URL as the base URL.
+            const proxiedContext = Object.assign({}, context, {
+              url: proxifyUrl(context.url, proxyIndex)
+            });
+            super.load(proxiedContext, config, callbacks);
+            return;
           }
           super.load(context, config, callbacks);
         }
@@ -652,11 +689,14 @@
     async function fetchText(url){
       const normalized = (url || '').trim();
       if(!normalized) throw new Error('No remote URL provided');
-      const attempts=[
-        {url: normalized, timeout: 9000},
-        {url: proxifyUrl(normalized, 0), timeout: 12000},
-        {url: proxifyUrl(normalized, 1), timeout: 12000}
-      ];
+      const attempts = hasCorsProxy()
+        ? [
+            {url: proxifyUrl(normalized, 0), timeout: 12000},
+            {url: normalized, timeout: 9000}
+          ]
+        : [
+            {url: normalized, timeout: 9000}
+          ];
       let lastError=null;
       for(const attempt of attempts){
         const controller=new AbortController();
@@ -817,7 +857,10 @@
             cachedText = EMBEDDED_DEFAULT_PLAYLIST;
             try{ localStorage.setItem(cacheKey,m3uText); }catch{}
             rememberLastGoodPlaylist(m3uText, sourceKey);
-            if(backgroundRefresh){
+            // Do not background-fetch the default remote playlist here.
+            // The default playlist is already embedded, and Chrome desktop will
+            // throw noisy CORS errors if we fetch raw-tv.m3u8 from GitHub Pages.
+            if(false && backgroundRefresh){
               fetchText(sourceKey).then(fresh=>{
                 if(fresh && fresh !== EMBEDDED_DEFAULT_PLAYLIST){
                   try{ localStorage.setItem(cacheKey,fresh); }catch{}
@@ -938,7 +981,14 @@
 
       const autoplay = options.autoplay !== false;
       const forceMuted = options.forceMuted === true;
-      const proxyIndex = typeof options.proxyIndex === 'number' ? options.proxyIndex : -1;
+
+      // Desktop Chrome needs hls.js, and hls.js needs a CORS proxy for these streams.
+      // Phones/tablets and Safari-like browsers can often play HLS natively, so leave
+      // those direct unless a proxy retry was explicitly requested.
+      const shouldUseProxyByDefault = isDesktopChrome() && hasCorsProxy();
+      const proxyIndex = typeof options.proxyIndex === 'number'
+        ? options.proxyIndex
+        : (shouldUseProxyByDefault ? 0 : -1);
 
       state.currentChannel = channel;
       renderChannels();
@@ -986,6 +1036,12 @@
       };
 
       const retryWithProxy = () => {
+        if (!hasCorsProxy()) {
+          if (isDesktopChrome()) {
+            showAutoplayNote('Desktop Chrome needs a CORS proxy for this stream.');
+          }
+          return;
+        }
         if (proxyIndex >= CORS_PROXY_PREFIXES.length - 1) return;
         const nextProxy = proxyIndex + 1;
         showAutoplayNote(nextProxy === 0 ? 'Stream blocked by CORS — retrying through proxy…' : 'Trying backup proxy…');
@@ -1001,6 +1057,9 @@
       }
 
       if (window.Hls && Hls.isSupported()) {
+        // Important: keep loadSource on the original URL. The custom loader proxies
+        // the actual network request while preserving the original base URL for
+        // relative HLS segment resolution.
         state.hls = proxyIndex >= 0
           ? createProxiedHls(proxyIndex)
           : new Hls({ enableWorker: true, lowLatencyMode: true, backBufferLength: 30 });
@@ -1012,9 +1071,13 @@
           retryWithProxy();
         });
 
-        state.hls.loadSource(src);
+        state.hls.loadSource(originalSrc);
         state.hls.attachMedia(els.video);
         state.hls.on(Hls.Events.MANIFEST_PARSED, tryPlay);
+
+        if (isDesktopChrome() && !hasCorsProxy()) {
+          showAutoplayNote('Desktop Chrome may block this stream unless a CORS proxy is set.');
+        }
         return;
       }
 
