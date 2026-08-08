@@ -591,6 +591,92 @@
       font-size: 15px;
     }
 
+    .register-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0 10px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .register-divider::before,
+    .register-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .register-button,
+    .back-login-button {
+      width: 100%;
+      padding: 11px 16px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .register-button:hover,
+    .back-login-button:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+    }
+
+    .back-login-button {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    #registerSection {
+      display: none;
+      width: min(380px, 100%);
+      margin: 60px auto;
+      padding: 22px;
+      background: var(--panel);
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    #registerSection h2 {
+      margin: 0 0 6px;
+    }
+
+    .register-subtitle {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    #registerMessage,
+    #shareMessage {
+      margin: 8px 0 0;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .share-card {
+      margin-top: 12px;
+      padding: 14px;
+      background: var(--panel);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .share-button {
+      width: 100%;
+      max-width: 260px;
+      padding: 11px 16px;
+      margin-top: 8px;
+    }
+
     .view { display: none; }
     .view.active { display: block; }
 
@@ -1321,6 +1407,22 @@
     <input class="login-input" type="password" id="pin" placeholder="PIN">
     <button class="login-button" type="button" onclick="login()">Login</button>
     <p id="loginMessage"></p>
+
+    <div class="register-divider">New to PL Tips?</div>
+    <button class="register-button" type="button" onclick="showRegister()">Create Account</button>
+  </div>
+
+  <div id="registerSection">
+    <h2>Create Account</h2>
+    <p class="register-subtitle">Choose a display name and PIN. You’ll be signed in automatically.</p>
+
+    <input class="login-input" type="text" id="registerDisplayName" placeholder="Display Name" maxlength="24">
+    <input class="login-input" type="password" id="registerPin" placeholder="PIN" maxlength="20">
+    <input class="login-input" type="password" id="registerConfirmPin" placeholder="Confirm PIN" maxlength="20">
+
+    <button class="login-button" type="button" onclick="registerUser()">Create Account</button>
+    <button class="back-login-button" type="button" onclick="showLogin()">Back to Sign in</button>
+    <p id="registerMessage"></p>
   </div>
 
   <div id="appSection" style="display:none;">
@@ -1546,6 +1648,13 @@
           <div class="settings-help">Signed in as <strong id="settingsUserName"></strong>.</div>
           <button class="logout-button" style="display:inline-block;" type="button" onclick="logout()">Logout</button>
         </div>
+
+        <div class="settings-card full">
+          <div class="settings-title">Share PL Tips</div>
+          <div class="settings-help">Copy the app link and send it to someone else.</div>
+          <button class="share-button" type="button" onclick="shareApp()">Share App</button>
+          <p id="shareMessage"></p>
+        </div>
       </div>
     </section>
   </div>
@@ -1639,6 +1748,18 @@
     });
     document.getElementById("displayName").addEventListener("keydown", function(e) {
       if (e.key === "Enter") login();
+    });
+
+    document.getElementById("registerDisplayName").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") registerUser();
+    });
+
+    document.getElementById("registerPin").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") registerUser();
+    });
+
+    document.getElementById("registerConfirmPin").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") registerUser();
     });
 
     const remember = getRememberLogin();
@@ -1897,6 +2018,102 @@
     msg.innerText = text;
   }
 
+  function showRegister() {
+    document.getElementById("loginSection").style.display = "none";
+    document.getElementById("registerSection").style.display = "block";
+
+    const existingName = document.getElementById("displayName").value.trim();
+    if (existingName) {
+      document.getElementById("registerDisplayName").value = existingName;
+    }
+
+    setRegisterMessage("", "");
+    document.getElementById("registerDisplayName").focus();
+  }
+
+  function showLogin() {
+    document.getElementById("registerSection").style.display = "none";
+    document.getElementById("loginSection").style.display = "block";
+
+    const registerName = document.getElementById("registerDisplayName").value.trim();
+    if (registerName) {
+      document.getElementById("displayName").value = registerName;
+    }
+
+    setRegisterMessage("", "");
+    document.getElementById("displayName").focus();
+  }
+
+  function setRegisterMessage(text, type) {
+    const msg = document.getElementById("registerMessage");
+    msg.className = type || "";
+    msg.innerText = text;
+  }
+
+  function registerUser() {
+    const name = document.getElementById("registerDisplayName").value.trim();
+    const pin = document.getElementById("registerPin").value.trim();
+    const confirmPin = document.getElementById("registerConfirmPin").value.trim();
+
+    if (!name || !pin || !confirmPin) {
+      setRegisterMessage("Complete all fields.", "error");
+      return;
+    }
+
+    if (name.length < 2) {
+      setRegisterMessage("Display name must be at least 2 characters.", "error");
+      return;
+    }
+
+    if (pin.length < 4) {
+      setRegisterMessage("PIN must be at least 4 characters.", "error");
+      return;
+    }
+
+    if (pin !== confirmPin) {
+      setRegisterMessage("PINs do not match.", "error");
+      return;
+    }
+
+    setRegisterMessage("Creating account...", "");
+
+    apiCall("registerUser", {
+      displayName: name,
+      pin: pin
+    })
+      .then(function(response) {
+        if (!response || !response.success) {
+          setRegisterMessage(
+            response && response.message ? response.message : "Could not create account.",
+            "error"
+          );
+          return;
+        }
+
+        currentUser = response;
+        currentLoginPin = pin;
+        saveLogin(response.displayName, pin);
+
+        document.getElementById("registerSection").style.display = "none";
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("appSection").style.display = "block";
+        document.getElementById("userArea").style.display = "flex";
+        document.getElementById("mobileNav").style.display = "";
+
+        document.getElementById("loggedInName").innerText = response.displayName;
+        document.getElementById("settingsUserName").innerText = response.displayName;
+        document.getElementById("rememberToggle").checked = getRememberLogin();
+
+        document.getElementById("displayName").value = response.displayName;
+        document.getElementById("pin").value = pin;
+
+        loadGameweeks();
+      })
+      .catch(function(error) {
+        setRegisterMessage("Registration error: " + error.message, "error");
+      });
+  }
+
   function login(isAutomatic) {
     const name = document.getElementById("displayName").value.trim();
     const pin = document.getElementById("pin").value.trim();
@@ -1944,6 +2161,7 @@
 
     document.getElementById("appSection").style.display = "none";
     document.getElementById("userArea").style.display = "none";
+    document.getElementById("registerSection").style.display = "none";
     document.getElementById("loginSection").style.display = "block";
     document.getElementById("displayName").value = "";
     document.getElementById("pin").value = "";
@@ -2410,6 +2628,66 @@
         message.className = "error";
         message.innerText = "PIN error: " + error.message;
       });
+  }
+
+  function shareApp() {
+    const url = "https://albsfc.github.io/PLTips.html";
+    const message = document.getElementById("shareMessage");
+
+    if (navigator.share) {
+      navigator.share({
+        title: "Premier League Tipping",
+        text: "Join our Premier League tipping comp!",
+        url: url
+      })
+        .then(function() {
+          message.className = "success";
+          message.innerText = "Share menu opened.";
+        })
+        .catch(function(error) {
+          if (error && error.name === "AbortError") return;
+          copyAppUrl(url, message);
+        });
+      return;
+    }
+
+    copyAppUrl(url, message);
+  }
+
+  function copyAppUrl(url, message) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url)
+        .then(function() {
+          message.className = "success";
+          message.innerText = "App link copied!";
+        })
+        .catch(function() {
+          fallbackCopyUrl(url, message);
+        });
+    } else {
+      fallbackCopyUrl(url, message);
+    }
+  }
+
+  function fallbackCopyUrl(url, message) {
+    const textArea = document.createElement("textarea");
+    textArea.value = url;
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      document.execCommand("copy");
+      message.className = "success";
+      message.innerText = "App link copied!";
+    } catch(e) {
+      message.className = "error";
+      message.innerText = url;
+    }
+
+    document.body.removeChild(textArea);
   }
 
   function logoHtml(team) {
