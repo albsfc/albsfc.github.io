@@ -402,6 +402,11 @@
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
       transition: background .18s ease, color .18s ease;
+
+      /* iPhone standalone/PWA safe areas */
+      padding-top: env(safe-area-inset-top);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
     }
 
     button, input, select { font: inherit; }
@@ -410,7 +415,7 @@
       width: min(1180px, 100%);
       margin: 0 auto;
       padding: 14px;
-      padding-bottom: 84px;
+      padding-bottom: calc(96px + env(safe-area-inset-bottom));
     }
 
     .topbar {
@@ -523,7 +528,11 @@
       left: 0;
       right: 0;
       bottom: 0;
-      padding: 6px max(8px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+      padding:
+        6px
+        max(8px, env(safe-area-inset-right))
+        calc(8px + env(safe-area-inset-bottom))
+        max(8px, env(safe-area-inset-left));
       background: var(--nav-bg);
       border-top: 1px solid var(--line);
       grid-template-columns: repeat(4, 1fr);
@@ -560,7 +569,53 @@
       text-align: center;
     }
 
-    #loginSection h2 { margin: 0 0 16px; }
+    #loginSection h2 { margin: 0 0 8px; }
+
+    .login-intro {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .login-rules {
+      margin: 16px 0 2px;
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--panel-soft);
+      text-align: left;
+    }
+
+    .login-rules-title {
+      margin-bottom: 7px;
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .login-rule-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 3px 0;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .login-rule-row strong {
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .login-rule-total {
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px solid var(--line);
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 900;
+      text-align: center;
+    }
 
     .login-input,
     .settings-input {
@@ -1274,8 +1329,21 @@
     .success { color: var(--green); }
     .muted { color: var(--muted); font-size: 11px; }
 
+
+    @media (display-mode: standalone) {
+      .topbar {
+        padding-top: 6px;
+      }
+    }
+
     @media (max-width: 760px) {
-      .app { padding: 10px 10px 86px; }
+      .app {
+        padding:
+          10px
+          max(10px, env(safe-area-inset-right))
+          calc(112px + env(safe-area-inset-bottom))
+          max(10px, env(safe-area-inset-left));
+      }
       .desktop-nav { display: none; }
       .mobile-nav { display: grid; }
 
@@ -1327,7 +1395,10 @@
       .fixture-subline { font-size: 9px; }
       .day-heading { font-size: 13px; padding: 9px 10px; }
       .team-detail { font-size: 9px; }
-      .submit-wrap { bottom: 64px; }
+      .submit-wrap {
+        /* Sit fully above the fixed mobile menu + iPhone home indicator */
+        bottom: calc(68px + env(safe-area-inset-bottom));
+      }
 
   
     .table-controls {
@@ -1403,6 +1474,21 @@
 
   <div id="loginSection">
     <h2>Sign in</h2>
+
+    <p class="login-intro">
+      Tip every Premier League score, earn points for getting the result and scores right,
+      climb the tipping leaderboard, and see what the league table would look like based on your own predictions.
+    </p>
+
+    <div class="login-rules">
+      <div class="login-rules-title">How scoring works</div>
+      <div class="login-rule-row"><span>Correct match result</span><strong>3 pts</strong></div>
+      <div class="login-rule-row"><span>Correct home score</span><strong>3 pts</strong></div>
+      <div class="login-rule-row"><span>Correct away score</span><strong>3 pts</strong></div>
+      <div class="login-rule-row"><span>Everything correct</span><strong>+1 bonus</strong></div>
+      <div class="login-rule-total">Maximum 10 points per match</div>
+    </div>
+
     <input class="login-input" type="text" id="displayName" placeholder="Display Name">
     <input class="login-input" type="password" id="pin" placeholder="PIN">
     <button class="login-button" type="button" onclick="login()">Login</button>
