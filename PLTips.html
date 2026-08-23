@@ -1973,6 +1973,47 @@
       }
     }
 
+  
+    /* ===== SHORT-PAGE MOBILE FIX =====
+       Keep short views (especially Leaderboard) tall enough to fill the screen,
+       so iOS/Android rubber-banding cannot visually pull the fixed nav upward. */
+    @media (max-width: 760px) {
+      html,
+      body {
+        min-height: 100%;
+      }
+
+      body.logged-in .app {
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      body.logged-in #appSection {
+        flex: 1 0 auto;
+        min-height: calc(100svh - 74px - env(safe-area-inset-bottom, 0px));
+      }
+
+      body.logged-in .view.active {
+        min-height: calc(100svh - 140px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+      }
+
+      /* Fallback for older mobile browsers without svh support. */
+      @supports not (height: 100svh) {
+        body.logged-in .app {
+          min-height: 100vh;
+        }
+
+        body.logged-in #appSection {
+          min-height: calc(100vh - 74px - env(safe-area-inset-bottom, 0px));
+        }
+
+        body.logged-in .view.active {
+          min-height: calc(100vh - 140px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+        }
+      }
+    }
+
   </style>
 </head>
 
