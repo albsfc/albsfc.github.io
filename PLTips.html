@@ -1177,55 +1177,143 @@
 
     .compare-controls {
       display: none;
-      align-items: center;
+      align-items: end;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       margin: 0 0 12px;
       flex-wrap: wrap;
     }
 
     .compare-controls.show { display: flex; }
 
-    .compare-player {
-      min-width: 145px;
+    .compare-select-wrap {
+      min-width: 150px;
+      flex: 1 1 150px;
     }
 
-    .compare-player.left {
-      color: #5bb6ff;
-      border-color: rgba(91,182,255,.65);
-    }
-
-    .compare-player.right {
-      color: #c58cff;
-      border-color: rgba(197,140,255,.65);
-    }
-
-    .compare-vs {
+    .compare-select-label {
+      display: block;
+      margin-bottom: 4px;
       color: var(--muted);
-      font-size: 11px;
+      font-size: 9px;
       font-weight: 900;
       text-transform: uppercase;
+      letter-spacing: .45px;
     }
 
-    .compare-table .compare-left-head,
-    .compare-table .compare-left-value {
-      color: #5bb6ff;
+    .compare-player {
+      width: 100%;
+      min-width: 0;
     }
 
-    .compare-table .compare-right-head,
-    .compare-table .compare-right-value {
-      color: #c58cff;
+    .tip-compare-summary {
+      display: grid;
+      grid-template-columns: minmax(110px,1.2fr) repeat(3,minmax(78px,.8fr));
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: var(--panel-soft);
+      font-size: 10px;
+      font-weight: 900;
     }
 
-    .compare-change {
+    .tip-compare-summary .summary-player {
+      text-align: center;
+    }
+
+    .tip-compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 11px;
+    }
+
+    .tip-compare-table th,
+    .tip-compare-table td {
+      padding: 9px 6px;
+      border-bottom: 1px solid var(--line);
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .tip-compare-table th {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .tip-compare-table .match-col {
+      width: 40%;
+      text-align: left;
+    }
+
+    .tip-compare-match {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 5px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .tip-compare-team {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 800;
+    }
+
+    .tip-compare-team.home { text-align: right; }
+    .tip-compare-team.away { text-align: left; }
+
+    .tip-compare-result {
+      color: var(--text);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .tip-cell {
+      white-space: nowrap;
+      font-weight: 900;
+    }
+
+    .tip-score.player-1 { color: #5bb6ff; }
+    .tip-score.player-2 { color: #c58cff; }
+    .tip-score.player-3 { color: #4fd99b; }
+
+    .tip-points {
+      margin-left: 3px;
+      color: var(--text);
+      opacity: .86;
+      font-weight: 800;
+    }
+
+    .tip-none {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .actual-compare-table .actual-head,
+    .actual-compare-table .actual-pos {
+      color: var(--muted);
+    }
+
+    .actual-compare-table .mine-head,
+    .actual-compare-table .mine-pos {
+      color: var(--accent);
+    }
+
+    .actual-compare-change {
       min-width: 38px;
       font-weight: 900;
       text-align: right;
     }
 
-    .compare-change.up { color: var(--green); }
-    .compare-change.down { color: var(--red); }
-    .compare-change.same { color: var(--muted); }
+    .actual-compare-change.up { color: var(--green); }
+    .actual-compare-change.down { color: var(--red); }
+    .actual-compare-change.same { color: var(--muted); }
 
     .points-earned.points-0 { color: var(--red) !important; }
     .points-earned.points-low { color: #ffd34d !important; }
@@ -1265,24 +1353,56 @@
 
       .compare-controls {
         display: none;
-        grid-template-columns: 1fr auto 1fr;
+        grid-template-columns: repeat(3,minmax(0,1fr));
         gap: 6px;
+        align-items: end;
       }
 
       .compare-controls.show { display: grid; }
-      .compare-player { min-width: 0; width: 100%; }
+      .compare-select-wrap { min-width: 0; }
+      .compare-player { width: 100%; min-width: 0; padding-left: 7px; padding-right: 22px; font-size: 11px; }
 
-      .compare-table th,
-      .compare-table td {
-        padding-left: 4px;
-        padding-right: 4px;
+      .tip-compare-summary {
+        grid-template-columns: 74px repeat(3,minmax(0,1fr));
+        padding: 7px 5px;
+        font-size: 9px;
       }
 
-      .compare-table .table-team span {
-        max-width: 120px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+      .tip-compare-table {
+        font-size: 10px;
+      }
+
+      .tip-compare-table th,
+      .tip-compare-table td {
+        padding: 8px 3px;
+      }
+
+      .tip-compare-table .match-col {
+        width: 38%;
+      }
+
+      .tip-compare-match {
+        grid-template-columns: 1fr;
+        gap: 1px;
+      }
+
+      .tip-compare-team.home,
+      .tip-compare-team.away {
+        text-align: left;
+      }
+
+      .tip-compare-result {
+        font-size: 10px;
+      }
+
+      .tip-cell {
+        font-size: 10px;
+      }
+
+      .tip-points {
+        display: block;
+        margin: 2px 0 0;
+        font-size: 9px;
       }
     }
 
@@ -1720,7 +1840,8 @@
         <div class="table-mode-toggle">
           <button id="actualTableButton" class="table-mode-button active" type="button" onclick="setTableMode('actual')">Actual</button>
           <button id="predictedTableButton" class="table-mode-button" type="button" onclick="setTableMode('predicted')">Mine</button>
-          <button id="compareTableButton" class="table-mode-button" type="button" onclick="setTableMode('compare')">Compare</button>
+          <button id="actualCompareButton" class="table-mode-button" type="button" onclick="setTableMode('actualcompare')">Vs Actual</button>
+          <button id="tipsCompareButton" class="table-mode-button" type="button" onclick="setTableMode('tipscompare')">Tips Compare</button>
         </div>
 
         <div class="gameweek-controls">
@@ -1737,9 +1858,18 @@
       </div>
 
       <div id="compareControls" class="compare-controls">
-        <select id="compareLeft" class="compare-player left" onchange="loadTablePage()"></select>
-        <span class="compare-vs">vs</span>
-        <select id="compareRight" class="compare-player right" onchange="loadTablePage()"></select>
+        <div class="compare-select-wrap">
+          <label class="compare-select-label" for="comparePlayer1">Player 1</label>
+          <select id="comparePlayer1" class="compare-player" onchange="loadTablePage()"></select>
+        </div>
+        <div class="compare-select-wrap">
+          <label class="compare-select-label" for="comparePlayer2">Player 2</label>
+          <select id="comparePlayer2" class="compare-player" onchange="loadTablePage()"></select>
+        </div>
+        <div class="compare-select-wrap">
+          <label class="compare-select-label" for="comparePlayer3">Player 3</label>
+          <select id="comparePlayer3" class="compare-player" onchange="loadTablePage()"></select>
+        </div>
       </div>
 
       <div id="tableModeNote" class="predicted-note">Actual results through the selected gameweek.</div>
@@ -2725,24 +2855,28 @@
   }
 
   function setTableMode(mode) {
-    tableMode = ["actual", "predicted", "compare"].indexOf(mode) >= 0 ? mode : "actual";
+    tableMode = ["actual", "predicted", "actualcompare", "tipscompare"].indexOf(mode) >= 0 ? mode : "actual";
 
     document.getElementById("actualTableButton").classList.toggle("active", tableMode === "actual");
     document.getElementById("predictedTableButton").classList.toggle("active", tableMode === "predicted");
-    document.getElementById("compareTableButton").classList.toggle("active", tableMode === "compare");
-    document.getElementById("compareControls").classList.toggle("show", tableMode === "compare");
+    document.getElementById("actualCompareButton").classList.toggle("active", tableMode === "actualcompare");
+    document.getElementById("tipsCompareButton").classList.toggle("active", tableMode === "tipscompare");
+
+    document.getElementById("compareControls").classList.toggle("show", tableMode === "tipscompare");
 
     const note = document.getElementById("tableModeNote");
 
     if (tableMode === "actual") {
       note.innerText = "Actual results through the selected gameweek.";
     } else if (tableMode === "predicted") {
-      note.innerText = "Based on your saved tips through the selected gameweek.";
+      note.innerText = "Your predicted league table through the selected gameweek.";
+    } else if (tableMode === "actualcompare") {
+      note.innerText = "Your predicted table compared with the actual table. Positive means you have that club higher.";
     } else {
-      note.innerText = "Compare where each team sits in two different predicted or actual tables.";
+      note.innerText = "Compare up to three players' tips. Only matches that have kicked off are shown.";
     }
 
-    if (tableMode === "compare") {
+    if (tableMode === "tipscompare") {
       ensureComparePlayers().then(loadTablePage);
     } else {
       loadTablePage();
@@ -2773,82 +2907,63 @@
     if (comparePlayersLoaded) return Promise.resolve();
 
     return apiCall("getLeaderboard", {}).then(function(players) {
-      const left = document.getElementById("compareLeft");
-      const right = document.getElementById("compareRight");
       const list = players || [];
+      const selects = [
+        document.getElementById("comparePlayer1"),
+        document.getElementById("comparePlayer2"),
+        document.getElementById("comparePlayer3")
+      ];
 
-      let options = '<option value="actual">Actual Table</option>';
+      let options = "";
 
       list.forEach(function(player) {
         const userId = player.user || player.userId || "";
         const name = player.displayName || "";
         if (!name) return;
 
-        options += '<option value="user:' + escapeHtml(String(userId)) + '" data-name="' +
+        options += '<option value="' + escapeHtml(String(userId)) + '" data-name="' +
           escapeHtml(name) + '">' + escapeHtml(name) + '</option>';
       });
 
-      left.innerHTML = options;
-      right.innerHTML = options;
-
-      left.value = "actual";
-
-      const myValue = "user:" + String(currentUser.userId);
-      const myOption = Array.from(right.options).find(function(opt) {
-        return opt.value === myValue ||
-          String(opt.getAttribute("data-name") || "").toLowerCase() === String(currentUser.displayName || "").toLowerCase();
+      selects.forEach(function(select) {
+        select.innerHTML = options;
       });
 
-      if (myOption) {
-        right.value = myOption.value;
-      } else if (right.options.length > 1) {
-        right.selectedIndex = 1;
+      const myIndex = list.findIndex(function(player) {
+        return String(player.user || player.userId || "") === String(currentUser.userId) ||
+          String(player.displayName || "").toLowerCase() === String(currentUser.displayName || "").toLowerCase();
+      });
+
+      if (selects[0].options.length) {
+        selects[0].selectedIndex = myIndex >= 0 ? myIndex : 0;
+      }
+
+      if (selects[1].options.length > 1) {
+        selects[1].selectedIndex = myIndex === 0 ? 1 : 0;
+      }
+
+      if (selects[2].options.length > 2) {
+        let third = 2;
+        if (third === selects[0].selectedIndex || third === selects[1].selectedIndex) third = selects[2].options.length - 1;
+        selects[2].selectedIndex = third;
+      } else if (selects[2].options.length) {
+        selects[2].selectedIndex = Math.min(selects[2].options.length - 1, 0);
       }
 
       comparePlayersLoaded = true;
     });
   }
 
-  function getCompareSelection(selectId) {
+  function getSelectedComparePlayer(selectId) {
     const select = document.getElementById(selectId);
-    const option = select.options[select.selectedIndex];
+    const option = select && select.options[select.selectedIndex];
 
-    if (!option || option.value === "actual") {
-      return { type: "actual", label: "Actual", userId: "", displayName: "" };
-    }
+    if (!option) return null;
 
     return {
-      type: "user",
-      label: option.getAttribute("data-name") || option.textContent,
-      userId: option.value.replace(/^user:/, ""),
+      userId: option.value,
       displayName: option.getAttribute("data-name") || option.textContent
     };
-  }
-
-  function loadComparisonTable(round) {
-    const box = document.getElementById("leagueTable");
-    const left = getCompareSelection("compareLeft");
-    const right = getCompareSelection("compareRight");
-
-    function fetchTable(selection) {
-      if (selection.type === "actual") {
-        return apiCall("getActualTable", { stageName: round });
-      }
-
-      return apiCall("getPredictedTable", {
-        stageName: round,
-        userId: selection.userId,
-        displayName: selection.displayName
-      });
-    }
-
-    Promise.all([fetchTable(left), fetchTable(right)])
-      .then(function(results) {
-        renderComparisonTable(results[0] || [], results[1] || [], left.label, right.label);
-      })
-      .catch(function(error) {
-        box.innerHTML = '<div class="error">Compare error: ' + escapeHtml(error.message) + '</div>';
-      });
   }
 
   function loadTablePage() {
@@ -2861,12 +2976,29 @@
 
     box.innerHTML = '<div class="muted">Loading table...</div>';
 
-    if (tableMode === "compare") {
-      if (!comparePlayersLoaded) {
-        ensureComparePlayers().then(function() { loadComparisonTable(round); });
-      } else {
-        loadComparisonTable(round);
-      }
+    if (tableMode === "tipscompare") {
+      ensureComparePlayers().then(function() {
+        loadTipsComparison(round);
+      });
+      return;
+    }
+
+    if (tableMode === "actualcompare") {
+      Promise.all([
+        apiCall("getActualTable", { stageName: round }),
+        apiCall("getPredictedTable", {
+          stageName: round,
+          userId: currentUser.userId,
+          displayName: currentUser.displayName
+        })
+      ])
+        .then(function(results) {
+          renderActualVsMine(results[0] || [], results[1] || []);
+        })
+        .catch(function(error) {
+          box.innerHTML = '<div class="error">Comparison error: ' + escapeHtml(error.message) + '</div>';
+        });
+
       return;
     }
 
@@ -2934,46 +3066,38 @@
     box.innerHTML = html;
   }
 
-  function renderComparisonTable(leftRows, rightRows, leftLabel, rightLabel) {
+  function renderActualVsMine(actualRows, mineRows) {
     const box = document.getElementById("leagueTable");
 
-    if (!leftRows.length && !rightRows.length) {
+    if (!actualRows.length && !mineRows.length) {
       box.innerHTML = '<div class="muted">No table data available for this gameweek.</div>';
       return;
     }
 
-    const leftMap = {};
-    const rightMap = {};
-
-    leftRows.forEach(function(team) {
-      leftMap[normaliseTeamName(team.name)] = team;
+    const mineMap = {};
+    mineRows.forEach(function(team) {
+      mineMap[normaliseTeamName(team.name)] = team;
     });
 
-    rightRows.forEach(function(team) {
-      rightMap[normaliseTeamName(team.name)] = team;
-    });
+    const ordered = actualRows.length ? actualRows.slice() : mineRows.slice();
 
-    const ordered = leftRows.length ? leftRows.slice() : rightRows.slice();
-
-    let html = '<div class="league-table-wrap"><table class="league-table compare-table"><thead><tr>' +
+    let html = '<div class="league-table-wrap"><table class="league-table actual-compare-table"><thead><tr>' +
       '<th>#</th><th class="club">Team</th>' +
-      '<th class="compare-left-head">' + escapeHtml(leftLabel) + '</th>' +
-      '<th class="compare-right-head">' + escapeHtml(rightLabel) + '</th>' +
+      '<th class="actual-head">Actual</th>' +
+      '<th class="mine-head">Mine</th>' +
       '<th></th>' +
       '</tr></thead><tbody>';
 
-    ordered.forEach(function(baseTeam, index) {
-      const key = normaliseTeamName(baseTeam.name);
-      const left = leftMap[key];
-      const right = rightMap[key];
-      const leftPos = left ? Number(left.position) : null;
-      const rightPos = right ? Number(right.position) : null;
+    ordered.forEach(function(team, index) {
+      const mine = mineMap[normaliseTeamName(team.name)];
+      const actualPos = Number(team.position) || (index + 1);
+      const minePos = mine ? Number(mine.position) : null;
 
       let changeText = "—";
       let changeClass = "same";
 
-      if (leftPos !== null && rightPos !== null) {
-        const change = leftPos - rightPos;
+      if (minePos !== null) {
+        const change = actualPos - minePos;
         if (change > 0) {
           changeText = "+" + change;
           changeClass = "up";
@@ -2984,13 +3108,135 @@
       }
 
       html += '<tr>' +
-        '<td>' + (leftPos !== null ? leftPos : (index + 1)) + '</td>' +
-        '<td class="club"><div class="table-team"><img src="' + escapeHtml(getClubLogo(baseTeam.name)) +
-          '" alt="" onerror="this.style.display=\'none\'"><span>' + escapeHtml(baseTeam.name) + '</span></div></td>' +
-        '<td class="compare-left-value"><strong>' + (leftPos !== null ? leftPos : "—") + '</strong></td>' +
-        '<td class="compare-right-value"><strong>' + (rightPos !== null ? rightPos : "—") + '</strong></td>' +
-        '<td class="compare-change ' + changeClass + '">' + changeText + '</td>' +
+        '<td>' + actualPos + '</td>' +
+        '<td class="club"><div class="table-team"><img src="' + escapeHtml(getClubLogo(team.name)) +
+          '" alt="" onerror="this.style.display=\'none\'"><span>' + escapeHtml(team.name) + '</span></div></td>' +
+        '<td class="actual-pos"><strong>' + actualPos + '</strong></td>' +
+        '<td class="mine-pos"><strong>' + (minePos !== null ? minePos : "—") + '</strong></td>' +
+        '<td class="actual-compare-change ' + changeClass + '">' + changeText + '</td>' +
       '</tr>';
+    });
+
+    html += '</tbody></table></div>';
+    box.innerHTML = html;
+  }
+
+  function loadTipsComparison(round) {
+    const box = document.getElementById("leagueTable");
+
+    const players = [
+      getSelectedComparePlayer("comparePlayer1"),
+      getSelectedComparePlayer("comparePlayer2"),
+      getSelectedComparePlayer("comparePlayer3")
+    ].filter(Boolean);
+
+    if (!players.length) {
+      box.innerHTML = '<div class="muted">Choose players to compare.</div>';
+      return;
+    }
+
+    const requests = players.map(function(player) {
+      return apiCall("getMatchesByRound", {
+        stageName: round,
+        userId: player.userId,
+        displayName: player.displayName
+      });
+    });
+
+    Promise.all(requests)
+      .then(function(results) {
+        renderTipsComparison(players, results);
+      })
+      .catch(function(error) {
+        box.innerHTML = '<div class="error">Tips comparison error: ' + escapeHtml(error.message) + '</div>';
+      });
+  }
+
+  function renderTipsComparison(players, results) {
+    const box = document.getElementById("leagueTable");
+
+    const baseMatches = (results[0] || []).filter(function(match) {
+      return match.locked || (match.ftHome !== "" && match.ftAway !== "");
+    });
+
+    if (!baseMatches.length) {
+      box.innerHTML = '<div class="muted">No kicked-off matches to compare in this gameweek yet.</div>';
+      return;
+    }
+
+    const maps = results.map(function(matches) {
+      const map = {};
+      (matches || []).forEach(function(match) {
+        map[match.matchId] = match;
+      });
+      return map;
+    });
+
+    const totals = players.map(function(player, playerIndex) {
+      return baseMatches.reduce(function(total, match) {
+        const row = maps[playerIndex][match.matchId];
+        const p = row ? Number(row.tipPoints) : 0;
+        return total + (isNaN(p) ? 0 : p);
+      }, 0);
+    });
+
+    let summary = '<div class="tip-compare-summary"><div>Gameweek total</div>';
+
+    players.forEach(function(player, index) {
+      summary += '<div class="summary-player">' +
+        escapeHtml(player.displayName) + '<br><strong>' + totals[index] + ' pts</strong></div>';
+    });
+
+    while (players.length < 3) {
+      players.push({ displayName: "" });
+      results.push([]);
+      maps.push({});
+      totals.push(0);
+      summary += '<div></div>';
+    }
+
+    summary += '</div>';
+
+    let html = summary +
+      '<div class="league-table-wrap"><table class="tip-compare-table"><thead><tr>' +
+      '<th class="match-col">Match</th>' +
+      '<th>' + escapeHtml(players[0].displayName) + '</th>' +
+      '<th>' + escapeHtml(players[1].displayName) + '</th>' +
+      '<th>' + escapeHtml(players[2].displayName) + '</th>' +
+      '</tr></thead><tbody>';
+
+    baseMatches.forEach(function(match) {
+      const actualScore = match.ftHome !== "" && match.ftAway !== ""
+        ? escapeHtml(match.ftHome) + '-' + escapeHtml(match.ftAway)
+        : 'Started';
+
+      html += '<tr><td class="match-col">' +
+        '<div class="tip-compare-match">' +
+          '<span class="tip-compare-team home">' + escapeHtml(match.home) + '</span>' +
+          '<span class="tip-compare-result">' + actualScore + '</span>' +
+          '<span class="tip-compare-team away">' + escapeHtml(match.away) + '</span>' +
+        '</div></td>';
+
+      for (let i = 0; i < 3; i++) {
+        const row = maps[i] ? maps[i][match.matchId] : null;
+
+        if (row && row.tipHome !== "" && row.tipAway !== "") {
+          const points = row.tipPoints !== "" && row.tipPoints !== null && row.tipPoints !== undefined
+            ? row.tipPoints
+            : 0;
+
+          html += '<td class="tip-cell">' +
+            '<span class="tip-score player-' + (i + 1) + '">' +
+              escapeHtml(row.tipHome) + '-' + escapeHtml(row.tipAway) +
+            '</span>' +
+            '<span class="tip-points">(' + escapeHtml(points) + ')</span>' +
+          '</td>';
+        } else {
+          html += '<td class="tip-none">—</td>';
+        }
+      }
+
+      html += '</tr>';
     });
 
     html += '</tbody></table></div>';
