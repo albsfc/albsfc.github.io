@@ -820,9 +820,10 @@
 
     .fixture-line {
       display: grid;
-      grid-template-columns: minmax(0,1fr) 108px minmax(0,1fr);
+      grid-template-columns: minmax(0,220px) 108px minmax(0,220px);
+      justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .team-side { min-width: 0; }
@@ -892,7 +893,9 @@
     }
 
     html[data-team-names="hidden"] .fixture-line {
-      grid-template-columns: 1fr 108px 1fr;
+      grid-template-columns: 42px 108px 42px;
+      justify-content: center;
+      gap: 10px;
     }
 
     html[data-team-names="hidden"] .fixture-line .team-name {
@@ -1416,8 +1419,9 @@
 
       .fixture-row { padding: 9px 9px 8px; }
       .fixture-line {
-        grid-template-columns: minmax(0,1fr) 96px minmax(0,1fr);
-        gap: 5px;
+        grid-template-columns: minmax(0,150px) 96px minmax(0,150px);
+        justify-content: center;
+        gap: 6px;
       }
 
       .club-logo,
@@ -1430,7 +1434,9 @@
       .team-name { font-size: 12px; }
 
       html[data-team-names="hidden"] .fixture-line {
-        grid-template-columns: 1fr 96px 1fr;
+        grid-template-columns: 34px 96px 34px;
+        justify-content: center;
+        gap: 8px;
       }
 
       html[data-team-names="hidden"] .fixture-line .club-logo,
