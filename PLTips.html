@@ -867,6 +867,48 @@
 
     .team-side.away .team-name { text-align: right; }
 
+    /* Fixture layout: badges sit beside the score, FotMob-style */
+    .team-side.home .team-line {
+      justify-content: flex-end;
+    }
+
+    .team-side.home .team-name {
+      text-align: right;
+    }
+
+    .team-side.home .club-logo,
+    .team-side.home .logo-fallback {
+      order: 2;
+    }
+
+    .team-side.away .club-logo,
+    .team-side.away .logo-fallback {
+      order: 0;
+    }
+
+    .team-side.away .team-name {
+      order: 2;
+      text-align: left;
+    }
+
+    html[data-team-names="hidden"] .fixture-line {
+      grid-template-columns: 1fr 108px 1fr;
+    }
+
+    html[data-team-names="hidden"] .fixture-line .team-name {
+      display: none;
+    }
+
+    html[data-team-names="hidden"] .fixture-line .team-line {
+      gap: 0;
+    }
+
+    html[data-team-names="hidden"] .fixture-line .club-logo,
+    html[data-team-names="hidden"] .fixture-line .logo-fallback {
+      width: 34px;
+      height: 34px;
+    }
+
     .score-centre { text-align: center; }
 
     .score-inputs {
@@ -1386,6 +1428,17 @@
 
       .team-line { gap: 5px; }
       .team-name { font-size: 12px; }
+
+      html[data-team-names="hidden"] .fixture-line {
+        grid-template-columns: 1fr 96px 1fr;
+      }
+
+      html[data-team-names="hidden"] .fixture-line .club-logo,
+      html[data-team-names="hidden"] .fixture-line .logo-fallback {
+        width: 31px;
+        height: 31px;
+      }
+
       .score-box {
         width: 37px;
         height: 32px;
@@ -1708,6 +1761,18 @@
         </div>
 
         <div class="settings-card">
+          <div class="settings-title">Fixture Display</div>
+          <div class="settings-help">Choose whether fixtures show club names or just the badges.</div>
+          <div class="toggle-row">
+            <span>Show team names</span>
+            <label class="switch">
+              <input id="teamNamesToggle" type="checkbox" onchange="setShowTeamNames(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-card">
           <div class="settings-title">Login</div>
           <div class="settings-help">Choose whether this device remembers your login.</div>
           <div class="toggle-row">
@@ -1756,6 +1821,7 @@
 <script>
   const STORAGE_KEY = "premierLeagueTippingLogin";
   const REMEMBER_KEY = "premierLeagueTippingRemember";
+  const TEAM_NAMES_KEY = "premierLeagueTippingShowTeamNames";
   // ============================================================
   // GITHUB -> APPS SCRIPT API
   // Paste your deployed Apps Script /exec URL below.
@@ -1829,6 +1895,7 @@
 
   window.onload = function() {
     applySavedTheme();
+    applyTeamNamePreference();
     document.getElementById("pin").addEventListener("keydown", function(e) {
       if (e.key === "Enter") login();
     });
@@ -2049,6 +2116,31 @@
   function hexToRgba(hex, alpha) {
     const rgb = hexToRgb(hex);
     return "rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + "," + alpha + ")";
+  }
+
+  function getShowTeamNames() {
+    try {
+      const value = localStorage.getItem(TEAM_NAMES_KEY);
+      return value === null ? true : value === "true";
+    } catch(e) {
+      return true;
+    }
+  }
+
+  function applyTeamNamePreference() {
+    const showNames = getShowTeamNames();
+    document.documentElement.setAttribute("data-team-names", showNames ? "shown" : "hidden");
+
+    const toggle = document.getElementById("teamNamesToggle");
+    if (toggle) toggle.checked = showNames;
+  }
+
+  function setShowTeamNames(showNames) {
+    try {
+      localStorage.setItem(TEAM_NAMES_KEY, String(showNames));
+    } catch(e) {}
+
+    document.documentElement.setAttribute("data-team-names", showNames ? "shown" : "hidden");
   }
 
   function getRememberLogin() {
