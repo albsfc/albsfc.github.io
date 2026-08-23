@@ -1998,6 +1998,47 @@
       }
     }
 
+
+    /* ===== MOBILE SAVE TIPS BAR =====
+       Keep Save Tips directly above the fixed bottom nav without covering fixtures. */
+    @media (max-width: 760px) {
+      #fixturesView.active {
+        position: relative;
+      }
+
+      #fixturesView.active #matches {
+        /* Reserve room for the fixed Save Tips button. */
+        padding-bottom: 92px !important;
+      }
+
+      #fixturesView.active .submit-wrap {
+        position: fixed !important;
+        left: max(10px, env(safe-area-inset-left, 0px)) !important;
+        right: max(10px, env(safe-area-inset-right, 0px)) !important;
+        bottom: calc(66px + env(safe-area-inset-bottom, 0px)) !important;
+        z-index: 9998 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        pointer-events: none;
+      }
+
+      #fixturesView.active .submit-button,
+      #fixturesView.active #submitMessage {
+        pointer-events: auto;
+      }
+
+      #fixturesView.active .submit-button {
+        width: 100%;
+        min-height: 52px;
+        margin: 0;
+        border-radius: 10px;
+      }
+
+      #fixturesView:not(.active) .submit-wrap {
+        display: none !important;
+      }
+    }
+
   </style>
 </head>
 
