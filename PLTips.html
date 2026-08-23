@@ -1746,6 +1746,114 @@
       .league-table th,
       .league-table td { padding: 8px 3px; }
     }
+  
+    /* ===== CLEANER TABLE / TIP COMPARISON ===== */
+    .table-toolbar {
+      align-items: center;
+    }
+
+    .actual-compare-mine-pos {
+      margin-left: 7px;
+      color: var(--accent);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .actual-compare-mine-pos::before { content: "("; }
+    .actual-compare-mine-pos::after { content: ")"; }
+
+    .tip-compare-summary {
+      background: var(--panel-soft) !important;
+      border: 1px solid rgba(20,151,255,.22);
+    }
+
+    .tip-compare-table {
+      background: var(--panel) !important;
+    }
+
+    .tip-compare-table th,
+    .tip-compare-table td {
+      background: transparent !important;
+    }
+
+    .tip-compare-match {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .tip-compare-fixture {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: left;
+      font-weight: 850;
+    }
+
+    .tip-compare-result {
+      min-width: 34px;
+      text-align: right;
+      color: var(--text);
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    /* Prediction colour now means points earned, not player identity. */
+    .tip-score.score-0  { color: var(--red); }
+    .tip-score.score-1  { color: #ffd34d; }
+    .tip-score.score-3  { color: var(--green); }
+    .tip-score.score-6  { color: #b58cff; }
+    .tip-score.score-10 { color: #4db8ff; }
+
+    .tip-score-legend {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px 14px;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: var(--panel-soft);
+      border: 1px solid rgba(20,151,255,.22);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .tip-score-legend .legend-title {
+      color: var(--muted);
+      margin-right: 2px;
+    }
+
+    .tip-score-legend .score-0  { color: var(--red); }
+    .tip-score-legend .score-1  { color: #ffd34d; }
+    .tip-score-legend .score-3  { color: var(--green); }
+    .tip-score-legend .score-6  { color: #b58cff; }
+    .tip-score-legend .score-10 { color: #4db8ff; }
+
+    @media (max-width: 700px) {
+      .tip-compare-match {
+        grid-template-columns: minmax(0,1fr) auto;
+        gap: 5px;
+      }
+
+      .tip-compare-fixture {
+        font-size: 9px;
+      }
+
+      .tip-compare-result {
+        font-size: 10px;
+      }
+
+      .tip-score-legend {
+        gap: 6px 10px;
+        padding: 9px 7px;
+        font-size: 9px;
+      }
+    }
+
   </style>
 </head>
 
@@ -1840,7 +1948,7 @@
         <div class="table-mode-toggle">
           <button id="actualTableButton" class="table-mode-button active" type="button" onclick="setTableMode('actual')">Actual</button>
           <button id="predictedTableButton" class="table-mode-button" type="button" onclick="setTableMode('predicted')">Mine</button>
-          <button id="actualCompareButton" class="table-mode-button" type="button" onclick="setTableMode('actualcompare')">Vs Actual</button>
+          <button id="actualCompareButton" class="table-mode-button" type="button" onclick="setTableMode('actualcompare')">Compare Mine</button>
           <button id="tipsCompareButton" class="table-mode-button" type="button" onclick="setTableMode('tipscompare')">Tips Compare</button>
         </div>
 
@@ -1848,12 +1956,6 @@
           <button class="gw-nav" type="button" onclick="changeTableGameweek(-1)">‹</button>
           <select id="tableRoundSelect" onchange="loadTablePage()"></select>
           <button class="gw-nav" type="button" onclick="changeTableGameweek(1)">›</button>
-        </div>
-
-        <div class="table-display-toggle">
-          <button id="tableDisplayAuto" class="table-display-button active" type="button" onclick="setTableDisplay('auto')">Auto</button>
-          <button id="tableDisplayCompact" class="table-display-button" type="button" onclick="setTableDisplay('compact')">Compact</button>
-          <button id="tableDisplayDetailed" class="table-display-button" type="button" onclick="setTableDisplay('detailed')">Detailed</button>
         </div>
       </div>
 
@@ -2871,7 +2973,7 @@
     } else if (tableMode === "predicted") {
       note.innerText = "Your predicted league table through the selected gameweek.";
     } else if (tableMode === "actualcompare") {
-      note.innerText = "Your predicted table compared with the actual table. Positive means you have that club higher.";
+      note.innerText = "Actual league table with your predicted position shown in blue brackets beside each club.";
     } else {
       note.innerText = "Compare up to three players' tips. Only matches that have kicked off are shown.";
     }
@@ -2881,16 +2983,6 @@
     } else {
       loadTablePage();
     }
-  }
-
-  function setTableDisplay(mode) {
-    tableDisplay = ["auto", "compact", "detailed"].indexOf(mode) >= 0 ? mode : "auto";
-
-    document.getElementById("tableDisplayAuto").classList.toggle("active", tableDisplay === "auto");
-    document.getElementById("tableDisplayCompact").classList.toggle("active", tableDisplay === "compact");
-    document.getElementById("tableDisplayDetailed").classList.toggle("active", tableDisplay === "detailed");
-
-    loadTablePage();
   }
 
   function changeTableGameweek(direction) {
@@ -3038,7 +3130,7 @@
       return;
     }
 
-    let html = '<div class="league-table-wrap"><table class="league-table" data-display="' + tableDisplay + '"><thead><tr>' +
+    let html = '<div class="league-table-wrap"><table class="league-table" data-display="auto"><thead><tr>' +
       '<th>#</th><th class="club">Team</th>' +
       '<th>P</th>' +
       '<th class="detail-full">W</th><th class="detail-full">D</th><th class="detail-full">L</th>' +
@@ -3069,8 +3161,8 @@
   function renderActualVsMine(actualRows, mineRows) {
     const box = document.getElementById("leagueTable");
 
-    if (!actualRows.length && !mineRows.length) {
-      box.innerHTML = '<div class="muted">No table data available for this gameweek.</div>';
+    if (!actualRows.length) {
+      box.innerHTML = '<div class="muted">No actual table data available for this gameweek.</div>';
       return;
     }
 
@@ -3079,41 +3171,32 @@
       mineMap[normaliseTeamName(team.name)] = team;
     });
 
-    const ordered = actualRows.length ? actualRows.slice() : mineRows.slice();
-
-    let html = '<div class="league-table-wrap"><table class="league-table actual-compare-table"><thead><tr>' +
+    let html = '<div class="league-table-wrap"><table class="league-table" data-display="auto"><thead><tr>' +
       '<th>#</th><th class="club">Team</th>' +
-      '<th class="actual-head">Actual</th>' +
-      '<th class="mine-head">Mine</th>' +
-      '<th></th>' +
+      '<th>P</th>' +
+      '<th class="detail-full">W</th><th class="detail-full">D</th><th class="detail-full">L</th>' +
+      '<th class="detail-medium">+/-</th><th>GD</th><th>Pts</th>' +
       '</tr></thead><tbody>';
 
-    ordered.forEach(function(team, index) {
+    actualRows.forEach(function(team) {
       const mine = mineMap[normaliseTeamName(team.name)];
-      const actualPos = Number(team.position) || (index + 1);
       const minePos = mine ? Number(mine.position) : null;
-
-      let changeText = "—";
-      let changeClass = "same";
-
-      if (minePos !== null) {
-        const change = actualPos - minePos;
-        if (change > 0) {
-          changeText = "+" + change;
-          changeClass = "up";
-        } else if (change < 0) {
-          changeText = String(change);
-          changeClass = "down";
-        }
-      }
+      const gdText = team.gd > 0 ? "+" + team.gd : String(team.gd);
 
       html += '<tr>' +
-        '<td>' + actualPos + '</td>' +
+        '<td>' + team.position + '</td>' +
         '<td class="club"><div class="table-team"><img src="' + escapeHtml(getClubLogo(team.name)) +
-          '" alt="" onerror="this.style.display=\'none\'"><span>' + escapeHtml(team.name) + '</span></div></td>' +
-        '<td class="actual-pos"><strong>' + actualPos + '</strong></td>' +
-        '<td class="mine-pos"><strong>' + (minePos !== null ? minePos : "—") + '</strong></td>' +
-        '<td class="actual-compare-change ' + changeClass + '">' + changeText + '</td>' +
+          '" alt="" onerror="this.style.display=\\'none\\'"><span>' +
+          escapeHtml(team.name) +
+          (minePos !== null ? '<span class="actual-compare-mine-pos">' + minePos + '</span>' : '') +
+          '</span></div></td>' +
+        '<td>' + team.p + '</td>' +
+        '<td class="detail-full">' + team.w + '</td>' +
+        '<td class="detail-full">' + team.d + '</td>' +
+        '<td class="detail-full">' + team.l + '</td>' +
+        '<td class="detail-medium">' + team.gf + '-' + team.ga + '</td>' +
+        '<td>' + gdText + '</td>' +
+        '<td><strong>' + team.pts + '</strong></td>' +
       '</tr>';
     });
 
@@ -3180,19 +3263,20 @@
       }, 0);
     });
 
-    let summary = '<div class="tip-compare-summary"><div>Gameweek total</div>';
-
-    players.forEach(function(player, index) {
-      summary += '<div class="summary-player">' +
-        escapeHtml(player.displayName) + '<br><strong>' + totals[index] + ' pts</strong></div>';
-    });
-
     while (players.length < 3) {
       players.push({ displayName: "" });
       results.push([]);
       maps.push({});
       totals.push(0);
-      summary += '<div></div>';
+    }
+
+    let summary = '<div class="tip-compare-summary"><div>Gameweek total</div>';
+
+    for (let i = 0; i < 3; i++) {
+      summary += '<div class="summary-player">' +
+        escapeHtml(players[i].displayName) +
+        (players[i].displayName ? '<br><strong>' + totals[i] + ' pts</strong>' : '') +
+        '</div>';
     }
 
     summary += '</div>';
@@ -3208,28 +3292,31 @@
     baseMatches.forEach(function(match) {
       const actualScore = match.ftHome !== "" && match.ftAway !== ""
         ? escapeHtml(match.ftHome) + '-' + escapeHtml(match.ftAway)
-        : 'Started';
+        : 'LIVE';
 
       html += '<tr><td class="match-col">' +
         '<div class="tip-compare-match">' +
-          '<span class="tip-compare-team home">' + escapeHtml(match.home) + '</span>' +
+          '<span class="tip-compare-fixture">' +
+            escapeHtml(match.home) + ' - ' + escapeHtml(match.away) +
+          '</span>' +
           '<span class="tip-compare-result">' + actualScore + '</span>' +
-          '<span class="tip-compare-team away">' + escapeHtml(match.away) + '</span>' +
         '</div></td>';
 
       for (let i = 0; i < 3; i++) {
         const row = maps[i] ? maps[i][match.matchId] : null;
 
         if (row && row.tipHome !== "" && row.tipAway !== "") {
-          const points = row.tipPoints !== "" && row.tipPoints !== null && row.tipPoints !== undefined
-            ? row.tipPoints
-            : 0;
+          let points = Number(row.tipPoints);
+          if (isNaN(points)) points = 0;
+
+          // The app's possible scoring outcomes are 0, 1, 3, 6 and 10.
+          const allowed = [0, 1, 3, 6, 10];
+          const scoreClass = allowed.indexOf(points) >= 0 ? points : 0;
 
           html += '<td class="tip-cell">' +
-            '<span class="tip-score player-' + (i + 1) + '">' +
+            '<span class="tip-score score-' + scoreClass + '">' +
               escapeHtml(row.tipHome) + '-' + escapeHtml(row.tipAway) +
             '</span>' +
-            '<span class="tip-points">(' + escapeHtml(points) + ')</span>' +
           '</td>';
         } else {
           html += '<td class="tip-none">—</td>';
@@ -3239,7 +3326,16 @@
       html += '</tr>';
     });
 
-    html += '</tbody></table></div>';
+    html += '</tbody></table></div>' +
+      '<div class="tip-score-legend">' +
+        '<span class="legend-title">Score colours:</span>' +
+        '<span class="score-0">0 pts</span>' +
+        '<span class="score-1">1 pt</span>' +
+        '<span class="score-3">3 pts</span>' +
+        '<span class="score-6">6 pts</span>' +
+        '<span class="score-10">10 pts</span>' +
+      '</div>';
+
     box.innerHTML = html;
   }
 
