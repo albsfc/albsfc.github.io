@@ -1900,6 +1900,79 @@
       display: block;
     }
 
+  
+    /* ===== HARD-LOCK MOBILE NAV HEIGHT/POSITION =====
+       Same physical bar size on every view, regardless of content or active icon. */
+    @media (max-width: 760px) {
+      .mobile-nav {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        top: auto !important;
+
+        width: 100% !important;
+        height: calc(58px + env(safe-area-inset-bottom, 0px)) !important;
+        min-height: calc(58px + env(safe-area-inset-bottom, 0px)) !important;
+        max-height: calc(58px + env(safe-area-inset-bottom, 0px)) !important;
+
+        margin: 0 !important;
+        padding:
+          4px
+          max(8px, env(safe-area-inset-right, 0px))
+          calc(4px + env(safe-area-inset-bottom, 0px))
+          max(8px, env(safe-area-inset-left, 0px)) !important;
+
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        grid-template-rows: 50px !important;
+        align-items: stretch !important;
+        gap: 2px !important;
+        z-index: 9999 !important;
+        box-sizing: border-box !important;
+
+        transform: none !important;
+        -webkit-transform: none !important;
+      }
+
+      .mobile-nav-button {
+        width: 100% !important;
+        height: 50px !important;
+        min-height: 50px !important;
+        max-height: 50px !important;
+
+        padding: 4px 2px !important;
+        margin: 0 !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 2px !important;
+
+        line-height: 1 !important;
+        box-sizing: border-box !important;
+      }
+
+      .mobile-nav-button .icon {
+        width: 22px !important;
+        height: 20px !important;
+        margin: 0 !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        font-size: 17px !important;
+        line-height: 20px !important;
+      }
+
+      /* Reserve exactly the same amount of room on every page. */
+      .app {
+        padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+    }
+
   </style>
 </head>
 
@@ -2346,7 +2419,7 @@
     if (viewName === "table") loadTablePage();
     if (viewName === "leaderboard") loadLeaderboard();
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo(0, 0);
   }
 
   function applySavedTheme() {
