@@ -818,77 +818,52 @@
 
     .fixture-row:first-of-type { border-top: 0; }
 
+    /* Fixed centre geometry:
+       [home name] [home badge] [score] [away badge] [away name]
+       Badge columns are always the same distance from the score. */
     .fixture-line {
       display: grid;
-      grid-template-columns: minmax(0,220px) 42px 108px 42px minmax(0,220px);
+      grid-template-columns: minmax(0, 220px) 42px 108px 42px minmax(0, 220px);
       justify-content: center;
       align-items: center;
       column-gap: 10px;
     }
 
-    .fixture-line > .team-side.home {
-      display: contents;
-    }
-
-    .fixture-line > .team-side.away {
-      display: contents;
-    }
-
-    .fixture-line > .team-side.home .team-line,
-    .fixture-line > .team-side.away .team-line {
-      display: contents;
-    }
-
-    .fixture-line > .team-side.home .team-name {
-      grid-column: 1;
-      justify-self: end;
-      text-align: right;
-    }
-
-    .fixture-line > .team-side.home .club-logo,
-    .fixture-line > .team-side.home .logo-fallback {
-      grid-column: 2;
-      justify-self: center;
-    }
-
-    .fixture-line > .score-area {
-      grid-column: 3;
-      justify-self: center;
-    }
-
-    .fixture-line > .team-side.away .club-logo,
-    .fixture-line > .team-side.away .logo-fallback {
-      grid-column: 4;
-      justify-self: center;
-    }
-
-    .fixture-line > .team-side.away .team-name {
-      grid-column: 5;
-      justify-self: start;
-      text-align: left;
-    }
-
-    .team-side { min-width: 0; }
-
-    .team-line {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .team-name-cell {
       min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 17px;
+      font-weight: 800;
     }
 
-    .team-side.away .team-line { justify-content: flex-end; }
+    .team-name-cell.home-name {
+      text-align: right;
+      justify-self: end;
+    }
+
+    .team-name-cell.away-name {
+      text-align: left;
+      justify-self: start;
+    }
+
+    .team-badge-cell {
+      width: 42px;
+      display: grid;
+      place-items: center;
+    }
 
     .club-logo {
-      width: 30px;
-      height: 30px;
+      width: 34px;
+      height: 34px;
       object-fit: contain;
       flex: 0 0 auto;
     }
 
     .logo-fallback {
-      width: 30px;
-      height: 30px;
+      width: 34px;
+      height: 34px;
       border-radius: 8px;
       display: none;
       place-items: center;
@@ -899,90 +874,25 @@
       flex: 0 0 auto;
     }
 
-    .team-name {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 17px;
-      font-weight: 800;
+    .score-centre {
+      width: 108px;
+      text-align: center;
+      justify-self: center;
     }
 
-    .team-side.away .team-name { text-align: right; }
-
-    /* Fixture layout: badges sit beside the score, FotMob-style */
-    .team-side.home {
-      text-align: right;
-    }
-
-    .team-side.home .team-line {
-      justify-content: flex-end;
-      width: 100%;
-    }
-
-    .team-side.home .team-name {
-      text-align: right;
-    }
-
-    .team-side.home .club-logo,
-    .team-side.home .logo-fallback {
-      order: 2;
-    }
-
-    .team-side.away {
-      text-align: left;
-    }
-
-    .team-side.away .team-line {
-      justify-content: flex-start;
-      width: 100%;
-    }
-
-    .team-side.away .club-logo,
-    .team-side.away .logo-fallback {
-      order: 0;
-    }
-
-    .team-side.away .team-name {
-      order: 2;
-      text-align: left;
-    }
-
+    /* Badge-only mode simply removes the two name columns. */
     html[data-team-names="hidden"] .fixture-line {
       grid-template-columns: 42px 108px 42px;
-      justify-content: center;
       column-gap: 10px;
     }
 
-    html[data-team-names="hidden"] .fixture-line > .team-side.home .club-logo,
-    html[data-team-names="hidden"] .fixture-line > .team-side.home .logo-fallback {
-      grid-column: 1;
-    }
-
-    html[data-team-names="hidden"] .fixture-line > .score-area {
-      grid-column: 2;
-    }
-
-    html[data-team-names="hidden"] .fixture-line > .team-side.away .club-logo,
-    html[data-team-names="hidden"] .fixture-line > .team-side.away .logo-fallback {
-      grid-column: 3;
-    }
-
-    html[data-team-names="hidden"] .fixture-line .team-name {
+    html[data-team-names="hidden"] .team-name-cell {
       display: none;
     }
 
-    html[data-team-names="hidden"] .fixture-line .team-line {
-      gap: 0;
-    }
-
-    html[data-team-names="hidden"] .fixture-line .club-logo,
-    html[data-team-names="hidden"] .fixture-line .logo-fallback {
-      width: 34px;
-      height: 34px;
-    }
-
-    .score-centre { text-align: center; }
+    html[data-team-names="hidden"] .home-badge { grid-column: 1; }
+    html[data-team-names="hidden"] .score-centre { grid-column: 2; }
+    html[data-team-names="hidden"] .away-badge { grid-column: 3; }
 
     .score-inputs {
       display: flex;
@@ -1488,31 +1398,33 @@
       .toolbar-title { font-size: 16px; }
 
       .fixture-row { padding: 9px 9px 8px; }
+
       .fixture-line {
-        grid-template-columns: minmax(0,128px) 34px 96px 34px minmax(0,128px);
-        justify-content: center;
-        column-gap: 6px;
+        grid-template-columns: minmax(0, 132px) 34px 96px 34px minmax(0, 132px);
+        column-gap: 7px;
+      }
+
+      .team-name-cell {
+        font-size: 15px;
+      }
+
+      .team-badge-cell {
+        width: 34px;
       }
 
       .club-logo,
       .logo-fallback {
-        width: 27px;
-        height: 27px;
+        width: 31px;
+        height: 31px;
       }
 
-      .team-line { gap: 5px; }
-      .team-name { font-size: 15px; }
+      .score-centre {
+        width: 96px;
+      }
 
       html[data-team-names="hidden"] .fixture-line {
         grid-template-columns: 34px 96px 34px;
-        justify-content: center;
-        column-gap: 7px;
-      }
-
-      html[data-team-names="hidden"] .fixture-line .club-logo,
-      html[data-team-names="hidden"] .fixture-line .logo-fallback {
-        width: 31px;
-        height: 31px;
+        column-gap: 8px;
       }
 
       .score-box {
@@ -1838,7 +1750,7 @@
 
         <div class="settings-card">
           <div class="settings-title">Fixture Display</div>
-          <div class="settings-help">Choose whether fixtures show club names or just the badges.</div>
+          <div class="settings-help">Show full team names, or hide them for a clean badge-only layout.</div>
           <div class="toggle-row">
             <span>Show team names</span>
             <label class="switch">
@@ -2567,13 +2479,11 @@
         dayHtml +=
           '<div class="fixture-row" onclick="fixtureRowClick(event, \'' + escapeHtml(match.matchId) + '\')">' +
             '<div class="fixture-line">' +
-              '<div class="team-side home"><div class="team-line">' +
-                logoHtml(match.home) + '<div class="team-name">' + escapeHtml(match.home) + '</div>' +
-              '</div></div>' +
+              '<div class="team-name-cell home-name">' + escapeHtml(match.home) + '</div>' +
+              '<div class="team-badge-cell home-badge">' + logoHtml(match.home) + '</div>' +
               '<div class="score-centre">' + scoreHtml + '</div>' +
-              '<div class="team-side away"><div class="team-line">' +
-                '<div class="team-name">' + escapeHtml(match.away) + '</div>' + logoHtml(match.away) +
-              '</div></div>' +
+              '<div class="team-badge-cell away-badge">' + logoHtml(match.away) + '</div>' +
+              '<div class="team-name-cell away-name">' + escapeHtml(match.away) + '</div>' +
             '</div>' +
 
             '<div class="fixture-subline">' +
