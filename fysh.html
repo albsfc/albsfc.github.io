@@ -14,7 +14,8 @@
 <li>Ground floor calibrated to the 21.90 m overall length and the 17.00 m main west-wall dimension. Upper floor calibrated to the printed dimension chains, including the 15.45 m chain and 12.90 m depth, then registered to the west wall, north wall and stair core. Small inconsistencies in the scans were rounded.</li>
 <li>Ground floor datum follows FFL 9.800. Garage follows FFL 9.450, 350 mm lower. Upper floor assumed 3.00 m above the ground floor. Modelled wall heights are 2.75 m downstairs and 2.70 m upstairs.</li>
 <li>Typical external and internal walls use the printed 250 mm and 100 mm thicknesses. Door and window sizes, sill heights, stair winders and railing details are approximate where the drawings are unclear.</li>
-<li>The roof follows the four elevations as a simplified tiled hip with secondary gables and lower roofs. The elevation’s 8.40 m maximum guides the ridge height above approximate ground level. Eaves, roof junctions, brick colour, frames, cabinetry and finishes are illustrative.</li>
+<li>The roof follows the four elevations as a simplified tiled hip with secondary gables and lower roofs. The elevation’s 8.40 m maximum guides the ridge height above approximate ground level. Eaves and roof junctions are simplified. The photographs guide the charcoal roof, cream and taupe render, dark metalwork and interior finishes. Colours are visual estimates.</li>
+<li>The kitchen uses the former dining footprint. Its U-shaped layout follows the photo, with the cooktop on the left, the sink below the shuttered window and the fridge on the right. Cabinet dimensions, window placement and the dining label in the former kitchen area are inferred.</li>
 </ul></details></footer></main>
 <script>
 "use strict";
@@ -25,7 +26,7 @@ const U=(x,y)=>{
   const [a,b]=i<0?breaks.slice(-2):breaks.slice(i-1,i+1);
   return G(330+(x-384), a[1]+(y-a[0])*(b[1]-a[1])/(b[0]-a[0]));
 };
-const C={brick:'#b5846b',internal:'#e8ddca',timber:'#d5b38d',wet:'#afc5c1',tile:'#d0cbb9',garage:'#b5b8af',glass:'#78a8ab',trim:'#425253',door:'#97694d',roof:'#535d5f',fascia:'#e3d9c7',rail:'#465956',void:'#eee8dc',land:'#b9c3ad'};
+const C={render:'#e2d6bd',accent:'#a18b7a',internal:'#e5dfd0',timber:'#b8916c',tread:'#634335',wet:'#ccc8bf',tile:'#c2b5a4',entryTile:'#e5e2d7',garage:'#b4b1aa',glass:'#435970',trim:'#222b34',door:'#926445',roof:'#303238',fascia:'#ebe5d7',rail:'#283039',land:'#839567',cabinet:'#c9c1b1',counter:'#f2eee5',splash:'#423532',shutters:'#64483c',steel:'#838889'};
 const storeys={
  g:{map:G,z:0,h:2.75,walls:[],areas:[],labels:[]},
  u:{map:U,z:3,h:2.7,walls:[],areas:[],labels:[]}
@@ -39,7 +40,7 @@ const gp=[[257,137],[1470,137],[1470,647],[1187,647],[1187,1138],[884,1138],[884
 const gar=[[1187,648],[1772,648],[1772,1115],[1552,1115],[1552,1067],[1187,1067]];
 const alf=[[1470,137],[1698,137],[1698,648],[1470,648]];
 const porch=[[201,435],[387,435],[387,608],[201,608]];
-area('g',gp,C.timber);
+area('g',gp,C.entryTile);
 area('g',gar,C.garage,-.35);
 area('g',alf,C.tile,-.045);
 area('g',porch,C.tile,-.045);
@@ -49,14 +50,14 @@ wall('g',gp[0],gp[1],'e',[W(528,585),W(750,811),W(883,950,1.33,2.23),D(995,1088,
 wall('g',gp[1],gp[2],'e',[D(177,390,2.12,'slider'),D(402,615,2.12,'slider')]);
 wall('g',gp[2],gp[3],'e');
 wall('g',gp[3],gp[4],'e',[D(654,722)],-.35,3.10);
-wall('g',gp[4],gp[5],'e',[W(946,1000,.54,2.24),W(1078,1133,.54,2.24)]);
+wall('g',gp[4],gp[5],'a',[W(952,1115,1.02,2.09,4)]);
 wall('g',gp[5],gp[6],'e');
 wall('g',gp[6],gp[7],'e',[W(684,832,1.05,2.14,3)]);
 wall('g',gp[7],gp[8],'e',[W(945,1010,1.0,2.13)]);
 wall('g',gp[8],gp[9],'e',[W(562,615,.52,2.24)]);
-wall('g',gp[9],gp[10],'e');
-wall('g',gp[10],gp[11],'e',[W(.18,.83,.46,2.75,3)]);
-wall('g',gp[11],gp[12],'e');
+wall('g',gp[9],gp[10],'a');
+wall('g',gp[10],gp[11],'a',[W(.18,.83,.46,2.75,3)]);
+wall('g',gp[11],gp[12],'a');
 wall('g',gp[12],gp[13],'e',[W(651,704,.52,2.24)]);
 wall('g',gp[13],gp[14],'e');
 wall('g',gp[14],gp[15],'e',[D(478,562,2.32)]);
@@ -65,7 +66,7 @@ wall('g',[387,435],[484,435],'i',[D(408,480)]);
 wall('g',gp[16],gp[0],'e',[W(194,250,.54,2.24),W(314,373,.54,2.24)]);
 wall('g',gar[0],gar[1],'e',[W(1495,1580,1.22,2.35)],-.35);
 wall('g',gar[1],gar[2],'e',[W(850,951,1.1,2.35)],-.35);
-wall('g',gar[2],gar[3],'e',[D(1571,1754,2.35,'garage')],-.35);
+wall('g',gar[2],gar[3],'a',[D(1571,1754,2.35,'garage')],-.35);
 wall('g',gar[3],gar[4],'e',[],-.35);
 wall('g',gar[4],gar[5],'e',[D(1210,1535,2.35,'garage')],-.35);
 wall('g',[484,137],[484,435],'i');
@@ -76,7 +77,7 @@ wall('g',[987,137],[987,400],'i',[D(330,393)]);
 wall('g',[987,400],[1127,400],'i');
 wall('g',[1127,137],[1127,400],'i');
 wall('g',[366,608],[459,608]);wall('g',[612,608],[733,608]);wall('g',[674,608],[674,913]);
-for(const a of [['Office',369,273],['Theatre room',665,280],['Bath',908,212],['Laundry',1057,261],['Entry',571,523],['Porch',287,519],['Lounge',507,754],['Kitchen',784,787],['Dining',1033,860],['Family',1295,346],['Alfresco',1580,355],['Garage',1470,861],['Stairs ↑',1027,554]])label('g',...a);
+for(const a of [['Office',369,273],['Theatre room',665,280],['Bath',908,212],['Laundry',1057,261],['Entry',571,523],['Porch',287,519],['Lounge',507,754],['Dining',784,805],['Kitchen',1036,982],['Family',1295,346],['Alfresco',1580,355],['Garage',1470,861],['Stairs ↑',1027,554]])label('g',...a);
 
 const up=[[384,26],[1525,26],[1525,950],[942,950],[942,914],[725,914],[725,798],[566,798],[531,835],[387,690],[422,654],[422,489],[446,489],[446,321],[384,321]];
 const entryVoid=[[422,489],[730,489],[730,798],[566,798],[531,835],[387,690],[422,654]];
@@ -94,9 +95,9 @@ wall('u',up[3],up[4],'e');
 wall('u',up[4],up[5],'e',[W(743,884,.98,2.24,3)]);
 wall('u',up[5],up[6],'e',[W(807,884,.98,2.24)]);
 wall('u',up[6],up[7],'e',[W(612,662,.83,2.24)]);
-wall('u',up[7],up[8],'e');
-wall('u',up[8],up[9],'e',[W(.18,.83,0,2.24,4)]);
-wall('u',up[9],up[10],'e');
+wall('u',up[7],up[8],'a');
+wall('u',up[8],up[9],'a',[W(.18,.83,0,2.24,4)]);
+wall('u',up[9],up[10],'a');
 wall('u',up[10],up[11],'e',[W(519,590,.83,2.24)]);
 wall('u',up[11],up[12],'e');
 wall('u',up[12],up[13],'e',[D(339,474,2.17,'slider')]);
@@ -170,8 +171,8 @@ function wallInfo(w,map){
 }
 function buildWall(list,w,s,cut=false){
   const {len,opens,p}=wallInfo(w,s.map);
-  const z=w.base??s.z,h=cut?.96:w.height??s.h,ex=w.type==='e',width=ex?.25:.10;
-  const color=ex?C.brick:C.internal;
+  const z=w.base??s.z,h=cut?.96:w.height??s.h,ex=w.type!=='i',width=ex?.25:.10;
+  const color=w.type==='a'?C.accent:ex?C.render:C.internal;
   const bar=(a,b,l,u,c=color,thick=width)=>box(list,p(a),p(b),thick,z+l,z+Math.min(u,h),c);
   let cursor=0;
   for(const [a,b,l,u,style,n] of opens){
@@ -179,7 +180,7 @@ function buildWall(list,w,s,cut=false){
     const gap=.036/len;
     if(!cut){
       const glazing=style==='window'||style==='slider';
-      bar(a,b,l+.035,u-.033,glazing?C.glass:style==='garage'?C.garage:C.door,.043);
+      bar(a,b,l+.035,u-.033,glazing?C.glass:style==='garage'?C.roof:C.door,.043);
       bar(a,b,l,l+.035,C.trim,.095);bar(a,b,u-.033,u,C.trim,.095);
       for(let i=0;i<=n;i++){
         const t=a+(b-a)*i/n;
@@ -218,7 +219,8 @@ function steps(){
   function tread(p,i){
     const z=3*i/total;
     stairTreads.push(p);
-    prism(mesh.stairs,p,Math.max(0,z-.185),z,i%2?C.timber:'#c59e77');
+    prism(mesh.stairs,p,Math.max(0,z-.188),z-.035,C.internal);
+    prism(mesh.stairs,p,z-.035,z,C.tread);
   }
   for(let i=0;i<n;i++){
     const a=bottom-(bottom-yr)*i/n,b=bottom-(bottom-yr)*(i+1)/n;
@@ -233,12 +235,42 @@ function steps(){
 }
 function column(list,map,x,y,z,h,w=.32){
   const [a,b]=map(x,y);
-  rect(list,[a-w/2,b-w/2],[a+w/2,b+w/2],z,h,C.brick);
+  rect(list,[a-w/2,b-w/2],[a+w/2,b+w/2],z,h,C.accent);
 }
-function cabinetry(list,map,a,b,z=.88){
-  const p=map(...a),q=map(...b);
-  rect(list,p,q,.015,z,'#9d7d60');
-  rect(list,p.map(x=>x-.024),q.map(x=>x+.024),z,z+.045,'#eee9db');
+// The installed kitchen occupies the dining footprint on the original plan.
+const kitchenCabinets=[
+  [[896,938],[946,1080],.91],
+  [[896,1080],[1176,1128],.91],
+  [[1128,938],[1176,1011],.91],
+  [[1114,1011],[1176,1080],1.83,C.steel]
+];
+const kitchenFittings=[
+  [[904,979],[938,1034],'#242629'],
+  [[979,1090],[1081,1120],C.steel],
+  [[994,1093],[1025,1117],'#5f6464'],
+  [[1031,1093],[1063,1117],'#5f6464']
+];
+function buildKitchen(list,cutaway=false){
+  for(const [a,b,height,color] of kitchenCabinets){
+    rect(list,G(...a),G(...b),0,height-.04,color??C.cabinet);
+    rect(list,G(...a),G(...b),height-.04,height,color??C.counter);
+  }
+  kitchenFittings.forEach(([a,b,color],i)=>{
+    const z=.913+i*.004;
+    rect(list,G(...a),G(...b),z-.003,z,color);
+  });
+  rect(list,G(1025,1119),G(1030,1124),.91,1.23,C.steel);
+  if(cutaway)return;
+  rect(list,G(952,1123),G(1115,1128),.92,1.02,C.splash);
+  rect(list,G(952,1123),G(1115,1128),2.09,2.56,C.splash);
+  rect(list,G(952,1123),G(1115,1128),1.02,2.09,C.shutters);
+  for(let z=1.12;z<2.08;z+=.105)rect(list,G(953,1121),G(1114,1124),z,z+.021,'#80604f');
+  for(let x=952;x<=1115;x+=40)rect(list,G(x,1119),G(x+3,1125),1.02,2.09,'#4d3830');
+  rect(list,G(897,971),G(940,1041),1.63,1.70,C.steel);
+  rect(list,G(900,992),G(917,1020),1.70,2.53,C.steel);
+  for(const [a,b] of [[[896,938],[923,970]],[[896,1042],[923,1080]],[[1137,1010],[1176,1080]]]){
+    rect(list,G(...a),G(...b),1.70+(a[0]>1100?.16:0),2.48,C.cabinet);
+  }
 }
 for(const [k,s] of Object.entries(storeys)){
   for(const r of s.areas)slab(mesh[k],r,s.map);
@@ -246,11 +278,11 @@ for(const [k,s] of Object.entries(storeys)){
 for(const a of [[218,446],[218,598],[1685,147],[1685,398],[1685,632]])column(mesh.g,G,...a,-.08,2.75);
 for(const a of [[265,329],[265,479],[948,1019],[1255,1019]])column(mesh.u,U,...a,2.98,5.70,.24);
 column(mesh.g,G,267,443,-.08,2.75,.25);
-for(const a of [[[681,614],[731,974]],[[681,980],[856,1025]],[[856,688],[923,907]]])cabinetry(mesh.g,G,...a);
+
 for(const r of rails)railing(mesh.u,r.map(p=>U(...p)),3);
 steps();
 rect(mesh.site,[-1.7,-1.6],[23.4,16.0],-.53,-.40,C.land);
-rect(mesh.site,G(1188,1076),G(1774,1275),-.406,-.394,'#a7aaa0');
+rect(mesh.site,G(1188,1076),G(1774,1275),-.406,-.394,'#4e4d4b');
 for(let i=0;i<2;i++){
   const a=G(182+i*9,449),b=G(201+i*5,595);
   rect(mesh.g,a,b,-.39,-.23+i*.105,C.tile);
@@ -261,13 +293,23 @@ function roofHip(list,x0,y0,x1,y1,z,ridge,inset){
   const a=[x0,y0,z],b=[x1,y0,z],c=[x1,y1,z],d=[x0,y1,z];
   const p=[x0+inset,(y0+y1)/2,ridge],q=[x1-inset,(y0+y1)/2,ridge];
   for(const poly of [[a,b,q,p],[b,c,q],[c,d,p,q],[d,a,p]])face(list,poly,C.roof);
-  for(const [f,g] of [[a,b],[b,c],[c,d],[d,a]])box(list,f,g,.095,z-.16,z+.015,C.fascia);
+  for(const [f,g] of [[a,b],[b,c],[c,d],[d,a]]){
+    box(list,f,g,.095,z-.16,z+.015,C.fascia);
+    box(list,f,g,.125,z-.033,z+.027,C.trim);
+  }
 }
 function gable(list,x0,x1,y0,y1,z,ridge){
   const m=(x0+x1)/2;
   const a=[x0,y0,z],b=[x1,y0,z],c=[x1,y1,z],d=[x0,y1,z],p=[m,y0,ridge],q=[m,y1,ridge];
   face(list,[a,d,q,p],C.roof);face(list,[b,p,q,c],C.roof);
-  face(list,[a,b,p],C.brick);face(list,[c,d,q],C.brick);
+  face(list,[a,b,p],C.accent);face(list,[c,d,q],C.accent);
+  for(const [edgeA,edgeB,tip,offset] of [[a,b,p,-.012],[d,c,q,.012]]){
+    for(const edge of [edgeA,edgeB]){
+      const point=(v,h)=>[v[0],v[1]+offset,v[2]+h];
+      face(list,[point(edge,-.13),point(tip,-.13),point(tip,0),point(edge,0)],C.fascia);
+      face(list,[point(edge,0),point(tip,0),point(tip,.038),point(edge,.038)],C.trim);
+    }
+  }
   box(list,a,d,.075,z-.13,z,C.fascia);box(list,b,c,.075,z-.13,z,C.fascia);
 }
 const [ux,uy]=U(384,26),[nx,ey]=U(1525,950);
@@ -284,6 +326,8 @@ roofHip(mesh.roofG,gX,gY,hX,hY,2.55,4.11,1.48);
 gable(mesh.roofG,G(1526,0)[0],hX,G(0,935)[1],hY,2.55,3.73);
 rect(mesh.roofG,G(182,423),G(388,615),2.62,2.77,C.fascia);
 const cutMesh={g:[...mesh.g],u:[...mesh.u]};
+buildKitchen(mesh.g);
+buildKitchen(cutMesh.g,true);
 for(const [k,s] of Object.entries(storeys))for(const w of s.walls){
   buildWall(mesh[k],w,s);buildWall(cutMesh[k],w,s,true);
 }
@@ -378,15 +422,28 @@ function renderPlan(width,height){
     ctx.fillStyle=r.color;ctx.fill('evenodd');
     ctx.strokeStyle='#aaa491';ctx.lineWidth=.035;ctx.stroke();
   }
+  if(s===storeys.g){
+    for(const [a,b,height,color] of kitchenCabinets){
+      const [x,y]=G(...a),[u,v]=G(...b);
+      ctx.fillStyle=color??C.counter;
+      ctx.fillRect(x,y,u-x,v-y);
+      ctx.strokeStyle='#887f6e';ctx.lineWidth=.045;
+      ctx.strokeRect(x,y,u-x,v-y);
+    }
+    for(const [a,b,color] of kitchenFittings){
+      const [x,y]=G(...a),[u,v]=G(...b);
+      ctx.fillStyle=color;ctx.fillRect(x,y,u-x,v-y);
+    }
+  }
   for(const p of stairTreads){
-    ctx.beginPath();polygon(p);ctx.fillStyle='#cba47e';ctx.fill();
+    ctx.beginPath();polygon(p);ctx.fillStyle=C.tread;ctx.fill();
     ctx.strokeStyle='#705a49';ctx.lineWidth=.028;ctx.stroke();
   }
   if(s===storeys.u)for(const r of rails)for(let i=1;i<r.length;i++)line(project(r[i-1]),project(r[i]),C.rail,.067);
   for(const w of s.walls){
     const {opens,p}=wallInfo(w,s.map);
-    const thickness=w.type==='e'?.25:.10;
-    const color=w.type==='e'?'#473e37':'#534939';
+    const thickness=w.type!=='i'?.25:.10;
+    const color=w.type!=='i'?'#473e37':'#534939';
     let cursor=0;
     for(const [a,b,,,style] of opens){
       line(p(cursor),p(a),color,thickness);
