@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Two-storey house · 3D model</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eeeae1;color:#272e29;font:15px system-ui,sans-serif}main{max-width:1520px;margin:auto;padding:24px clamp(12px,3vw,46px)}header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}h1{font:500 clamp(27px,4vw,43px) Georgia,serif;margin:0}header span,footer{color:#535d54;font-size:13px}.toolbar{display:flex;flex-wrap:wrap;gap:9px;justify-content:space-between;margin-bottom:10px}.group{display:flex;gap:4px;flex-wrap:wrap;background:#f9f7f1;padding:4px;border:1px solid #d9d3c7;border-radius:10px}button{font:inherit;font-size:13px;border:0;background:transparent;color:inherit;padding:8px 12px;border-radius:6px;cursor:pointer}button[aria-pressed=true]{background:#234f43;color:white}button:disabled{opacity:.4;cursor:default}button:focus-visible,canvas:focus-visible{outline:2px solid #ad693d;outline-offset:2px}.stage{position:relative;height:clamp(410px,72vh,900px);border:1px solid #d4cec0;border-radius:15px;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#fbf9f2,#e0e5dc)}canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}canvas:active{cursor:grabbing}[hidden]{display:none!important}.badge{position:absolute;top:15px;left:16px;background:#faf8f1e8;padding:7px 10px;border-radius:7px;font-size:12px;pointer-events:none}.sides{position:absolute;right:12px;bottom:12px}.sides button{padding:6px 9px}footer{margin-top:10px;line-height:1.5}details{margin-top:12px;border-top:1px solid #d4cec0;padding-top:10px}summary{cursor:pointer;color:#234f43}ul{padding-left:20px}
+</style></head><body><main>
+<header><h1>Two-storey house</h1><span>Architectural model · metres</span></header>
+<div class="toolbar">
+<div class="group" aria-label="Storey"><button data-level="all" aria-pressed="true">Whole house</button><button data-level="g" aria-pressed="false">Ground floor</button><button data-level="u" aria-pressed="false">Upper floor</button></div>
+<div class="group" aria-label="View"><button data-mode="3d" aria-pressed="true">3D view</button><button data-mode="plan" aria-pressed="false">Floor plan</button></div>
+<div class="group" aria-label="Model controls"><button id="roof" aria-pressed="true">Roof on</button><button id="cut" aria-pressed="false">Cutaway</button><button id="minus" aria-label="Zoom out">−</button><button id="plus" aria-label="Zoom in">+</button><button id="reset">Reset</button></div>
+</div>
+<div class="stage"><canvas id="model" tabindex="0" aria-label="Interactive 3D model"></canvas><canvas id="plan" tabindex="0" aria-label="Labelled overhead floor plan" hidden></canvas><div id="badge" class="badge"></div><div class="group sides" aria-label="Face an elevation"><button data-side="S" title="South elevation · entry">S</button><button data-side="E" title="East elevation · garage doors">E</button><button data-side="N" title="North elevation · alfresco">N</button><button data-side="W" title="West elevation">W</button></div></div>
+<footer><span id="help"></span><details><summary>Drawing scale and model assumptions</summary><ul>
+<li>Ground floor calibrated to the 21.90 m overall length and the 17.00 m main west-wall dimension. Upper floor calibrated to the printed dimension chains, including the 15.45 m chain and 12.90 m depth, then registered to the west wall, north wall and stair core. Small inconsistencies in the scans were rounded.</li>
+<li>Ground floor datum follows FFL 9.800. Garage follows FFL 9.450, 350 mm lower. Upper floor assumed 3.00 m above the ground floor. Modelled wall heights are 2.75 m downstairs and 2.70 m upstairs.</li>
+<li>Typical external and internal walls use the printed 250 mm and 100 mm thicknesses. Door and window sizes, sill heights, stair winders and railing details are approximate where the drawings are unclear.</li>
+<li>The roof follows the four elevations as a simplified tiled hip with secondary gables and lower roofs. The elevation’s 8.40 m maximum guides the ridge height above approximate ground level. Eaves, roof junctions, brick colour, frames, cabinetry and finishes are illustrative.</li>
+</ul></details></footer></main>
+<script>
+"use strict";
+const G=(x,y)=>[(x-200)*.01386,(y-137)*.014];
+const U=(x,y)=>{
+  const breaks=[[26,137],[287,400],[489,608],[690,807],[835,952],[950,1138]];
+  const i=breaks.findIndex(([source],i)=>i>0&&source>=y);
+  const [a,b]=i<0?breaks.slice(-2):breaks.slice(i-1,i+1);
+  return G(330+(x-384), a[1]+(y-a[0])*(b[1]-a[1])/(b[0]-a[0]));
+};
+const C={brick:'#b5846b',internal:'#e8ddca',timber:'#d5b38d',wet:'#afc5c1',tile:'#d0cbb9',garage:'#b5b8af',glass:'#78a8ab',trim:'#425253',door:'#97694d',roof:'#535d5f',fascia:'#e3d9c7',rail:'#465956',void:'#eee8dc',land:'#b9c3ad'};
+const storeys={
+ g:{map:G,z:0,h:2.75,walls:[],areas:[],labels:[]},
+ u:{map:U,z:3,h:2.7,walls:[],areas:[],labels:[]}
+};
+function wall(l,a,b,type='i',open=[],base=null,height=null){storeys[l].walls.push({a,b,type,open,base,height});}
+const W=(s,e,b=.76,t=2.23,n=2)=>[s,e,b,t,'window',n];
+const D=(s,e,t=2.10,style='door')=>[s,e,0,t,style,style==='slider'?3:1];
+function area(l,points,color,z=storeys[l].z,holes=[]){storeys[l].areas.push({points,color,z,holes});}
+function label(l,name,x,y){storeys[l].labels.push([name,x,y]);}
+const gp=[[257,137],[1470,137],[1470,647],[1187,647],[1187,1138],[884,1138],[884,1035],[670,1035],[670,913],[507,913],[474,952],[330,807],[366,775],[366,608],[387,608],[387,435],[257,435]];
+const gar=[[1187,648],[1772,648],[1772,1115],[1552,1115],[1552,1067],[1187,1067]];
+const alf=[[1470,137],[1698,137],[1698,648],[1470,648]];
+const porch=[[201,435],[387,435],[387,608],[201,608]];
+area('g',gp,C.timber);
+area('g',gar,C.garage,-.35);
+area('g',alf,C.tile,-.045);
+area('g',porch,C.tile,-.045);
+area('g',[[847,139],[987,139],[987,316],[847,316]],C.wet,.012);
+area('g',[[987,139],[1127,139],[1127,400],[987,400]],C.wet,.012);
+wall('g',gp[0],gp[1],'e',[W(528,585),W(750,811),W(883,950,1.33,2.23),D(995,1088,2.17),W(1163,1220),W(1372,1430)]);
+wall('g',gp[1],gp[2],'e',[D(177,390,2.12,'slider'),D(402,615,2.12,'slider')]);
+wall('g',gp[2],gp[3],'e');
+wall('g',gp[3],gp[4],'e',[D(654,722)],-.35,3.10);
+wall('g',gp[4],gp[5],'e',[W(946,1000,.54,2.24),W(1078,1133,.54,2.24)]);
+wall('g',gp[5],gp[6],'e');
+wall('g',gp[6],gp[7],'e',[W(684,832,1.05,2.14,3)]);
+wall('g',gp[7],gp[8],'e',[W(945,1010,1.0,2.13)]);
+wall('g',gp[8],gp[9],'e',[W(562,615,.52,2.24)]);
+wall('g',gp[9],gp[10],'e');
+wall('g',gp[10],gp[11],'e',[W(.18,.83,.46,2.75,3)]);
+wall('g',gp[11],gp[12],'e');
+wall('g',gp[12],gp[13],'e',[W(651,704,.52,2.24)]);
+wall('g',gp[13],gp[14],'e');
+wall('g',gp[14],gp[15],'e',[D(478,562,2.32)]);
+wall('g',gp[15],gp[16],'e');
+wall('g',[387,435],[484,435],'i',[D(408,480)]);
+wall('g',gp[16],gp[0],'e',[W(194,250,.54,2.24),W(314,373,.54,2.24)]);
+wall('g',gar[0],gar[1],'e',[W(1495,1580,1.22,2.35)],-.35);
+wall('g',gar[1],gar[2],'e',[W(850,951,1.1,2.35)],-.35);
+wall('g',gar[2],gar[3],'e',[D(1571,1754,2.35,'garage')],-.35);
+wall('g',gar[3],gar[4],'e',[],-.35);
+wall('g',gar[4],gar[5],'e',[D(1210,1535,2.35,'garage')],-.35);
+wall('g',[484,137],[484,435],'i');
+wall('g',[484,435],[847,435],'i',[D(708,831,2.14,'fold')]);
+wall('g',[847,137],[847,435],'i');
+wall('g',[847,316],[987,316],'i',[D(916,977)]);
+wall('g',[987,137],[987,400],'i',[D(330,393)]);
+wall('g',[987,400],[1127,400],'i');
+wall('g',[1127,137],[1127,400],'i');
+wall('g',[366,608],[459,608]);wall('g',[612,608],[733,608]);wall('g',[674,608],[674,913]);
+for(const a of [['Office',369,273],['Theatre room',665,280],['Bath',908,212],['Laundry',1057,261],['Entry',571,523],['Porch',287,519],['Lounge',507,754],['Kitchen',784,787],['Dining',1033,860],['Family',1295,346],['Alfresco',1580,355],['Garage',1470,861],['Stairs ↑',1027,554]])label('g',...a);
+
+const up=[[384,26],[1525,26],[1525,950],[942,950],[942,914],[725,914],[725,798],[566,798],[531,835],[387,690],[422,654],[422,489],[446,489],[446,321],[384,321]];
+const entryVoid=[[422,489],[730,489],[730,798],[566,798],[531,835],[387,690],[422,654]];
+const stairVoid=[[980,286],[1192,286],[1192,475],[980,475]];
+const balcony=[[942,950],[1263,950],[1263,1023],[942,1023]];
+const sideDeck=[[259,321],[446,321],[446,489],[259,489]];
+area('u',up,C.timber,3,[entryVoid,stairVoid]);
+area('u',balcony,C.tile,2.98);
+area('u',sideDeck,C.tile,2.98);
+for(const r of [[686,27,785,211],[785,27,987,286],[987,27,1193,159]])area('u',[[r[0],r[1]],[r[2],r[1]],[r[2],r[3]],[r[0],r[3]]],C.wet,3.012);
+wall('u',up[0],up[1],'e',[W(713,755,1.36,2.23),W(824,939,1.30,2.23),W(1069,1147,1.32,2.23),W(1234,1284,.90,2.24),W(1425,1481,.90,2.24)]);
+wall('u',up[1],up[2],'e',[W(106,254,1.02,2.23,3),W(423,553,1.01,2.24,3)]);
+wall('u',up[2],up[3],'e',[D(1022,1183,2.2,'slider'),W(1319,1476,.99,2.24,3)]);
+wall('u',up[3],up[4],'e');
+wall('u',up[4],up[5],'e',[W(743,884,.98,2.24,3)]);
+wall('u',up[5],up[6],'e',[W(807,884,.98,2.24)]);
+wall('u',up[6],up[7],'e',[W(612,662,.83,2.24)]);
+wall('u',up[7],up[8],'e');
+wall('u',up[8],up[9],'e',[W(.18,.83,0,2.24,4)]);
+wall('u',up[9],up[10],'e');
+wall('u',up[10],up[11],'e',[W(519,590,.83,2.24)]);
+wall('u',up[11],up[12],'e');
+wall('u',up[12],up[13],'e',[D(339,474,2.17,'slider')]);
+wall('u',up[13],up[14],'e');
+wall('u',up[14],up[0],'e',[W(77,136,.78,2.24),W(202,261,.78,2.24)]);
+wall('u',[686,26],[686,321],'i',[D(85,141),D(220,274)]);
+wall('u',[686,211],[785,211]);wall('u',[785,26],[785,321]);
+wall('u',[384,321],[785,321],'i',[D(611,682)]);
+wall('u',[785,272],[867,272]);wall('u',[867,272],[867,321]);
+wall('u',[785,321],[867,321],'i',[D(799,855)]);
+wall('u',[867,286],[1193,286],'i',[D(879,936)]);
+wall('u',[987,26],[987,286]);wall('u',[987,159],[1193,159]);
+wall('u',[1193,26],[1193,359],'i',[D(93,149),D(195,252)]);
+wall('u',[1193,359],[1525,359],'i',[D(1196,1264)]);
+wall('u',[1268,359],[1268,617],'i',[D(551,617)]);wall('u',[1268,617],[1525,617]);
+wall('u',[1221,617],[1268,617],'i');wall('u',[1221,617],[1221,950],'i',[D(624,685)]);
+wall('u',[1291,617],[1291,669]);wall('u',[1291,669],[1525,669],'i',[D(1300,1398,2,'slider'),D(1410,1508,2,'slider')]);wall('u',[1403,617],[1403,669]);
+wall('u',[730,617],[993,617]);wall('u',[730,617],[730,798]);wall('u',[993,617],[993,946],'i',[D(626,686)]);
+for(const a of [['Bedroom 2',529,158],['Ens.',735,119],['WIR',740,251],['Bath',888,164],['Linen',825,301],['Ens.',1100,97],['WIR',1085,226],['Bedroom 1',1360,157],['Gallery',794,437],['Open to below',567,589],['Stairs ↓',1076,499],['Study',852,756],['TV area',1107,766],['Bedroom 4',1400,481],['Bedroom 3',1372,789],['BIR',1346,646],['BIR',1458,646],['Balcony',1104,989],['Side balcony',345,394]])label('u',...a);
+const mesh={g:[],u:[],roofG:[],roofU:[],site:[],stairs:[]};
+const rgb=color=>color.slice(1).match(/../g).map(v=>parseInt(v,16)/255);
+function face(list,p,color){
+  const a=p[1].map((x,i)=>x-p[0][i]),b=p[2].map((x,i)=>x-p[0][i]);
+  const n=[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+  const mag=Math.hypot(...n)||1;
+  const light=.75+.25*Math.abs((n[0]*-.34+n[1]*.44+n[2]*.82)/mag);
+  const c=rgb(color).map(v=>v*light);
+  for(let i=1;i<p.length-1;i++)for(const v of [p[0],p[i],p[i+1]])list.push(...v,...c);
+}
+function prism(list,p,z0,z1,c){
+  face(list,p.map(([x,y])=>[x,y,z1]),c);
+  face(list,p.map(([x,y])=>[x,y,z0]).reverse(),c);
+  p.forEach(([x,y],i)=>{
+    const [a,b]=p[(i+1)%p.length];
+    face(list,[[x,y,z0],[a,b,z0],[a,b,z1],[x,y,z1]],c);
+  });
+}
+function box(list,a,b,width,z0,z1,c){
+  if(z1<=z0||width<=0)return;
+  const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy);
+  if(len<.0001)return;
+  const x=-dy*width/(2*len),y=dx*width/(2*len);
+  prism(list,[[a[0]+x,a[1]+y],[b[0]+x,b[1]+y],[b[0]-x,b[1]-y],[a[0]-x,a[1]-y]],z0,z1,c);
+}
+function rect(list,a,b,z0,z1,c){
+  prism(list,[[a[0],a[1]],[b[0],a[1]],[b[0],b[1]],[a[0],b[1]]],z0,z1,c);
+}
+function slab(list,r,map){
+  const loops=[r.points,...r.holes].map(poly=>poly.map(p=>map(...p)));
+  const ys=[...new Set(loops.flat().map(p=>p[1]))].sort((a,b)=>a-b);
+  const depth=r.z===3?.25:r.z===2.98?.20:r.z<=0?.17:.012;
+  for(let i=0;i<ys.length-1;i++){
+    const lo=ys[i],hi=ys[i+1],mid=(lo+hi)/2, edges=[];
+    for(const p of loops)p.forEach(([x,y],j)=>{
+      const [a,b]=p[(j+1)%p.length];
+      if(Math.min(y,b)<mid&&mid<Math.max(y,b))edges.push(value=>x+(a-x)*(value-y)/(b-y));
+    });
+    edges.sort((a,b)=>a(mid)-b(mid));
+    for(let j=0;j<edges.length;j+=2){
+      const a=edges[j],b=edges[j+1];
+      prism(list,[[a(lo),lo],[b(lo),lo],[b(hi),hi],[a(hi),hi]],r.z-depth,r.z,r.color);
+    }
+  }
+}
+function wallInfo(w,map){
+  const a=map(...w.a),b=map(...w.b),len=Math.hypot(b[0]-a[0],b[1]-a[1]);
+  const ax=w.a[0]===w.b[0]?1:0;
+  const fraction=v=>v<=1?v:(v-w.a[ax])/(w.b[ax]-w.a[ax]);
+  const opens=w.open.map(([a,b,...rest])=>[Math.max(0,Math.min(fraction(a),fraction(b))),Math.min(1,Math.max(fraction(a),fraction(b))),...rest]).filter(([a,b])=>b>a).sort((a,b)=>a[0]-b[0]);
+  return {len,opens,p:t=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]};
+}
+function buildWall(list,w,s,cut=false){
+  const {len,opens,p}=wallInfo(w,s.map);
+  const z=w.base??s.z,h=cut?.96:w.height??s.h,ex=w.type==='e',width=ex?.25:.10;
+  const color=ex?C.brick:C.internal;
+  const bar=(a,b,l,u,c=color,thick=width)=>box(list,p(a),p(b),thick,z+l,z+Math.min(u,h),c);
+  let cursor=0;
+  for(const [a,b,l,u,style,n] of opens){
+    bar(cursor,a,0,h);bar(a,b,0,l);bar(a,b,u,h);
+    const gap=.036/len;
+    if(!cut){
+      const glazing=style==='window'||style==='slider';
+      bar(a,b,l+.035,u-.033,glazing?C.glass:style==='garage'?C.garage:C.door,.043);
+      bar(a,b,l,l+.035,C.trim,.095);bar(a,b,u-.033,u,C.trim,.095);
+      for(let i=0;i<=n;i++){
+        const t=a+(b-a)*i/n;
+        bar(Math.max(a,t-gap/2),Math.min(b,t+gap/2),l,u,C.trim,.095);
+      }
+      if(style==='window'&&n===2)bar(a,b,(l+u)/2-.018,(l+u)/2+.018,C.trim,.085);
+      if(style==='garage')for(let t=.18;t<u;t+=.19)bar(a,b,t,t+.013,C.trim,.055);
+    }
+    cursor=b;
+  }
+  bar(cursor,1,0,h);
+}
+function railing(list,p,z){
+  for(let i=1;i<p.length;i++){
+    const a=p[i-1],b=p[i];
+    box(list,a,b,.07,z+1,z+1.06,C.rail);
+    for(let r=.20;r<.97;r+=.15)box(list,a,b,.029,z+r,z+r+.025,C.rail);
+    const n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/1.35);
+    for(let j=0;j<=n;j++){
+      const x=a[0]+(b[0]-a[0])*j/n,y=a[1]+(b[1]-a[1])*j/n;
+      rect(list,[x-.035,y-.035],[x+.035,y+.035],z,z+1.06,C.rail);
+    }
+  }
+}
+const rails=[
+ [[942,952],[942,1023],[1263,1023],[1263,952]],
+ [[446,321],[259,321],[259,489],[446,489]],
+ [[446,489],[730,489],[730,617]],
+ [[1060,475],[1192,475],[1192,390]]
+];
+const stairTreads=[];
+function steps(){
+  // The right flight starts on the ground floor. The two winders turn to the west flight.
+  const [left,top]=U(980,286),[right,bottom]=U(1192,475),middle=(left+right)/2;
+  const inner=.27,w=.98,yr=top+.99,n=6,total=16;
+  function tread(p,i){
+    const z=3*i/total;
+    stairTreads.push(p);
+    prism(mesh.stairs,p,Math.max(0,z-.185),z,i%2?C.timber:'#c59e77');
+  }
+  for(let i=0;i<n;i++){
+    const a=bottom-(bottom-yr)*i/n,b=bottom-(bottom-yr)*(i+1)/n;
+    tread([[right-w,b],[right,b],[right,a],[right-w,a]],i+1);
+  }
+  const turn=[middle,yr],outline=[[right,yr],[right,top],[middle,top],[left,top],[left,yr]];
+  for(let i=0;i<4;i++)tread([turn,outline[i],outline[i+1]],7+i);
+  for(let i=0;i<n;i++){
+    const a=yr+(bottom-yr)*i/n,b=yr+(bottom-yr)*(i+1)/n;
+    tread([[left,a],[middle-inner,a],[middle-inner,b],[left,b]],i+11);
+  }
+}
+function column(list,map,x,y,z,h,w=.32){
+  const [a,b]=map(x,y);
+  rect(list,[a-w/2,b-w/2],[a+w/2,b+w/2],z,h,C.brick);
+}
+function cabinetry(list,map,a,b,z=.88){
+  const p=map(...a),q=map(...b);
+  rect(list,p,q,.015,z,'#9d7d60');
+  rect(list,p.map(x=>x-.024),q.map(x=>x+.024),z,z+.045,'#eee9db');
+}
+for(const [k,s] of Object.entries(storeys)){
+  for(const r of s.areas)slab(mesh[k],r,s.map);
+}
+for(const a of [[218,446],[218,598],[1685,147],[1685,398],[1685,632]])column(mesh.g,G,...a,-.08,2.75);
+for(const a of [[265,329],[265,479],[948,1019],[1255,1019]])column(mesh.u,U,...a,2.98,5.70,.24);
+column(mesh.g,G,267,443,-.08,2.75,.25);
+for(const a of [[[681,614],[731,974]],[[681,980],[856,1025]],[[856,688],[923,907]]])cabinetry(mesh.g,G,...a);
+for(const r of rails)railing(mesh.u,r.map(p=>U(...p)),3);
+steps();
+rect(mesh.site,[-1.7,-1.6],[23.4,16.0],-.53,-.40,C.land);
+rect(mesh.site,G(1188,1076),G(1774,1275),-.406,-.394,'#a7aaa0');
+for(let i=0;i<2;i++){
+  const a=G(182+i*9,449),b=G(201+i*5,595);
+  rect(mesh.g,a,b,-.39,-.23+i*.105,C.tile);
+}
+// Transition at the dropped garage slab.
+for(let i=0;i<2;i++)rect(mesh.g,G(1187+i*10,655),G(1211+i*10,719),-.35,-.115-i*.115,C.tile);
+function roofHip(list,x0,y0,x1,y1,z,ridge,inset){
+  const a=[x0,y0,z],b=[x1,y0,z],c=[x1,y1,z],d=[x0,y1,z];
+  const p=[x0+inset,(y0+y1)/2,ridge],q=[x1-inset,(y0+y1)/2,ridge];
+  for(const poly of [[a,b,q,p],[b,c,q],[c,d,p,q],[d,a,p]])face(list,poly,C.roof);
+  for(const [f,g] of [[a,b],[b,c],[c,d],[d,a]])box(list,f,g,.095,z-.16,z+.015,C.fascia);
+}
+function gable(list,x0,x1,y0,y1,z,ridge){
+  const m=(x0+x1)/2;
+  const a=[x0,y0,z],b=[x1,y0,z],c=[x1,y1,z],d=[x0,y1,z],p=[m,y0,ridge],q=[m,y1,ridge];
+  face(list,[a,d,q,p],C.roof);face(list,[b,p,q,c],C.roof);
+  face(list,[a,b,p],C.brick);face(list,[c,d,q],C.brick);
+  box(list,a,d,.075,z-.13,z,C.fascia);box(list,b,c,.075,z-.13,z,C.fascia);
+}
+const [ux,uy]=U(384,26),[nx,ey]=U(1525,950);
+roofHip(mesh.roofU,ux-.43,uy-.42,nx+.39,ey+.34,5.72,8.0,5.65);
+gable(mesh.roofU,U(926,0)[0],U(1280,0)[0],U(0,714)[1],U(0,1051)[1],5.72,6.78);
+gable(mesh.roofU,ux-.65,U(610,0)[0],U(0,503)[1],U(0,844)[1],5.72,6.49);
+rect(mesh.roofU,U(237,311),U(457,506),5.60,5.77,C.fascia);
+const [aX,aY]=G(1462,108),[bX,bY]=G(1730,668);
+// Lower alfresco roof slopes down away from the family doors.
+face(mesh.roofG,[[aX,aY,4.12],[bX,aY,2.73],[bX,bY,2.73],[aX,bY,4.12]],C.roof);
+box(mesh.roofG,[bX,aY],[bX,bY],.1,2.55,2.73,C.fascia);
+const [gX,gY]=G(1457,628),[hX,hY]=G(1796,1134);
+roofHip(mesh.roofG,gX,gY,hX,hY,2.55,4.11,1.48);
+gable(mesh.roofG,G(1526,0)[0],hX,G(0,935)[1],hY,2.55,3.73);
+rect(mesh.roofG,G(182,423),G(388,615),2.62,2.77,C.fascia);
+const cutMesh={g:[...mesh.g],u:[...mesh.u]};
+for(const [k,s] of Object.entries(storeys))for(const w of s.walls){
+  buildWall(mesh[k],w,s);buildWall(cutMesh[k],w,s,true);
+}
+const el=id=>document.getElementById(id);
+const model=el('model'),plan=el('plan'),ctx=plan.getContext('2d');
+const gl=model.getContext('webgl',{antialias:true,alpha:true});
+let level='all',mode='3d',roof=true,cut=false,angle=-2.28,tilt=.57,zoom=1,panX=0,panY=0;
+let program,buffers,uniforms;
+const name={all:'Whole house',g:'Ground floor',u:'Upper floor'};
+if(gl){
+  function shader(type,source){
+    const s=gl.createShader(type);
+    gl.shaderSource(s,source);gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  program=gl.createProgram();
+  gl.attachShader(program,shader(gl.VERTEX_SHADER,`
+    attribute vec3 p; attribute vec3 c; varying vec3 color;
+    uniform vec3 center, right, up, eye; uniform vec2 scale, shift;
+    void main(){vec3 q=p-center;gl_Position=vec4(vec2(dot(q,right),dot(q,up))*scale+shift,-dot(q,eye)/80.0,1.0);color=c;}
+  `));
+  gl.attachShader(program,shader(gl.FRAGMENT_SHADER,`
+    precision mediump float;
+    varying vec3 color;
+    void main(){gl_FragColor=vec4(color,1.0);}
+  `));
+  gl.linkProgram(program);
+  if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));
+  gl.useProgram(program);
+  const pos=gl.getAttribLocation(program,'p'),col=gl.getAttribLocation(program,'c');
+  uniforms=Object.fromEntries(['center','right','up','eye','scale','shift'].map(key=>[key,gl.getUniformLocation(program,key)]));
+  gl.enableVertexAttribArray(pos);gl.enableVertexAttribArray(col);
+  gl.enable(gl.DEPTH_TEST);
+  buffers=Object.fromEntries(Object.entries({...mesh,cutG:cutMesh.g,cutU:cutMesh.u}).map(([key,data])=>{
+    const buffer=gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);
+    return [key,{count:data.length/6,buffer}];
+  }));
+  function draw(key){
+    const {buffer,count}=buffers[key];
+    gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+    gl.vertexAttribPointer(pos,3,gl.FLOAT,false,24,0);
+    gl.vertexAttribPointer(col,3,gl.FLOAT,false,24,12);
+    gl.drawArrays(gl.TRIANGLES,0,count);
+  }
+  function renderModel(width,height){
+    gl.viewport(0,0,width,height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    const a=Math.cos(angle),b=Math.sin(angle),c=Math.cos(tilt),d=Math.sin(tilt);
+    const unit=Math.min(width/29,height/23)*zoom;
+    gl.uniform3f(uniforms.center,level==='u'?10.2:10.75,6.7,level==='all'?2.8:level==='u'?4.45:.9);
+    // Plan axes point north and east. Reverse screen right to preserve elevation handedness.
+    gl.uniform3f(uniforms.right,-a,-b,0);
+    gl.uniform3f(uniforms.up,-b*d,a*d,c);
+    gl.uniform3f(uniforms.eye,b*c,-a*c,d);
+    gl.uniform2f(uniforms.scale,2*unit/width,2*unit/height);
+    const ratio=width/Math.max(1,model.clientWidth);
+    gl.uniform2f(uniforms.shift,2*panX*ratio/width,-2*panY*ratio/height);
+    if(level==='all')draw('site');
+    if(level!=='u')draw(cut?'cutG':'g');
+    if(level!=='g')draw(cut?'cutU':'u');
+    draw('stairs');
+    if(roof&&!cut){
+      if(level!=='u')draw('roofG');
+      if(level!=='g')draw('roofU');
+    }
+  }
+  window.renderModel=renderModel;
+}else{
+  mode='plan';level='g';
+  document.querySelector('[data-mode="3d"]').disabled=true;
+}
+function renderPlan(width,height){
+  const ratio=width/Math.max(1,plan.clientWidth), s=storeys[level==='u'?'u':'g'];
+  const unit=Math.min(width/25,height/18)*zoom;
+  const ox=width/2-10.8*unit+panX*ratio,oy=height/2-6.8*unit+panY*ratio;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,width,height);
+  ctx.setTransform(unit,0,0,unit,ox,oy);
+  function polygon(points,project=p=>p){
+    points.forEach((v,i)=>{const p=project(v);if(i===0)ctx.moveTo(...p);else ctx.lineTo(...p);});
+    ctx.closePath();
+  }
+  const project=p=>s.map(...p);
+  function line(a,b,color,weight){
+    ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);
+    ctx.strokeStyle=color;ctx.lineWidth=weight;ctx.stroke();
+  }
+  for(const r of s.areas){
+    ctx.beginPath();polygon(r.points,project);
+    for(const h of r.holes)polygon(h,project);
+    ctx.fillStyle=r.color;ctx.fill('evenodd');
+    ctx.strokeStyle='#aaa491';ctx.lineWidth=.035;ctx.stroke();
+  }
+  for(const p of stairTreads){
+    ctx.beginPath();polygon(p);ctx.fillStyle='#cba47e';ctx.fill();
+    ctx.strokeStyle='#705a49';ctx.lineWidth=.028;ctx.stroke();
+  }
+  if(s===storeys.u)for(const r of rails)for(let i=1;i<r.length;i++)line(project(r[i-1]),project(r[i]),C.rail,.067);
+  for(const w of s.walls){
+    const {opens,p}=wallInfo(w,s.map);
+    const thickness=w.type==='e'?.25:.10;
+    const color=w.type==='e'?'#473e37':'#534939';
+    let cursor=0;
+    for(const [a,b,,,style] of opens){
+      line(p(cursor),p(a),color,thickness);
+      const A=p(a),B=p(b);
+      if(['window','garage','slider'].includes(style))line(A,B,style==='garage'?'#6d7168':'#397c83',style==='garage'?.08:.092);
+      else{
+        const dx=B[0]-A[0],dy=B[1]-A[1],span=Math.hypot(dx,dy),theta=Math.atan2(dy,dx);
+        line(A,[A[0]-dy,A[1]+dx],'#8a614b',.051);
+        ctx.beginPath();ctx.arc(...A,span,theta,theta+Math.PI/2);
+        ctx.strokeStyle='#aa8067';ctx.lineWidth=.024;ctx.stroke();
+      }
+      cursor=b;
+    }
+    line(p(cursor),p(1),color,thickness);
+  }
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font='600 '+Math.min(.36,Math.max(.23,13*ratio/unit))+'px system-ui';
+  for(const [label,x,y] of s.labels){
+    const [a,b]=s.map(x,y);
+    ctx.strokeStyle='#fff6e7';ctx.lineWidth=.075;ctx.lineJoin='round';ctx.strokeText(label,a,b);
+    ctx.fillStyle='#27342e';ctx.fillText(label,a,b);
+  }
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+  const w=width/ratio,h=height/ratio;
+  ctx.fillStyle='#28443b';ctx.textAlign='right';ctx.font='600 13px system-ui';
+  ctx.fillText('N →',w-19,25);
+  const span=3*unit/ratio;
+  line([21,h-26],[21+span,h-26],'#334d45',2);
+  line([21,h-31],[21,h-21],'#334d45',1);
+  line([21+span,h-31],[21+span,h-21],'#334d45',1);
+  ctx.textAlign='left';ctx.font='12px system-ui';ctx.fillText('3 m',22,h-40);
+}
+function render(){
+  const canvas=mode==='3d'?model:plan;
+  const ratio=Math.min(devicePixelRatio||1,2);
+  const w=Math.round(canvas.clientWidth*ratio),h=Math.round(canvas.clientHeight*ratio);
+  if(!w||!h)return;
+  if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
+  if(mode==='3d')window.renderModel(w,h);else renderPlan(w,h);
+}
+function reset(){angle=-2.28;tilt=.57;zoom=1;panX=panY=0;}
+function sync(){
+  model.hidden=mode!=='3d';plan.hidden=mode!=='plan';
+  document.querySelector('.sides').hidden=mode==='plan';
+  for(const b of document.querySelectorAll('[data-level]')){
+    b.setAttribute('aria-pressed',String(b.dataset.level===level));
+    b.disabled=b.dataset.level==='all'&&(mode==='plan'||!gl);
+  }
+  for(const b of document.querySelectorAll('[data-mode]'))b.setAttribute('aria-pressed',String(b.dataset.mode===mode));
+  el('roof').disabled=mode==='plan'||cut;
+  el('roof').setAttribute('aria-pressed',String(roof&&!cut&&mode==='3d'));
+  el('roof').textContent=roof&&!cut?'Roof on':'Roof off';
+  el('cut').disabled=mode==='plan';el('cut').setAttribute('aria-pressed',String(cut&&mode==='3d'));
+  el('badge').textContent=name[level]+' · '+(mode==='plan'?'Overhead':cut?'Cutaway':'3D');
+  el('help').textContent=mode==='3d'?'Drag to rotate. Scroll or pinch to zoom. Shift-drag to pan. Use N, E, S or W to face an elevation.':gl?'Drag to pan. Scroll or pinch to zoom. Choose a storey above.':'3D requires browser WebGL. Both floor plans are available here.';
+  render();
+}
+for(const b of document.querySelectorAll('[data-level]'))b.onclick=()=>{
+  level=b.dataset.level;panX=panY=0;zoom=1;
+  if(level!=='all')roof=false;
+  sync();
+};
+for(const b of document.querySelectorAll('[data-mode]'))b.onclick=()=>{
+  mode=b.dataset.mode;if(mode==='plan'&&level==='all')level='g';reset();sync();
+};
+for(const b of document.querySelectorAll('[data-side]'))b.onclick=()=>{
+  angle={E:Math.PI,S:-Math.PI/2,W:0,N:Math.PI/2}[b.dataset.side];
+  tilt=.095;panX=panY=0;render();
+};
+function changeZoom(f){zoom=Math.min(5,Math.max(.48,zoom*f));render();}
+el('roof').onclick=()=>{roof=!roof;sync();};
+el('cut').onclick=()=>{cut=!cut;sync();};
+el('plus').onclick=()=>changeZoom(1.24);
+el('minus').onclick=()=>changeZoom(1/1.24);
+el('reset').onclick=()=>{reset();render();};
+for(const canvas of [model,plan]){
+  const pointers=new Map();
+  canvas.addEventListener('pointerdown',e=>{
+    if(![0,1,2].includes(e.button))return;
+    canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,[e.clientX,e.clientY]);
+  });
+  for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,e=>pointers.delete(e.pointerId));
+  canvas.addEventListener('pointermove',e=>{
+    if(!pointers.has(e.pointerId))return;
+    const old=pointers.get(e.pointerId),p=[e.clientX,e.clientY],dx=p[0]-old[0],dy=p[1]-old[1];
+    pointers.set(e.pointerId,p);
+    if(pointers.size===2){
+      const [x,y]=[...pointers].find(([id])=>id!==e.pointerId)[1];
+      const before=Math.hypot(old[0]-x,old[1]-y),after=Math.hypot(p[0]-x,p[1]-y);
+      panX+=dx/2;panY+=dy/2;changeZoom(after/Math.max(1,before));return;
+    }
+    if(mode==='plan'||e.shiftKey||e.buttons===2||e.buttons===4){panX+=dx;panY+=dy;}
+    else{angle+=dx*.009;tilt=Math.min(1.565,Math.max(.015,tilt+dy*.008));}
+    render();
+  });
+  canvas.addEventListener('contextmenu',e=>e.preventDefault());
+  canvas.addEventListener('wheel',e=>{e.preventDefault();changeZoom(Math.exp(-Math.sign(e.deltaY)*.13));},{passive:false});
+  canvas.addEventListener('keydown',e=>{
+    const actions={'+':()=>changeZoom(1.24),'-':()=>changeZoom(1/1.24),'0':reset,
+      ArrowLeft:()=>mode==='plan'?panX+=25:angle-=.14,ArrowRight:()=>mode==='plan'?panX-=25:angle+=.14,
+      ArrowUp:()=>mode==='plan'?panY+=25:tilt=Math.min(1.565,tilt+.12),ArrowDown:()=>mode==='plan'?panY-=25:tilt=Math.max(.015,tilt-.12)};
+    if(actions[e.key]){e.preventDefault();actions[e.key]();render();}
+  });
+}
+new ResizeObserver(render).observe(document.querySelector('.stage'));
+sync();
+</script></body></html>
