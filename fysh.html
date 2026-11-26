@@ -13,9 +13,10 @@
 <footer><span id="help"></span><details><summary>Drawing scale and model assumptions</summary><ul>
 <li>Ground floor calibrated to the 21.90 m overall length and the 17.00 m main west-wall dimension. Upper floor calibrated to the printed dimension chains, including the 15.45 m chain and 12.90 m depth, then registered to the west wall, north wall and stair core. Small inconsistencies in the scans were rounded.</li>
 <li>Ground floor datum follows FFL 9.800. Garage follows FFL 9.450, 350 mm lower. Upper floor assumed 3.00 m above the ground floor. Modelled wall heights are 2.75 m downstairs and 2.70 m upstairs.</li>
-<li>Typical external and internal walls use the printed 250 mm and 100 mm thicknesses. Door and window sizes, sill heights, stair winders and railing details are approximate where the drawings are unclear.</li>
+<li>Typical external and internal walls use the printed 250 mm and 100 mm thicknesses. Door and window sizes and sill heights are approximate. The stair turns right on the way up from the entry, based on the photo. The curve, landing and railing dimensions are estimated.</li>
 <li>The roof follows the four elevations as a simplified tiled hip with secondary gables and lower roofs. The elevation’s 8.40 m maximum guides the ridge height above approximate ground level. Eaves and roof junctions are simplified. The photographs guide the charcoal roof, cream and taupe render, dark metalwork and interior finishes. Colours are visual estimates.</li>
-<li>The kitchen uses the former dining footprint. Its U-shaped layout follows the photo, with the cooktop on the left, the sink below the shuttered window and the fridge on the right. Cabinet dimensions, window placement and the dining label in the former kitchen area are inferred.</li>
+<li>The kitchen uses the former dining footprint. Its U-shaped layout follows the photo, with the cooktop on the left, the sink below the shuttered window and the fridge on the right. The cabinet runs were extended by about 0.6 m toward the interior. Cabinet dimensions, window placement and the dining label in the former kitchen area are inferred.</li>
+<li>The front concrete path wraps past the entry and angled window bay. Its width and planting positions are estimated from the exterior photos.</li>
 </ul></details></footer></main>
 <script>
 "use strict";
@@ -209,28 +210,44 @@ const rails=[
  [[942,952],[942,1023],[1263,1023],[1263,952]],
  [[446,321],[259,321],[259,489],[446,489]],
  [[446,489],[730,489],[730,617]],
- [[1060,475],[1192,475],[1192,390]]
+ [[980,475],[1100,475]],
+ [[1187,475],[1192,475],[1192,390]]
 ];
 const stairTreads=[];
 function steps(){
-  // The right flight starts on the ground floor. The two winders turn to the west flight.
-  const [left,top]=U(980,286),[right,bottom]=U(1192,475),middle=(left+right)/2;
-  const inner=.27,w=.98,yr=top+.99,n=6,total=16;
-  function tread(p,i){
-    const z=3*i/total;
+  const [left,top]=U(980,286),[,bottom]=U(1192,475);
+  const startY=top+.61,straight=1.49,radius=.84,width=1.02;
+  const curve=radius*Math.PI/2,exitX=left+straight+radius;
+  const length=straight+curve+bottom-startY-radius;
+  const count=16;
+  function crossSection(distance){
+    if(distance<=straight)return [[left+distance,startY],[0,1]];
+    if(distance>=straight+curve)return [[exitX,bottom-(length-distance)],[-1,0]];
+    const turn=(distance-straight)/radius;
+    return [[left+straight+radius*Math.sin(turn),startY+radius*(1-Math.cos(turn))],[-Math.sin(turn),Math.cos(turn)]];
+  }
+  const edges=Array.from({length:count+1},(_,i)=>{
+    const [center,normal]=crossSection(length*i/count);
+    return [1,-1].map(side=>center.map((v,j)=>v+side*normal[j]*width/2));
+  });
+  for(let i=0;i<count;i++){
+    const z=3*(i+1)/count;
+    const p=[edges[i][0],edges[i+1][0],edges[i+1][1],edges[i][1]];
     stairTreads.push(p);
-    prism(mesh.stairs,p,Math.max(0,z-.188),z-.035,C.internal);
-    prism(mesh.stairs,p,z-.035,z,C.tread);
+    prism(mesh.stairs,p,z-.1875,z-.034,C.internal);
+    prism(mesh.stairs,p,z-.034,z,C.tread);
   }
-  for(let i=0;i<n;i++){
-    const a=bottom-(bottom-yr)*i/n,b=bottom-(bottom-yr)*(i+1)/n;
-    tread([[right-w,b],[right,b],[right,a],[right-w,a]],i+1);
-  }
-  const turn=[middle,yr],outline=[[right,yr],[right,top],[middle,top],[left,top],[left,yr]];
-  for(let i=0;i<4;i++)tread([turn,outline[i],outline[i+1]],7+i);
-  for(let i=0;i<n;i++){
-    const a=yr+(bottom-yr)*i/n,b=yr+(bottom-yr)*(i+1)/n;
-    tread([[left,a],[middle-inner,a],[middle-inner,b],[left,b]],i+11);
+  for(let i=0;i<count;i++){
+    const a=edges[i][0],b=edges[i+1][0],z=3*i/count,next=3*(i+1)/count;
+    for(const [height,width,color] of [[.95,.063,C.tread],[.34,.018,C.steel],[.49,.018,C.steel],[.64,.018,C.steel],[.79,.018,C.steel]]){
+      const h=z+height,k=next+height;
+      const dx=b[0]-a[0],dy=b[1]-a[1],offset=width/(2*Math.hypot(dx,dy));
+      const vertices=[[a[0]-dy*offset,a[1]+dx*offset,h],[b[0]-dy*offset,b[1]+dx*offset,k],
+        [b[0]+dy*offset,b[1]-dx*offset,k],[a[0]+dy*offset,a[1]-dx*offset,h]];
+      face(mesh.stairs,vertices,color);
+      face(mesh.stairs,[vertices[0],vertices[1],[...vertices[1].slice(0,2),k-width],[...vertices[0].slice(0,2),h-width]],color);
+    }
+    if(i%3===0)rect(mesh.stairs,[a[0]-.026,a[1]-.026],[a[0]+.026,a[1]+.026],z,z+.95,C.steel);
   }
 }
 function column(list,map,x,y,z,h,w=.32){
@@ -239,9 +256,9 @@ function column(list,map,x,y,z,h,w=.32){
 }
 // The installed kitchen occupies the dining footprint on the original plan.
 const kitchenCabinets=[
-  [[896,938],[946,1080],.91],
+  [[896,896],[946,1080],.91],
   [[896,1080],[1176,1128],.91],
-  [[1128,938],[1176,1011],.91],
+  [[1128,896],[1176,1011],.91],
   [[1114,1011],[1176,1080],1.83,C.steel]
 ];
 const kitchenFittings=[
@@ -268,7 +285,7 @@ function buildKitchen(list,cutaway=false){
   for(let x=952;x<=1115;x+=40)rect(list,G(x,1119),G(x+3,1125),1.02,2.09,'#4d3830');
   rect(list,G(897,971),G(940,1041),1.63,1.70,C.steel);
   rect(list,G(900,992),G(917,1020),1.70,2.53,C.steel);
-  for(const [a,b] of [[[896,938],[923,970]],[[896,1042],[923,1080]],[[1137,1010],[1176,1080]]]){
+  for(const [a,b] of [[[896,896],[923,970]],[[896,1042],[923,1080]],[[1137,1010],[1176,1080]]]){
     rect(list,G(...a),G(...b),1.70+(a[0]>1100?.16:0),2.48,C.cabinet);
   }
 }
@@ -283,6 +300,42 @@ for(const r of rails)railing(mesh.u,r.map(p=>U(...p)),3);
 steps();
 rect(mesh.site,[-1.7,-1.6],[23.4,16.0],-.53,-.40,C.land);
 rect(mesh.site,G(1188,1076),G(1774,1275),-.406,-.394,'#4e4d4b');
+const pathInner=[[245,230],[245,422],[189,422],[189,620],[352,620],[352,769],[310,805],[474,970],[514,926],[657,926],[657,1047],[871,1047],[871,1153],[1188,1153]];
+const pathOuter=[[161,230],[161,341],[104,341],[104,704],[269,704],[269,737],[191,805],[473,1089],[550,1010],[573,1010],[573,1131],[787,1131],[787,1237],[1188,1237]];
+const concrete='#434446';
+const pathPanels=pathInner.slice(1).map((point,i)=>[pathInner[i],point,pathOuter[i+1],pathOuter[i]]);
+for(const panel of pathPanels)prism(mesh.site,panel.map(point=>G(...point)),-.43,-.386,concrete);
+for(const i of [1,2,4,6,7,9,11]){
+  box(mesh.site,G(...pathInner[i]),G(...pathOuter[i]),.013,-.386,-.384,'#343537');
+}
+const frontPlants=[
+  [226,294,.42,.57],[223,365,.36,.46],[170,390,.35,.58],
+  [318,672,.36,.46],[427,900,.35,.52],[585,949,.48,.63],
+  [708,1079,.48,.72],[805,1066,.40,.56],[927,1177,.47,.68],
+  [1098,1178,.42,.57]
+];
+function plant(x,y,rise,spread){
+  const [cx,cy]=G(x,y),z=-.374;
+  const bed=Array.from({length:12},(_,i)=>{
+    const a=i*Math.PI/6;
+    return [cx+Math.cos(a)*spread*.59,cy+Math.sin(a)*spread*.59];
+  });
+  prism(mesh.site,bed,-.397,-.378,'#675e51');
+  const colors=['#415137','#53663c','#687849','#78834d'];
+  for(let i=0;i<20;i++){
+    const a=i*2.39996,dx=Math.cos(a),dy=Math.sin(a),reach=spread*(.37+.57*(i%7)/6);
+    const h=rise*(.69+.55*((i*3)%11)/10),w=.036+(i%3)*.009;
+    const base=[cx+dx*.035,cy+dy*.035,z];
+    const left=[cx+dx*reach*.40-dy*w,cy+dy*reach*.40+dx*w,z+h*.77];
+    const right=[cx+dx*reach*.40+dy*w,cy+dy*reach*.40-dx*w,z+h*.77];
+    const ridge=[cx+dx*reach*.46,cy+dy*reach*.46,z+h*.83];
+    const tip=[cx+dx*reach,cy+dy*reach,z+h];
+    face(mesh.site,[base,left,tip,ridge],colors[i%colors.length]);
+    face(mesh.site,[base,ridge,tip,right],colors[(i+1)%colors.length]);
+  }
+}
+for(const item of frontPlants)plant(...item);
+
 for(let i=0;i<2;i++){
   const a=G(182+i*9,449),b=G(201+i*5,595);
   rect(mesh.g,a,b,-.39,-.23+i*.105,C.tile);
@@ -415,6 +468,15 @@ function renderPlan(width,height){
   function line(a,b,color,weight){
     ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);
     ctx.strokeStyle=color;ctx.lineWidth=weight;ctx.stroke();
+  }
+  if(s===storeys.g){
+    for(const panel of pathPanels){
+      ctx.beginPath();polygon(panel,project);ctx.fillStyle=concrete;ctx.fill();
+    }
+    for(const [x,y,,spread] of frontPlants){
+      ctx.beginPath();ctx.arc(...G(x,y),spread*.67,0,2*Math.PI);
+      ctx.fillStyle='#64744b';ctx.fill();
+    }
   }
   for(const r of s.areas){
     ctx.beginPath();polygon(r.points,project);
